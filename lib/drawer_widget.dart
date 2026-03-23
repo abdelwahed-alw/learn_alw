@@ -114,7 +114,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Learn-Alw',
+                        'Salearn',
                         style:
                             Theme.of(context).textTheme.headlineSmall?.copyWith(
                                   color: Colors.white,
@@ -341,7 +341,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
       child: Column(
         children: [
           Text(
-            'Learn-Alw v1.0.0',
+            'Salearn v1.0.0',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: kColorTextMuted,
                   fontWeight: FontWeight.bold,

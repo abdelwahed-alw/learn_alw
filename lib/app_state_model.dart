@@ -1,5 +1,5 @@
 // lib/app_state_model.dart
-// Central state management for Learn-Alw using ChangeNotifier (Provider).
+// Central state management for Salearn using ChangeNotifier (Provider).
 // Persists all settings to SharedPreferences and drives the UI reactively.
 
 import 'package:flutter/foundation.dart';

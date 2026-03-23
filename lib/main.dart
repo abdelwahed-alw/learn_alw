@@ -1,5 +1,5 @@
 // lib/main.dart
-// App entry point for Learn-Alw.
+// App entry point for Salearn.
 // Bootstraps SharedPreferences and the Provider tree, then launches the app.
 
 import 'package:flutter/material.dart';
@@ -39,7 +39,7 @@ class LearnAlwApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Learn-Alw',
+      title: 'Salearn',
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.dark,
       theme: _buildLightTheme(),

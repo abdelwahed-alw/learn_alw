@@ -60,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             tooltip: 'Menu',
                           ),
                           Text(
-                            'Learn-Alw',
+                            'Salearn',
                             style: Theme.of(context)
                                 .textTheme
                                 .titleLarge

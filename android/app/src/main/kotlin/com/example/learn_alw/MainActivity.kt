@@ -1,4 +1,4 @@
-package com.example.learn_alw
+package com.alw.sa_learn
 
 import io.flutter.embedding.android.FlutterActivity
 

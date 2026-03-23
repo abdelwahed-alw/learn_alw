@@ -1,5 +1,5 @@
-name: SaLearn
-description: "Learn-Alw – AI-powered language learning app with Gemini BYOK."
+name: salearn
+description: "Salearn – AI-powered language learning app with Gemini BYOK."
 publish_to: 'none'
 
 version: 1.0.0+1

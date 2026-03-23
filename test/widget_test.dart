@@ -1,4 +1,4 @@
-// Widget test placeholder for Learn-Alw.
+// Widget test placeholder for Salearn.
 // Full integration tests require a real Gemini API key and are run manually.
 
 import 'package:flutter_test/flutter_test.dart';

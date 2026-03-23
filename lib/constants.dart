@@ -1,5 +1,5 @@
 // lib/constants.dart
-// App-wide constants for Learn-Alw – Premium UI Redesign.
+// App-wide constants for Salearn – Premium UI Redesign.
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
