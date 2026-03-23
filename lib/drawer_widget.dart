@@ -1,5 +1,4 @@
 // lib/drawer_widget.dart
-// Premium UI Sidebar for configuration (API key, languages, topics).
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +20,6 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   @override
   void initState() {
     super.initState();
-    // Pre-fill the text field with the saved API key.
     final state = context.read<AppStateModel>();
     _apiKeyController.text = state.apiKey;
   }
@@ -45,26 +43,21 @@ class _DrawerWidgetState extends State<DrawerWidget> {
       }
       return;
     }
-
     FocusScope.of(context).unfocus();
-
     try {
       await state.testAndSaveApiKey(key);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('API key verified and saved!'),
-            backgroundColor: kColorAccent,
+            backgroundColor: kColorPrimary,
           ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: kColorError,
-          ),
+          SnackBar(content: Text(e.toString()), backgroundColor: kColorError),
         );
       }
     }
@@ -87,70 +80,32 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      backgroundColor: kColorBackground,
+      width: 320,
       child: Consumer<AppStateModel>(
-        builder: (context, state, child) {
+        builder: (context, state, _) {
           return SafeArea(
             bottom: false,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // ── Header ──────────────────────────────────────────────────
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    gradient: kPrimaryGradient.scale(0.8),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.15),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.language_rounded,
-                            size: 40, color: Colors.white),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Salearn',
-                        style:
-                            Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1,
-                                ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'AI Language Tutor',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white.withValues(alpha: 0.8),
-                            ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // ── Scrollable Body ──────────────────────────────────────────
+                _buildHeader(),
                 Expanded(
                   child: ListView(
-                    padding: const EdgeInsets.all(24),
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
                     children: [
-                      _buildApiKeySection(context, state),
-                      const SizedBox(height: 32),
-                      _buildSectionTitle(
-                          context, 'Languages', Icons.translate_rounded),
-                      const SizedBox(height: 16),
-                      _buildLanguageDropdowns(state),
-                      const SizedBox(height: 32),
-                      _buildSectionTitle(
-                          context, 'Study Topic', Icons.menu_book_rounded),
-                      const SizedBox(height: 16),
+                      _buildSectionLabel('API KEY', Icons.vpn_key_rounded),
+                      const SizedBox(height: 10),
+                      _buildApiKeyCard(state),
+                      const SizedBox(height: 20),
+                      _buildSectionLabel('LANGUAGES', Icons.translate_rounded),
+                      const SizedBox(height: 10),
+                      _buildLanguageCard(state),
+                      const SizedBox(height: 20),
+                      _buildSectionLabel('STUDY TOPIC', Icons.menu_book_rounded),
+                      const SizedBox(height: 10),
                       _buildTopicList(state),
-                      const SizedBox(height: 40),
-                      _buildAboutSection(context),
+                      const SizedBox(height: 24),
+                      _buildFooter(),
                     ],
                   ),
                 ),
@@ -162,96 +117,209 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     );
   }
 
-  Widget _buildSectionTitle(BuildContext context, String title, IconData icon) {
+  // ── Header ──────────────────────────────────────────────────────────────────
+  Widget _buildHeader() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(24, 28, 24, 22),
+      decoration: BoxDecoration(
+        color: kColorSurface,
+        border: Border(bottom: BorderSide(color: kColorBorder)),
+      ),
+      child: Stack(
+        children: [
+          // Decorative circles
+          Positioned(
+            top: -30, right: -30,
+            child: Container(
+              width: 100, height: 100,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: kColorPrimary.withValues(alpha: 0.07),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -20, left: 60,
+            child: Container(
+              width: 70, height: 70,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: kColorAccent.withValues(alpha: 0.05),
+              ),
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 52, height: 52,
+                decoration: BoxDecoration(
+                  color: kColorPrimary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: kColorPrimary.withValues(alpha: 0.3),
+                    width: 1.5,
+                  ),
+                ),
+                child: const Icon(
+                  Icons.language_rounded,
+                  color: kColorPrimary,
+                  size: 26,
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                'Salearn',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: kColorText,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1,
+                    ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                'AI Language Tutor',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: kColorTextMuted,
+                    ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Section Label ───────────────────────────────────────────────────────────
+  Widget _buildSectionLabel(String title, IconData icon) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: kColorTextMuted),
-        const SizedBox(width: 8),
+        Icon(icon, size: 14, color: kColorTextMuted),
+        const SizedBox(width: 6),
         Text(
-          title.toUpperCase(),
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: kColorTextMuted,
-                letterSpacing: 1.5,
-                fontWeight: FontWeight.bold,
-              ),
+          title,
+          style: const TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.w700,
+            color: kColorTextMuted,
+            letterSpacing: 1.5,
+          ),
         ),
+        const SizedBox(width: 10),
+        Expanded(child: Divider(color: kColorBorder, thickness: 1, height: 1)),
       ],
     );
   }
 
-  // ── 1. API Key Section ──────────────────────────────────────────────────────
-  Widget _buildApiKeySection(BuildContext context, AppStateModel state) {
+  // ── API Key Card ────────────────────────────────────────────────────────────
+  Widget _buildApiKeyCard(AppStateModel state) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: kColorBackground,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color.fromARGB(255, 4, 8, 15), width: 1.5),
+        color: kColorSurface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: kColorBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
-              const Icon(Icons.vpn_key_rounded, color: Color.fromARGB(255, 0, 0, 0), size: 20),
-              const SizedBox(width: 8),
+              Container(
+                width: 30, height: 30,
+                decoration: BoxDecoration(
+                  color: kColorPrimary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.vpn_key_rounded,
+                    color: kColorPrimary, size: 16),
+              ),
+              const SizedBox(width: 10),
               Text(
                 'Gemini API Key',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: kColorAccent,
+                      fontWeight: FontWeight.w600,
                     ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           TextField(
             controller: _apiKeyController,
             obscureText: true,
+            style: const TextStyle(color: kColorText, fontSize: 14),
             decoration: InputDecoration(
               hintText: 'Paste your key here...',
-              fillColor: kColorSurface,
+              fillColor: kColorBackground,
               suffixIcon: IconButton(
-                icon: const Icon(Icons.clear, size: 18),
+                icon: const Icon(Icons.clear, size: 16),
                 onPressed: _apiKeyController.clear,
                 color: kColorTextMuted,
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: state.loadingPhase == LoadingPhase.testingKey
-                ? null
-                : () => _testAndSaveKey(state),
-            icon: state.loadingPhase == LoadingPhase.testingKey
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2, color: Colors.white),
-                  )
-                : const Icon(Icons.check_circle_outline, size: 20),
-            label: Text(
-              state.loadingPhase == LoadingPhase.testingKey
-                  ? 'Verifying...'
-                  : 'Test & Save',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+          const SizedBox(height: 12),
+          // Coral gradient button
+          Container(
+            height: 44,
+            decoration: BoxDecoration(
+              gradient: kPrimaryGradient,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(10),
+                onTap: state.loadingPhase == LoadingPhase.testingKey
+                    ? null
+                    : () => _testAndSaveKey(state),
+                child: Center(
+                  child: state.loadingPhase == LoadingPhase.testingKey
+                      ? const SizedBox(
+                          width: 18, height: 18,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.white),
+                        )
+                      : const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.check_circle_outline,
+                                size: 16, color: Colors.white),
+                            SizedBox(width: 8),
+                            Text(
+                              'Test & Save',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
+              ),
             ),
           ),
-          const SizedBox(height: 12),
-          TextButton.icon(
+          const SizedBox(height: 8),
+          // Ghost button
+          OutlinedButton.icon(
             onPressed: _launchYouTube,
             icon: const Icon(Icons.play_circle_fill_rounded,
-                color: kColorSecondary, size: 20),
+                color: kColorPrimary, size: 16),
             label: const Text(
               'How to get an API key',
               style: TextStyle(
-                  color: kColorSecondary, fontWeight: FontWeight.w600),
+                  color: kColorPrimary,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12),
             ),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 12),
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: kColorPrimary.withValues(alpha: 0.3)),
+              padding: const EdgeInsets.symmetric(vertical: 10),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(10)),
             ),
           ),
         ],
@@ -259,13 +327,12 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     );
   }
 
-  // ── 2. Language Pickers ─────────────────────────────────────────────────────
-  Widget _buildLanguageDropdowns(AppStateModel state) {
+  // ── Language Card ───────────────────────────────────────────────────────────
+  Widget _buildLanguageCard(AppStateModel state) {
     return Container(
-      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: kColorBackground,
-        borderRadius: BorderRadius.circular(16),
+        color: kColorSurface,
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(color: kColorBorder),
       ),
       child: Column(
@@ -274,91 +341,107 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             label: 'I speak',
             value: state.nativeLanguage,
             items: kSupportedLanguages,
-            onChanged: (val) {
-              if (val != null) state.setNativeLanguage(val);
-            },
+            onChanged: (val) { if (val != null) state.setNativeLanguage(val); },
           ),
-          const Divider(height: 1),
+          Divider(height: 1, color: kColorBorder),
           _DropdownRow(
             label: 'I want to learn',
             value: state.targetLanguage,
             items: kSupportedLanguages,
-            onChanged: (val) {
-              if (val != null) state.setTargetLanguage(val);
-            },
+            onChanged: (val) { if (val != null) state.setTargetLanguage(val); },
           ),
         ],
       ),
     );
   }
 
-  // ── 3. Topic List ───────────────────────────────────────────────────────────
+  // ── Topic List ──────────────────────────────────────────────────────────────
   Widget _buildTopicList(AppStateModel state) {
     return Container(
       decoration: BoxDecoration(
-        color: kColorBackground,
-        borderRadius: BorderRadius.circular(16),
+        color: kColorSurface,
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(color: kColorBorder),
       ),
       child: ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: kTopics.length,
-        separatorBuilder: (_, __) => const Divider(height: 1),
+        separatorBuilder: (_, __) => Divider(height: 1, color: kColorBorder),
         itemBuilder: (context, index) {
           final topic = kTopics[index];
           final isSelected = state.selectedTopic == topic;
 
-          return ListTile(
-            title: Text(
-              topic,
-              style: TextStyle(
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                color: isSelected ? kColorPrimary : kColorText,
-              ),
-            ),
-            trailing: isSelected
-                ? const Icon(Icons.check_circle_rounded, color: kColorPrimary)
-                : null,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          return InkWell(
+            borderRadius: BorderRadius.circular(12),
             onTap: () {
               state.selectTopic(topic);
-              // Close the drawer if on mobile.
               if (Scaffold.of(context).isDrawerOpen) {
                 Navigator.of(context).pop();
               }
             },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? kColorPrimary.withValues(alpha: 0.07)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      topic,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                        color: isSelected ? kColorPrimary : kColorAccent,
+                      ),
+                    ),
+                  ),
+                  if (isSelected)
+                    Container(
+                      width: 20, height: 20,
+                      decoration: const BoxDecoration(
+                        color: kColorPrimary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.check, size: 12, color: Colors.white),
+                    ),
+                ],
+              ),
+            ),
           );
         },
       ),
     );
   }
 
-  // ── 4. About Section ────────────────────────────────────────────────────────
-  Widget _buildAboutSection(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          Text(
-            'Salearn v1.0.0',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: kColorTextMuted,
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          const SizedBox(height: 4),
-          const Text(
-            'Powered by bdelwahed Abdellaoui',
-            style: TextStyle(color: kColorTextMuted, fontSize: 12),
-          ),
-        ],
-      ),
+  // ── Footer ──────────────────────────────────────────────────────────────────
+  Widget _buildFooter() {
+    return Column(
+      children: [
+        Divider(color: kColorBorder),
+        const SizedBox(height: 12),
+        Text(
+          'Salearn v1.0.0',
+          style: TextStyle(
+              color: kColorTextMuted,
+              fontSize: 11,
+              fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Powered by Abdelwahed Abdellaoui',
+          style: TextStyle(color: kColorBorder, fontSize: 10),
+        ),
+      ],
     );
   }
 }
 
-// ─── Reusable custom styled dropdown row ──────────────────────────────────────
+// ── Dropdown Row ──────────────────────────────────────────────────────────────
 class _DropdownRow extends StatelessWidget {
   final String label;
   final String value;
@@ -379,22 +462,19 @@ class _DropdownRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: const TextStyle(color: kColorTextMuted, fontSize: 14),
-          ),
+          Text(label,
+              style: const TextStyle(color: kColorTextMuted, fontSize: 12)),
           DropdownButton<String>(
             value: value,
             underline: const SizedBox(),
-            icon:
-                const Icon(Icons.arrow_drop_down_rounded, color: kColorPrimary),
+            icon: const Icon(Icons.arrow_drop_down_rounded,
+                color: kColorPrimary),
             dropdownColor: kColorSurface,
             borderRadius: BorderRadius.circular(12),
             style: const TextStyle(
-              color: kColorText,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+                color: kColorAccent,
+                fontSize: 14,
+                fontWeight: FontWeight.w600),
             onChanged: onChanged,
             items: items.map((lang) {
               return DropdownMenuItem(

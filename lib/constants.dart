@@ -1,31 +1,29 @@
 // lib/constants.dart
-// App-wide constants for Salearn – Premium UI Redesign.
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // ─── SharedPreferences keys ───────────────────────────────────────────────────
-const String kPrefApiKey = 'api_key';
-const String kPrefNativeLang = 'native_language';
-const String kPrefTargetLang = 'target_language';
-const String kPrefTopic = 'selected_topic';
+const String kPrefApiKey        = 'api_key';
+const String kPrefNativeLang    = 'native_language';
+const String kPrefTargetLang    = 'target_language';
+const String kPrefTopic         = 'selected_topic';
 
-// ─── YouTube tutorial placeholder ─────────────────────────────────────────────
+// ─── YouTube tutorial ─────────────────────────────────────────────────────────
 const String kYoutubeTutorialUrl =
     'https://www.youtube.com/watch?v=PLACEHOLDER_TUTORIAL_ID';
 
 // ─── Supported languages ──────────────────────────────────────────────────────
 const List<Map<String, String>> kSupportedLanguages = [
-  {'label': 'Arabic', 'code': 'ar'},
-  {'label': 'English', 'code': 'en'},
-  {'label': 'French', 'code': 'fr'},
-  {'label': 'Spanish', 'code': 'es'},
-  {'label': 'German', 'code': 'de'},
-  {'label': 'Turkish', 'code': 'tr'},
-  {'label': 'Italian', 'code': 'it'},
+  {'label': 'Arabic',     'code': 'ar'},
+  {'label': 'English',    'code': 'en'},
+  {'label': 'French',     'code': 'fr'},
+  {'label': 'Spanish',    'code': 'es'},
+  {'label': 'German',     'code': 'de'},
+  {'label': 'Turkish',    'code': 'tr'},
+  {'label': 'Italian',    'code': 'it'},
   {'label': 'Portuguese', 'code': 'pt'},
-  {'label': 'Chinese', 'code': 'zh'},
-  {'label': 'Japanese', 'code': 'ja'},
+  {'label': 'Chinese',    'code': 'zh'},
+  {'label': 'Japanese',   'code': 'ja'},
 ];
 
 String languageLabelFromCode(String code) {
@@ -51,61 +49,71 @@ const List<String> kTopics = [
   'Food & Cooking',
 ];
 
-// ─── Premium Color palette ────────────────────────────────────────────────────
-// Rich dark space background
-const Color kColorBackground = Color(0xFF090B10);
-// Elevated surfaces (cards, sidebars)
-const Color kColorSurface = Color(0xFF0F141E);
-// Glassmorphism base
-const Color kColorCard = Color(0xFF161C27);
-const Color kColorBorder = Color(0xFF2B3648);
+// ─── Color Palette — Navy × Coral ────────────────────────────────────────────
 
-// Neon Accents
-const Color kColorPrimary = Color(0xFF8B5CF6); // Vibrant Purple
-const Color kColorAccent = Color(0xFF06B6D4); // Cyan/Teal
-const Color kColorSecondary = Color(0xFFF43F5E); // Rose Pink
-const Color kColorError = Color(0xFFEF4444); // Red
+// Backgrounds (layered deep navy)
+const Color kColorBackground  = Color(0xFF0A192F); // Page bg
+const Color kColorSurface     = Color(0xFF112240); // Cards, drawer
+const Color kColorCard        = Color(0xFF172A46); // Elevated cards
+const Color kColorBorder      = Color(0xFF1E3A5F); // Subtle borders
 
-// Typography Colors
-const Color kColorText = Color(0xFFF8FAFC);
-const Color kColorTextMuted = Color(0xFF94A3B8);
+// Accent Colors
+const Color kColorPrimary     = Color(0xFFFF6B6B); // Coral red — buttons, highlights
+const Color kColorAccent      = Color(0xFFC7D5E8); // Steel blue — secondary accents
+const Color kColorSecondary   = Color(0xFFFF8E53); // Warm orange — gradient partner
+const Color kColorError       = Color(0xFFFF4757); // Error red
 
-// Glowing Gradients
+// Typography
+const Color kColorText        = Color(0xFFE8EFF7); // Primary text
+const Color kColorTextMuted   = Color(0xFF5577AA); // Muted / placeholder
+
+// ─── Gradients ────────────────────────────────────────────────────────────────
+
+// Coral → warm orange (buttons, CTAs)
 const LinearGradient kPrimaryGradient = LinearGradient(
-  colors: [Color(0xFF8B5CF6), Color(0xFF3B82F6)],
+  colors: [Color(0xFFFF6B6B), Color(0xFFFF8E53)],
   begin: Alignment.topLeft,
   end: Alignment.bottomRight,
 );
 
+// Steel blue → navy (accent areas)
 const LinearGradient kAccentGradient = LinearGradient(
-  colors: [Color(0xFF06B6D4), Color(0xFF3B82F6)],
+  colors: [Color(0xFFC7D5E8), Color(0xFF6B8CAE)],
   begin: Alignment.topLeft,
   end: Alignment.bottomRight,
 );
 
+// Card inner gradient (subtle depth)
 const LinearGradient kCardGradient = LinearGradient(
-  colors: [Color(0xFF161C27), Color(0xFF0F141E)],
+  colors: [Color(0xFF172A46), Color(0xFF112240)],
   begin: Alignment.topCenter,
   end: Alignment.bottomCenter,
 );
 
-// ─── Typography (Google Fonts) ────────────────────────────────────────────────
+// Drawer header gradient
+const LinearGradient kDrawerGradient = LinearGradient(
+  colors: [Color(0xFF1E3A5F), Color(0xFF0A192F)],
+  begin: Alignment.topLeft,
+  end: Alignment.bottomRight,
+);
+
+// ─── Typography ───────────────────────────────────────────────────────────────
 TextTheme buildPremiumTextTheme() {
   return GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme).copyWith(
     displayLarge: GoogleFonts.outfit(
         color: kColorText, fontWeight: FontWeight.bold, letterSpacing: -1),
     titleLarge: GoogleFonts.outfit(
-        color: kColorText, fontWeight: FontWeight.w600, letterSpacing: -0.5),
-    bodyLarge: GoogleFonts.outfit(color: kColorText, fontSize: 16, height: 1.6),
-    bodyMedium:
-        GoogleFonts.outfit(color: kColorText, fontSize: 14, height: 1.5),
+        color: kColorText, fontWeight: FontWeight.w700, letterSpacing: 0.5),
+    bodyLarge: GoogleFonts.outfit(
+        color: kColorText, fontSize: 16, height: 1.6),
+    bodyMedium: GoogleFonts.outfit(
+        color: kColorText, fontSize: 14, height: 1.5),
     labelLarge: GoogleFonts.outfit(
         color: kColorText, fontWeight: FontWeight.bold, letterSpacing: 0.5),
   );
 }
 
 // ─── Prompt templates ─────────────────────────────────────────────────────────
-
 String buildQuestionPrompt({
   required String targetLanguage,
   required String nativeLanguage,
