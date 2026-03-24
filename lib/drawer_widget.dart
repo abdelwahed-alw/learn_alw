@@ -372,47 +372,64 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           final topic = kTopics[index];
           final isSelected = state.selectedTopic == topic;
 
-          return InkWell(
-            borderRadius: BorderRadius.circular(12),
-            onTap: () {
-              state.selectTopic(topic);
-              if (Scaffold.of(context).isDrawerOpen) {
-                Navigator.of(context).pop();
-              }
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? kColorPrimary.withValues(alpha: 0.07)
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      topic,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                        color: isSelected ? kColorPrimary : kColorAccent,
-                      ),
-                    ),
-                  ),
-                  if (isSelected)
-                    Container(
-                      width: 20, height: 20,
-                      decoration: const BoxDecoration(
-                        color: kColorPrimary,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.check, size: 12, color: Colors.white),
-                    ),
-                ],
+         return InkWell(
+  borderRadius: BorderRadius.circular(12),
+  onTap: () {
+    state.selectTopic(topic);
+    if (Scaffold.of(context).isDrawerOpen) {
+      Navigator.of(context).pop();
+    }
+  },
+  child: TweenAnimationBuilder<double>(
+    tween: Tween(begin: 1.0, end: isSelected ? 1.02 : 1.0),
+    duration: const Duration(milliseconds: 300),
+    curve: Curves.elasticOut,
+    builder: (context, scale, child) => Transform.scale(
+      scale: scale,
+      child: child,
+    ),
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: isSelected
+            ? kColorPrimary.withValues(alpha: 0.07)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              topic,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                color: isSelected ? kColorPrimary : kColorAccent,
               ),
             ),
-          );
+          ),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            transitionBuilder: (child, anim) => ScaleTransition(
+              scale: anim, child: child,
+            ),
+            child: isSelected
+                ? Container(
+                    key: const ValueKey('check'),
+                    width: 20, height: 20,
+                    decoration: const BoxDecoration(
+                      color: kColorPrimary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.check, size: 12, color: Colors.white),
+                  )
+                : const SizedBox(key: ValueKey('empty'), width: 20),
+          ),
+        ],
+      ),
+    ),
+  ),
+);
         },
       ),
     );

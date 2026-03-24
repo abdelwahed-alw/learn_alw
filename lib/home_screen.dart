@@ -53,12 +53,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          IconButton(
-                            icon: const Icon(Icons.menu_rounded, size: 28),
-                            onPressed: () =>
-                                _scaffoldKey.currentState?.openDrawer(),
-                            tooltip: 'Menu',
-                          ),
+                         _AnimatedIconButton(
+  icon: Icons.menu_rounded,
+  onTap: () => _scaffoldKey.currentState?.openDrawer(),
+),
                           Text(
                             'Salearn',
                             style: Theme.of(context)
@@ -98,11 +96,11 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    return IconButton(
-      icon: const Icon(Icons.refresh_rounded, size: 26, color: kColorAccent),
-      onPressed: model.isIdle ? () => _refreshQuestion(context, model) : null,
-      tooltip: 'New question for current topic',
-    );
+   return _AnimatedIconButton(
+  icon: Icons.refresh_rounded,
+  color: kColorAccent,
+  onTap: model.isIdle ? () => _refreshQuestion(context, model) : null,
+);
   }
 
   Future<void> _refreshQuestion(
@@ -117,5 +115,74 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     }
+  }
+}
+class _AnimatedIconButton extends StatefulWidget {
+  final IconData icon;
+  final Color color;
+  final VoidCallback? onTap;
+
+  const _AnimatedIconButton({
+    required this.icon,
+    this.color = kColorText,
+    this.onTap,
+  });
+
+  @override
+  State<_AnimatedIconButton> createState() => _AnimatedIconButtonState();
+}
+
+class _AnimatedIconButtonState extends State<_AnimatedIconButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  late final Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 150),
+      lowerBound: 0.0,
+      upperBound: 0.15,
+    );
+    _scale = Tween<double>(begin: 1.0, end: 0.82).animate(
+      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  void _onTapDown(_) => _ctrl.forward();
+  void _onTapUp(_) async {
+    await _ctrl.reverse();
+    widget.onTap?.call();
+  }
+  void _onTapCancel() => _ctrl.reverse();
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
+      child: ScaleTransition(
+        scale: _scale,
+        child: Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: kColorSurface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: kColorBorder),
+          ),
+          child: Icon(widget.icon, size: 22, color: widget.color),
+        ),
+      ),
+    );
   }
 }

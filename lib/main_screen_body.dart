@@ -1,5 +1,4 @@
 // lib/main_screen_body.dart
-// Premium UI Redesign: Glassmorphism, Shimmer, Glowing Gradients.
 
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -23,20 +22,14 @@ class _MainScreenBodyState extends State<MainScreenBody> {
   Future<void> _submitAnswer(AppStateModel state) async {
     final text = _answerController.text.trim();
     if (text.isEmpty) return;
-
-    // Hide keyboard
     FocusScope.of(context).unfocus();
-
     try {
       await state.submitAnswer(text);
       _answerController.clear();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: kColorError,
-          ),
+          SnackBar(content: Text(e.toString()), backgroundColor: kColorError),
         );
       }
     }
@@ -53,18 +46,14 @@ class _MainScreenBodyState extends State<MainScreenBody> {
     return Consumer<AppStateModel>(
       builder: (context, state, child) {
         final textDirection = textDirectionForCode(state.nativeLanguage);
-
         return Directionality(
           textDirection: textDirection,
           child: Stack(
             children: [
-              // ── Background Ambient Glow ──────────────────────────────────────
               Positioned(
-                top: -100,
-                right: -100,
+                top: -100, right: -100,
                 child: Container(
-                  width: 300,
-                  height: 300,
+                  width: 300, height: 300,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: kColorPrimary.withValues(alpha: 0.15),
@@ -76,8 +65,6 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                   ),
                 ),
               ),
-
-              // ── Main scrollable content ──────────────────────────────────────
               CustomScrollView(
                 slivers: [
                   SliverToBoxAdapter(
@@ -95,7 +82,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                           _buildFeedbackSection(state),
                           const SizedBox(height: 24),
                           _buildExamplesSection(state),
-                          const SizedBox(height: 100), // padding for keyboard
+                          const SizedBox(height: 100),
                         ],
                       ),
                     ),
@@ -109,7 +96,6 @@ class _MainScreenBodyState extends State<MainScreenBody> {
     );
   }
 
-  // ── Header Banner (Glassmorphism) ──────────────────────────────────────────
   Widget _buildHeaderBanner(AppStateModel state) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
@@ -134,8 +120,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  _LanguageBadge(
-                      label: languageLabelFromCode(state.nativeLanguage)),
+                  _LanguageBadge(label: languageLabelFromCode(state.nativeLanguage)),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 12),
                     child: Icon(Icons.arrow_forward_rounded,
@@ -154,17 +139,14 @@ class _MainScreenBodyState extends State<MainScreenBody> {
     );
   }
 
-  // ── Question Card (Glowing Shadow) ─────────────────────────────────────────
   Widget _buildQuestionCard(AppStateModel state) {
     if (state.loadingPhase == LoadingPhase.generatingQ) {
       return _buildShimmerBox(height: 120);
     }
-
     if (state.currentQuestion.isEmpty) {
       return _buildEmptyStateBox(
           'Select a topic from the menu to start.', Icons.lightbulb_outline);
     }
-
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
@@ -216,11 +198,9 @@ class _MainScreenBodyState extends State<MainScreenBody> {
     );
   }
 
-  // ── Input Area ─────────────────────────────────────────────────────────────
   Widget _buildInputArea(AppStateModel state) {
     final isSubmitting = state.loadingPhase == LoadingPhase.submitting;
     final isDisabled = state.currentQuestion.isEmpty || isSubmitting;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -236,63 +216,20 @@ class _MainScreenBodyState extends State<MainScreenBody> {
           ),
         ),
         const SizedBox(height: 16),
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          height: 60,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: isDisabled ? null : kPrimaryGradient,
-            color: isDisabled ? kColorSurface : null,
-            boxShadow: isDisabled
-                ? []
-                : [
-                    BoxShadow(
-                      color: kColorPrimary.withValues(alpha: 0.3),
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
-                    )
-                  ],
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(16),
-              onTap: isDisabled ? null : () => _submitAnswer(state),
-              child: Center(
-                child: isSubmitting
-                    ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      )
-                    : const Text(
-                        'Submit Answer',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 1,
-                        ),
-                      ),
-              ),
-            ),
-          ),
+        _AnimatedSubmitButton(
+          isDisabled: isDisabled,
+          isSubmitting: isSubmitting,
+          onTap: () => _submitAnswer(state),
         ),
       ],
     );
   }
 
-  // ── AI Feedback (Glassmorphism) ────────────────────────────────────────────
   Widget _buildFeedbackSection(AppStateModel state) {
     if (state.loadingPhase == LoadingPhase.submitting) {
       return _buildShimmerBox(height: 150);
     }
     if (state.feedback.isEmpty) return const SizedBox.shrink();
-
     return ClipRRect(
       borderRadius: BorderRadius.circular(24),
       child: BackdropFilter(
@@ -334,7 +271,6 @@ class _MainScreenBodyState extends State<MainScreenBody> {
     );
   }
 
-  // ── Examples (Staggered Animations) ────────────────────────────────────────
   Widget _buildExamplesSection(AppStateModel state) {
     if (state.loadingPhase == LoadingPhase.submitting) {
       return Column(
@@ -347,10 +283,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
         ],
       );
     }
-
-    if (state.examples.isEmpty) {
-      return const SizedBox.shrink();
-    }
+    if (state.examples.isEmpty) return const SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -369,17 +302,36 @@ class _MainScreenBodyState extends State<MainScreenBody> {
           final index = entry.key;
           final example = entry.value;
           if (example.isEmpty) return const SizedBox.shrink();
-
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: _ExampleCard(index: index, text: example),
           );
         }),
+        const SizedBox(height: 24),
+        // ← Only appears when next question is ready
+        if (state.nextQuestionPreview.isNotEmpty)
+          _buildNextQuestionButton(state)
+        else if (state.feedback.isNotEmpty)
+          // Show shimmer while preview is loading in background
+          _buildShimmerBox(height: 90),
       ],
     );
   }
 
-  // ── Loading Shimmer ────────────────────────────────────────────────────────
+  Widget _buildNextQuestionButton(AppStateModel state) {
+    return _NextQuestionButton(
+      previewText: state.nextQuestionPreview,
+      onTap: () async {
+        final error = await state.generateNextQuestion();
+        if (error != null && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(error), backgroundColor: kColorError),
+          );
+        }
+      },
+    );
+  }
+
   Widget _buildShimmerBox({required double height}) {
     return Shimmer.fromColors(
       baseColor: kColorSurface,
@@ -400,7 +352,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
       decoration: BoxDecoration(
         color: kColorSurface.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: kColorBorder, style: BorderStyle.solid),
+        border: Border.all(color: kColorBorder),
       ),
       child: Center(
         child: Column(
@@ -421,7 +373,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
   }
 }
 
-// ─── Minimal language badge widget ────────────────────────────────────────────
+// ─── Language Badge ───────────────────────────────────────────────────────────
 class _LanguageBadge extends StatelessWidget {
   final String label;
   final bool isTarget;
@@ -431,7 +383,6 @@ class _LanguageBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = isTarget ? kColorAccent : kColorTextMuted;
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
@@ -441,17 +392,13 @@ class _LanguageBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(
-          color: color,
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-        ),
+        style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.bold),
       ),
     );
   }
 }
 
-// ─── Example Card with interactive hover/copy ─────────────────────────────────
+// ─── Example Card ─────────────────────────────────────────────────────────────
 class _ExampleCard extends StatelessWidget {
   final int index;
   final String text;
@@ -484,8 +431,7 @@ class _ExampleCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 28,
-                  height: 28,
+                  width: 28, height: 28,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
@@ -502,19 +448,218 @@ class _ExampleCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: Text(
-                    text,
-                    style: const TextStyle(fontSize: 16, height: 1.5),
-                  ),
+                  child: Text(text,
+                      style: const TextStyle(fontSize: 16, height: 1.5)),
                 ),
                 const SizedBox(width: 8),
-                Icon(
-                  Icons.copy_rounded,
-                  size: 20,
-                  color: kColorTextMuted.withValues(alpha: 0.5),
-                ),
+                Icon(Icons.copy_rounded,
+                    size: 20, color: kColorTextMuted.withValues(alpha: 0.5)),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Animated Submit Button ───────────────────────────────────────────────────
+class _AnimatedSubmitButton extends StatefulWidget {
+  final bool isDisabled;
+  final bool isSubmitting;
+  final VoidCallback onTap;
+
+  const _AnimatedSubmitButton({
+    required this.isDisabled,
+    required this.isSubmitting,
+    required this.onTap,
+  });
+
+  @override
+  State<_AnimatedSubmitButton> createState() => _AnimatedSubmitButtonState();
+}
+
+class _AnimatedSubmitButtonState extends State<_AnimatedSubmitButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  late final Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(vsync: this,
+        duration: const Duration(milliseconds: 120));
+    _scale = Tween<double>(begin: 1.0, end: 0.95).animate(
+      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() { _ctrl.dispose(); super.dispose(); }
+
+  void _onTapDown(_) { if (!widget.isDisabled) _ctrl.forward(); }
+  void _onTapUp(_) async {
+    if (!widget.isDisabled) { await _ctrl.reverse(); widget.onTap(); }
+  }
+  void _onTapCancel() => _ctrl.reverse();
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
+      child: ScaleTransition(
+        scale: _scale,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          height: 60,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: widget.isDisabled ? null : kPrimaryGradient,
+            color: widget.isDisabled ? kColorSurface : null,
+            boxShadow: widget.isDisabled ? [] : [
+              BoxShadow(
+                color: kColorPrimary.withValues(alpha: 0.35),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Center(
+            child: widget.isSubmitting
+                ? const SizedBox(
+                    width: 24, height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : const Text(
+                    'Submit Answer',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 1,
+                    ),
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Next Question Button ─────────────────────────────────────────────────────
+class _NextQuestionButton extends StatefulWidget {
+  final VoidCallback onTap;
+  final String previewText; // ← the actual next question text
+
+  const _NextQuestionButton({
+    required this.onTap,
+    required this.previewText,
+  });
+
+  @override
+  State<_NextQuestionButton> createState() => _NextQuestionButtonState();
+}
+
+class _NextQuestionButtonState extends State<_NextQuestionButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  late final Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(vsync: this,
+        duration: const Duration(milliseconds: 120));
+    _scale = Tween<double>(begin: 1.0, end: 0.95).animate(
+      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() { _ctrl.dispose(); super.dispose(); }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => _ctrl.forward(),
+      onTapUp: (_) async { await _ctrl.reverse(); widget.onTap(); },
+      onTapCancel: () => _ctrl.reverse(),
+      child: ScaleTransition(
+        scale: _scale,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: kColorPrimary.withValues(alpha: 0.5)),
+            color: kColorPrimary.withValues(alpha: 0.07),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ← "Next Question" label badge
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: kColorPrimary.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.arrow_forward_rounded,
+                            color: kColorPrimary, size: 12),
+                        SizedBox(width: 4),
+                        Text(
+                          'Next Question',
+                          style: TextStyle(
+                            color: kColorPrimary,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              // ← Shows the actual question text
+              Text(
+                widget.previewText,
+                style: const TextStyle(
+                  color: kColorText,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 8),
+              // ← Tap hint
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    'Tap to answer',
+                    style: TextStyle(
+                      color: kColorPrimary.withValues(alpha: 0.7),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(Icons.touch_app_rounded,
+                      color: kColorPrimary.withValues(alpha: 0.7), size: 14),
+                ],
+              ),
+            ],
           ),
         ),
       ),

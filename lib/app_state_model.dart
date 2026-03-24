@@ -1,21 +1,16 @@
 // lib/app_state_model.dart
-// Central state management for Salearn using ChangeNotifier (Provider).
-// Persists all settings to SharedPreferences and drives the UI reactively.
 
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
 import 'gemini_api_service.dart';
 
-// ── Loading state enum ────────────────────────────────────────────────────────
 enum LoadingPhase {
-  none, // Idle
-  testingKey, // Verifying API key
-  generatingQ, // Generating a new question
-  submitting, // Analyzing the user's answer
+  none,
+  testingKey,
+  generatingQ,
+  submitting,
 }
-
-// ─── AppStateModel ────────────────────────────────────────────────────────────
 
 class AppStateModel extends ChangeNotifier {
   AppStateModel(this._prefs);
@@ -25,8 +20,8 @@ class AppStateModel extends ChangeNotifier {
 
   // ── Persisted settings ───────────────────────────────────────────────────
   String _apiKey = '';
-  String _nativeLanguage = 'ar'; // Default: Arabic
-  String _targetLanguage = 'en'; // Default: English
+  String _nativeLanguage = 'ar';
+  String _targetLanguage = 'en';
   String _selectedTopic = kTopics.first;
 
   // ── Session state ────────────────────────────────────────────────────────
@@ -35,6 +30,8 @@ class AppStateModel extends ChangeNotifier {
   List<String> _examples = ['', '', ''];
   LoadingPhase _loadingPhase = LoadingPhase.none;
   String _errorMessage = '';
+  String _lastUserAnswer = '';
+  String _nextQuestionPreview = '';  // ← NEW
 
   // ─── Getters ───────────────────────────────────────────────────────────────
   String get apiKey => _apiKey;
@@ -46,6 +43,8 @@ class AppStateModel extends ChangeNotifier {
   List<String> get examples => List.unmodifiable(_examples);
   LoadingPhase get loadingPhase => _loadingPhase;
   String get errorMessage => _errorMessage;
+  String get lastUserAnswer => _lastUserAnswer;
+  String get nextQuestionPreview => _nextQuestionPreview;  // ← NEW
 
   bool get isIdle => _loadingPhase == LoadingPhase.none;
   bool get isTestingKey => _loadingPhase == LoadingPhase.testingKey;
@@ -55,8 +54,6 @@ class AppStateModel extends ChangeNotifier {
   bool get hasQuestion => _currentQuestion.isNotEmpty;
 
   // ─── Initialization ────────────────────────────────────────────────────────
-
-  /// Load all persisted values from SharedPreferences.
   void loadFromPrefs() {
     _apiKey = _prefs.getString(kPrefApiKey) ?? '';
     _nativeLanguage = _prefs.getString(kPrefNativeLang) ?? 'ar';
@@ -66,9 +63,6 @@ class AppStateModel extends ChangeNotifier {
   }
 
   // ─── API Key ───────────────────────────────────────────────────────────────
-
-  /// Tests the key with a live API call, saves if valid.
-  /// Returns a human-friendly status message (for SnackBar).
   Future<({bool success, String message})> testAndSaveApiKey(
       String rawKey) async {
     final key = rawKey.trim();
@@ -89,7 +83,6 @@ class AppStateModel extends ChangeNotifier {
   }
 
   // ─── Language selection ────────────────────────────────────────────────────
-
   Future<void> setNativeLanguage(String code) async {
     if (_nativeLanguage == code) return;
     _nativeLanguage = code;
@@ -105,8 +98,6 @@ class AppStateModel extends ChangeNotifier {
   }
 
   // ─── Topic selection ───────────────────────────────────────────────────────
-
-  /// Saves the topic and immediately generates a new question for it.
   Future<String?> selectTopic(String topic) async {
     _selectedTopic = topic;
     await _prefs.setString(kPrefTopic, topic);
@@ -116,9 +107,6 @@ class AppStateModel extends ChangeNotifier {
   }
 
   // ─── Question generation ───────────────────────────────────────────────────
-
-  /// Generates a new question from the AI.
-  /// Returns an error message string on failure, null on success.
   Future<String?> generateQuestion() async {
     if (!hasApiKey) return 'Please configure your API key first.';
     _setPhase(LoadingPhase.generatingQ);
@@ -141,18 +129,18 @@ class AppStateModel extends ChangeNotifier {
   }
 
   // ─── Answer submission ─────────────────────────────────────────────────────
-
-  /// Submits the user's answer for analysis.
-  /// Returns an error message on failure, null on success.
   Future<String?> submitAnswer(String answer) async {
     if (!hasApiKey) return 'Please configure your API key first.';
     if (!hasQuestion) return 'Please select a topic to get a question first.';
     final trimmed = answer.trim();
     if (trimmed.isEmpty) return 'Please write your answer first.';
 
+    _lastUserAnswer = trimmed;
+
     _setPhase(LoadingPhase.submitting);
     _feedback = '';
     _examples = ['', '', ''];
+    _nextQuestionPreview = '';  // ← clear old preview
     notifyListeners();
 
     try {
@@ -167,6 +155,10 @@ class AppStateModel extends ChangeNotifier {
       _feedback = analysis.feedback;
       _examples = List<String>.from(analysis.examples);
       _setPhase(LoadingPhase.none);
+
+      // ← Auto-generate next question preview in background
+      _generateNextQuestionPreview();
+
       return null;
     } on GeminiServiceException catch (e) {
       _errorMessage = e.message;
@@ -175,8 +167,38 @@ class AppStateModel extends ChangeNotifier {
     }
   }
 
-  // ─── Helpers ───────────────────────────────────────────────────────────────
+  // ─── Background preview generation ────────────────────────────────────────
+  Future<void> _generateNextQuestionPreview() async {
+    try {
+      final preview = await _api.generateNextQuestion(
+        apiKey: _apiKey,
+        nativeLanguage: languageLabelFromCode(_nativeLanguage),
+        targetLanguage: languageLabelFromCode(_targetLanguage),
+        topic: _selectedTopic,
+        previousQuestion: _currentQuestion,
+        userAnswer: _lastUserAnswer,
+      );
+      _nextQuestionPreview = preview;
+      notifyListeners();  // ← button appears automatically when ready
+    } catch (_) {
+      _nextQuestionPreview = '';
+    }
+  }
 
+  // ─── Contextual next question ──────────────────────────────────────────────
+  Future<String?> generateNextQuestion() async {
+    if (!hasApiKey) return 'Please configure your API key first.';
+    if (_nextQuestionPreview.isEmpty) return 'Next question not ready yet.';
+
+    // ← Use the preview directly, no extra API call!
+    _currentQuestion = _nextQuestionPreview;
+    _nextQuestionPreview = '';
+    _clearSessionKeepQuestion();
+    notifyListeners();
+    return null;
+  }
+
+  // ─── Helpers ───────────────────────────────────────────────────────────────
   void _setPhase(LoadingPhase phase) {
     _loadingPhase = phase;
     notifyListeners();
@@ -187,5 +209,14 @@ class AppStateModel extends ChangeNotifier {
     _feedback = '';
     _examples = ['', '', ''];
     _errorMessage = '';
+    _lastUserAnswer = '';
+    _nextQuestionPreview = '';  // ← NEW
+  }
+
+  void _clearSessionKeepQuestion() {
+    _feedback = '';
+    _examples = ['', '', ''];
+    _errorMessage = '';
+    _nextQuestionPreview = '';  // ← NEW
   }
 }

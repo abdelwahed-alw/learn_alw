@@ -264,4 +264,40 @@ class GeminiApiService {
       );
     }
   }
+  Future<String> generateNextQuestion({
+  required String apiKey,
+  required String nativeLanguage,
+  required String targetLanguage,
+  required String topic,
+  required String previousQuestion,
+  required String userAnswer,
+}) async {
+  return _withRetry(() async {
+    final prompt = '''You are a friendly language tutor teaching $targetLanguage to a $nativeLanguage speaker.
+
+The student was practicing "$topic".
+Previous question: "$previousQuestion"
+Student's answer: "$userAnswer"
+
+Based on their answer, generate ONE natural follow-up question that:
+- Continues the conversation naturally (like a real dialogue)
+- Is directly connected to what they just said
+- Encourages them to say more in $targetLanguage
+- Is slightly more challenging than the previous question
+
+Reply with ONLY the follow-up question — no explanation, no numbering.''';
+
+    final model = _buildModel(apiKey.trim());
+    final response =
+        await model.generateContent([Content.text(prompt)]).timeout(_timeout);
+    final text = response.text?.trim();
+    if (text == null || text.isEmpty) {
+      throw const GeminiServiceException(
+        GeminiErrorType.unknown,
+        'The AI returned an empty question. Please try again.',
+      );
+    }
+    return text;
+  });
+}
 }
