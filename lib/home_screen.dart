@@ -82,8 +82,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildRefreshButton(AppStateModel model, BuildContext context) {
-    if (!model.hasApiKey)
+    if (!model.hasApiKey) {
       return const SizedBox(width: 48); // placeholder for spacing
+    }
 
     if (model.isGeneratingQuestion) {
       return const Padding(
@@ -142,11 +143,9 @@ class _AnimatedIconButtonState extends State<_AnimatedIconButton>
     super.initState();
     _ctrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 150),
-      lowerBound: 0.0,
-      upperBound: 0.15,
+      duration: const Duration(milliseconds: 100),
     );
-    _scale = Tween<double>(begin: 1.0, end: 0.82).animate(
+    _scale = Tween<double>(begin: 1.0, end: 0.9).animate(
       CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
     );
   }
@@ -157,8 +156,8 @@ class _AnimatedIconButtonState extends State<_AnimatedIconButton>
     super.dispose();
   }
 
-  void _onTapDown(_) => _ctrl.forward();
-  void _onTapUp(_) async {
+  void _onTapDown(TapDownDetails d) => _ctrl.forward();
+  void _onTapUp(TapUpDetails d) async {
     await _ctrl.reverse();
     widget.onTap?.call();
   }
@@ -166,10 +165,11 @@ class _AnimatedIconButtonState extends State<_AnimatedIconButton>
 
   @override
   Widget build(BuildContext context) {
+    final isEnabled = widget.onTap != null;
     return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: _onTapCancel,
+      onTapDown: isEnabled ? _onTapDown : null,
+      onTapUp: isEnabled ? _onTapUp : null,
+      onTapCancel: isEnabled ? _onTapCancel : null,
       child: ScaleTransition(
         scale: _scale,
         child: Container(
@@ -180,7 +180,13 @@ class _AnimatedIconButtonState extends State<_AnimatedIconButton>
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: kColorBorder),
           ),
-          child: Icon(widget.icon, size: 22, color: widget.color),
+          child: Icon(
+            widget.icon,
+            size: 22,
+            color: isEnabled
+                ? widget.color
+                : widget.color.withValues(alpha: 0.4),
+          ),
         ),
       ),
     );

@@ -483,67 +483,107 @@ class _AnimatedSubmitButtonState extends State<_AnimatedSubmitButton>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
   late final Animation<double> _scale;
+  late final Animation<double> _shimmer;
 
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this,
-        duration: const Duration(milliseconds: 120));
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 150),
+    );
     _scale = Tween<double>(begin: 1.0, end: 0.95).animate(
+      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
+    );
+    _shimmer = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
     );
   }
 
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
-
-  void _onTapDown(_) { if (!widget.isDisabled) _ctrl.forward(); }
-  void _onTapUp(_) async {
-    if (!widget.isDisabled) { await _ctrl.reverse(); widget.onTap(); }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
   }
+
+  void _onTapDown(TapDownDetails d) {
+    if (!widget.isDisabled) _ctrl.forward();
+  }
+
+  void _onTapUp(TapUpDetails d) async {
+    if (!widget.isDisabled) {
+      await _ctrl.reverse();
+      widget.onTap();
+    }
+  }
+
   void _onTapCancel() => _ctrl.reverse();
 
   @override
   Widget build(BuildContext context) {
+    final isEnabled = !widget.isDisabled && !widget.isSubmitting;
     return GestureDetector(
       onTapDown: _onTapDown,
       onTapUp: _onTapUp,
       onTapCancel: _onTapCancel,
       child: ScaleTransition(
         scale: _scale,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
+        child: Container(
           height: 60,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            gradient: widget.isDisabled ? null : kPrimaryGradient,
-            color: widget.isDisabled ? kColorSurface : null,
-            boxShadow: widget.isDisabled ? [] : [
-              BoxShadow(
-                color: kColorPrimary.withValues(alpha: 0.35),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
+            gradient: isEnabled ? kPrimaryGradient : null,
+            color: isEnabled ? null : kColorSurface,
+            boxShadow: isEnabled
+                ? [
+                    BoxShadow(
+                      color: kColorPrimary.withValues(alpha: 0.4),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    ),
+                  ]
+                : null,
           ),
-          child: Center(
-            child: widget.isSubmitting
-                ? const SizedBox(
-                    width: 24, height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 3,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  )
-                : const Text(
-                    'Submit Answer',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: 1,
-                    ),
-                  ),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: null,
+              splashColor: Colors.white30,
+              highlightColor: Colors.white10,
+              child: Center(
+                child: widget.isSubmitting
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 3,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            isEnabled ? Icons.send_rounded : Icons.send_outlined,
+                            size: 20,
+                            color: isEnabled ? Colors.white : kColorTextMuted,
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            'Submit Answer',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: isEnabled ? Colors.white : kColorTextMuted,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
+            ),
           ),
         ),
       ),
@@ -573,21 +613,29 @@ class _NextQuestionButtonState extends State<_NextQuestionButton>
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this,
-        duration: const Duration(milliseconds: 120));
-    _scale = Tween<double>(begin: 1.0, end: 0.95).animate(
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 150),
+    );
+    _scale = Tween<double>(begin: 1.0, end: 0.97).animate(
       CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
     );
   }
 
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: (_) => _ctrl.forward(),
-      onTapUp: (_) async { await _ctrl.reverse(); widget.onTap(); },
+      onTapUp: (_) async {
+        await _ctrl.reverse();
+        widget.onTap();
+      },
       onTapCancel: () => _ctrl.reverse(),
       child: ScaleTransition(
         scale: _scale,
@@ -596,8 +644,11 @@ class _NextQuestionButtonState extends State<_NextQuestionButton>
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: kColorPrimary.withValues(alpha: 0.5)),
-            color: kColorPrimary.withValues(alpha: 0.07),
+            border: Border.all(
+              color: kColorPrimary.withValues(alpha: 0.5),
+              width: 1.5,
+            ),
+            color: kColorPrimary.withValues(alpha: 0.08),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -609,7 +660,7 @@ class _NextQuestionButtonState extends State<_NextQuestionButton>
                     padding: const EdgeInsets.symmetric(
                         horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      color: kColorPrimary.withValues(alpha: 0.15),
+                      color: kColorPrimary.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Row(
@@ -649,14 +700,14 @@ class _NextQuestionButtonState extends State<_NextQuestionButton>
                   Text(
                     'Tap to answer',
                     style: TextStyle(
-                      color: kColorPrimary.withValues(alpha: 0.7),
+                      color: kColorPrimary.withValues(alpha: 0.8),
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(width: 4),
                   Icon(Icons.touch_app_rounded,
-                      color: kColorPrimary.withValues(alpha: 0.7), size: 14),
+                      color: kColorPrimary.withValues(alpha: 0.8), size: 14),
                 ],
               ),
             ],
