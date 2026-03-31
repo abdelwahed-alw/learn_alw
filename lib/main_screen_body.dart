@@ -230,41 +230,71 @@ class _MainScreenBodyState extends State<MainScreenBody> {
       return _buildShimmerBox(height: 150);
     }
     if (state.feedback.isEmpty) return const SizedBox.shrink();
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-        child: Container(
-          padding: const EdgeInsets.all(28),
-          decoration: BoxDecoration(
-            color: kColorAccent.withValues(alpha: 0.05),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: kColorAccent.withValues(alpha: 0.3)),
+    
+    // Wrap in slide-up animation with fade
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 400),
+      curve: kPremiumCurve,
+      builder: (context, opacity, child) {
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, 0.3),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(
+            parent: AlwaysStoppedAnimation(opacity),
+            curve: kPremiumCurve,
+          )),
+          child: FadeTransition(
+            opacity: AlwaysStoppedAnimation(opacity),
+            child: child,
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const Icon(Icons.auto_awesome, color: kColorAccent),
-                  const SizedBox(width: 12),
-                  Text(
-                    'AI Feedback',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: kColorAccent,
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                state.feedback,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      height: 1.6,
+        );
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+          child: Container(
+            padding: const EdgeInsets.all(28),
+            decoration: BoxDecoration(
+              color: kColorAccent.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: kColorAccent.withValues(alpha: 0.3)),
+              // Enhanced glassmorphism with subtle shadow
+              boxShadow: [
+                BoxShadow(
+                  color: kColorAccent.withValues(alpha: 0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.auto_awesome, color: kColorAccent),
+                    const SizedBox(width: 12),
+                    Text(
+                      'AI Feedback',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: kColorAccent,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
-              ),
-            ],
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  state.feedback,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        height: 1.6,
+                      ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -298,13 +328,28 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                 ),
           ),
         ),
+        // Staggered fade-in animation for example cards
         ...state.examples.asMap().entries.map((entry) {
           final index = entry.key;
           final example = entry.value;
           if (example.isEmpty) return const SizedBox.shrink();
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: _ExampleCard(index: index, text: example),
+          return TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0.0, end: 1.0),
+            duration: Duration(milliseconds: 300 + (index * 100)), // Staggered delay
+            curve: kPremiumCurve,
+            builder: (context, opacity, child) {
+              return Opacity(
+                opacity: opacity,
+                child: Transform.translate(
+                  offset: Offset(0, 20 * (1 - opacity)), // Slide up effect
+                  child: child,
+                ),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _ExampleCard(index: index, text: example),
+            ),
           );
         }),
         const SizedBox(height: 24),
@@ -493,7 +538,7 @@ class _AnimatedSubmitButtonState extends State<_AnimatedSubmitButton>
       duration: const Duration(milliseconds: 150),
     );
     _scale = Tween<double>(begin: 1.0, end: 0.95).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
+      CurvedAnimation(parent: _ctrl, curve: kPremiumCurve),
     );
     _shimmer = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
@@ -618,7 +663,7 @@ class _NextQuestionButtonState extends State<_NextQuestionButton>
       duration: const Duration(milliseconds: 150),
     );
     _scale = Tween<double>(begin: 1.0, end: 0.97).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
+      CurvedAnimation(parent: _ctrl, curve: kPremiumCurve),
     );
   }
 

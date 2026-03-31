@@ -29,7 +29,11 @@ class _HomeScreenState extends State<HomeScreen> {
       key:
           _scaffoldKey, // We need a GlobalKey<ScaffoldState> to open the drawer
       backgroundColor: kColorBackground,
-      drawer: const DrawerWidget(),
+      drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.4,
+      drawerScrimColor: Colors.black54,
+      drawer: _AnimatedDrawer(
+        child: const DrawerWidget(),
+      ),
       body: Stack(
         children: [
           // The body contains the background gradient and the scrollable content
@@ -53,10 +57,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                         _AnimatedIconButton(
-  icon: Icons.menu_rounded,
-  onTap: () => _scaffoldKey.currentState?.openDrawer(),
-),
+                          _AnimatedIconButton(
+                            icon: Icons.menu_rounded,
+                            onTap: () => _scaffoldKey.currentState?.openDrawer(),
+                          ),
                           Text(
                             'Salearn',
                             style: Theme.of(context)
@@ -97,11 +101,11 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-   return _AnimatedIconButton(
-  icon: Icons.refresh_rounded,
-  color: kColorAccent,
-  onTap: model.isIdle ? () => _refreshQuestion(context, model) : null,
-);
+    return _AnimatedIconButton(
+      icon: Icons.refresh_rounded,
+      color: kColorAccent,
+      onTap: model.isIdle ? () => _refreshQuestion(context, model) : null,
+    );
   }
 
   Future<void> _refreshQuestion(
@@ -118,6 +122,71 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 }
+
+// ─── Animated Drawer with Bounce ────────────────────────────────────────────────
+class _AnimatedDrawer extends StatefulWidget {
+  final Widget child;
+
+  const _AnimatedDrawer({required this.child});
+
+  @override
+  State<_AnimatedDrawer> createState() => _AnimatedDrawerState();
+}
+
+class _AnimatedDrawerState extends State<_AnimatedDrawer>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<Offset> _slideAnimation;
+  late final Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+
+    // Slide-in with bounce effect using custom cubic curve
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(-1.0, 0.0),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: const Cubic(0.4, 0.0, 0.2, 1.0), // Premium curve
+    ));
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: kPremiumCurve,
+    ));
+
+    // Auto-open when drawer is opened
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SlideTransition(
+      position: _slideAnimation,
+      child: FadeTransition(
+        opacity: _fadeAnimation,
+        child: widget.child,
+      ),
+    );
+  }
+}
+
+// ─── Animated Icon Button with Premium Curve ───────────────────────────────────
 class _AnimatedIconButton extends StatefulWidget {
   final IconData icon;
   final Color color;
@@ -145,8 +214,9 @@ class _AnimatedIconButtonState extends State<_AnimatedIconButton>
       vsync: this,
       duration: const Duration(milliseconds: 100),
     );
+    // Use premium cubic curve for smoother feel
     _scale = Tween<double>(begin: 1.0, end: 0.9).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
+      CurvedAnimation(parent: _ctrl, curve: kPremiumCurve),
     );
   }
 

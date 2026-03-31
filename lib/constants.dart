@@ -155,3 +155,14 @@ TextDirection textDirectionForCode(String langCode) {
       ? TextDirection.rtl
       : TextDirection.ltr;
 }
+
+// ─── Animation Curves ───────────────────────────────────────────────────────────
+
+// Premium natural feel curve (0.4, 0, 0.2, 1)
+const Curve kPremiumCurve = Cubic(0.4, 0.0, 0.2, 1.0);
+
+// Bounce curve for drawer
+const Curve kBounceCurve = Curves.elasticOut;
+
+// Fast-out curve for quick interactions
+const Curve kQuickCurve = Curves.easeOutCubic;
