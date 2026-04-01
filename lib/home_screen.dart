@@ -4,6 +4,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'app_state_model.dart';
@@ -226,7 +227,10 @@ class _AnimatedIconButtonState extends State<_AnimatedIconButton>
     super.dispose();
   }
 
-  void _onTapDown(TapDownDetails d) => _ctrl.forward();
+  void _onTapDown(TapDownDetails d) {
+    HapticFeedback.lightImpact();
+    _ctrl.forward();
+  }
   void _onTapUp(TapUpDetails d) async {
     await _ctrl.reverse();
     widget.onTap?.call();

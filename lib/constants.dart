@@ -166,3 +166,6 @@ const Curve kBounceCurve = Curves.elasticOut;
 
 // Fast-out curve for quick interactions
 const Curve kQuickCurve = Curves.easeOutCubic;
+
+// Spring curve for bouncy/organic feel
+const Curve kSpringCurve = Curves.elasticOut;

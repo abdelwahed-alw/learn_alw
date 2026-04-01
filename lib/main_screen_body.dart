@@ -97,42 +97,45 @@ class _MainScreenBodyState extends State<MainScreenBody> {
   }
 
   Widget _buildHeaderBanner(AppStateModel state) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: kColorSurface.withValues(alpha: 0.5),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Topic: ${state.selectedTopic}',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: kColorPrimary,
+    return Hero(
+      tag: 'header_banner',
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: kColorSurface.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Topic: ${state.selectedTopic}',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: kColorPrimary,
+                      ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    _LanguageBadge(label: languageLabelFromCode(state.nativeLanguage)),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      child: Icon(Icons.arrow_forward_rounded,
+                          color: kColorTextMuted, size: 16),
                     ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  _LanguageBadge(label: languageLabelFromCode(state.nativeLanguage)),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12),
-                    child: Icon(Icons.arrow_forward_rounded,
-                        color: kColorTextMuted, size: 16),
-                  ),
-                  _LanguageBadge(
-                    label: languageLabelFromCode(state.targetLanguage),
-                    isTarget: true,
-                  ),
-                ],
-              ),
-            ],
+                    _LanguageBadge(
+                      label: languageLabelFromCode(state.targetLanguage),
+                      isTarget: true,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -147,53 +150,56 @@ class _MainScreenBodyState extends State<MainScreenBody> {
       return _buildEmptyStateBox(
           'Select a topic from the menu to start.', Icons.lightbulb_outline);
     }
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: kCardGradient,
-        boxShadow: [
-          BoxShadow(
-            color: kColorPrimary.withValues(alpha: 0.1),
-            blurRadius: 30,
-            offset: const Offset(0, 10),
-          ),
-        ],
-        border: Border.all(color: kColorBorder),
-      ),
-      padding: const EdgeInsets.all(28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: kColorPrimary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
+    return Hero(
+      tag: 'question_card',
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: kCardGradient,
+          boxShadow: [
+            BoxShadow(
+              color: kColorPrimary.withValues(alpha: 0.1),
+              blurRadius: 30,
+              offset: const Offset(0, 10),
+            ),
+          ],
+          border: Border.all(color: kColorBorder),
+        ),
+        padding: const EdgeInsets.all(28),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: kColorPrimary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.school_rounded,
+                      color: kColorPrimary, size: 20),
                 ),
-                child: const Icon(Icons.school_rounded,
-                    color: kColorPrimary, size: 20),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Translate or Answer',
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: kColorTextMuted,
-                      letterSpacing: 1.2,
-                    ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Text(
-            state.currentQuestion,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  height: 1.4,
-                  fontWeight: FontWeight.w600,
+                const SizedBox(width: 12),
+                Text(
+                  'Translate or Answer',
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: kColorTextMuted,
+                        letterSpacing: 1.2,
+                      ),
                 ),
-          ),
-        ],
+              ],
+            ),
+            const SizedBox(height: 20),
+            Text(
+              state.currentQuestion,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    height: 1.4,
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -231,22 +237,22 @@ class _MainScreenBodyState extends State<MainScreenBody> {
     }
     if (state.feedback.isEmpty) return const SizedBox.shrink();
     
-    // Wrap in slide-up animation with fade
+    // Spring Simulation for bouncy/organic entrance
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
-      duration: const Duration(milliseconds: 400),
-      curve: kPremiumCurve,
-      builder: (context, opacity, child) {
+      duration: const Duration(milliseconds: 600),
+      curve: kSpringCurve, // Using elasticOut for bouncy feel
+      builder: (context, value, child) {
         return SlideTransition(
           position: Tween<Offset>(
-            begin: const Offset(0, 0.3),
+            begin: const Offset(0, 0.5),
             end: Offset.zero,
           ).animate(CurvedAnimation(
-            parent: AlwaysStoppedAnimation(opacity),
-            curve: kPremiumCurve,
+            parent: AlwaysStoppedAnimation(value),
+            curve: kSpringCurve,
           )),
           child: FadeTransition(
-            opacity: AlwaysStoppedAnimation(opacity),
+            opacity: AlwaysStoppedAnimation(value),
             child: child,
           ),
         );
@@ -255,13 +261,14 @@ class _MainScreenBodyState extends State<MainScreenBody> {
         borderRadius: BorderRadius.circular(24),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-          child: Container(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: kSpringCurve,
             padding: const EdgeInsets.all(28),
             decoration: BoxDecoration(
               color: kColorAccent.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(color: kColorAccent.withValues(alpha: 0.3)),
-              // Enhanced glassmorphism with subtle shadow
               boxShadow: [
                 BoxShadow(
                   color: kColorAccent.withValues(alpha: 0.1),
@@ -287,11 +294,15 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                Text(
-                  state.feedback,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        height: 1.6,
-                      ),
+                AnimatedOpacity(
+                  duration: const Duration(milliseconds: 300),
+                  opacity: state.feedback.isNotEmpty ? 1.0 : 0.0,
+                  child: Text(
+                    state.feedback,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          height: 1.6,
+                        ),
+                  ),
                 ),
               ],
             ),
@@ -333,9 +344,10 @@ class _MainScreenBodyState extends State<MainScreenBody> {
           final index = entry.key;
           final example = entry.value;
           if (example.isEmpty) return const SizedBox.shrink();
+          // Staggered slide with 50ms delay increment
           return TweenAnimationBuilder<double>(
             tween: Tween(begin: 0.0, end: 1.0),
-            duration: Duration(milliseconds: 300 + (index * 100)), // Staggered delay
+            duration: Duration(milliseconds: 300 + (index * 50)), // 50ms delay increment
             curve: kPremiumCurve,
             builder: (context, opacity, child) {
               return Opacity(
@@ -552,7 +564,10 @@ class _AnimatedSubmitButtonState extends State<_AnimatedSubmitButton>
   }
 
   void _onTapDown(TapDownDetails d) {
-    if (!widget.isDisabled) _ctrl.forward();
+    if (!widget.isDisabled) {
+      HapticFeedback.lightImpact();
+      _ctrl.forward();
+    }
   }
 
   void _onTapUp(TapUpDetails d) async {
@@ -676,7 +691,10 @@ class _NextQuestionButtonState extends State<_NextQuestionButton>
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: (_) => _ctrl.forward(),
+      onTapDown: (_) {
+        HapticFeedback.lightImpact();
+        _ctrl.forward();
+      },
       onTapUp: (_) async {
         await _ctrl.reverse();
         widget.onTap();
