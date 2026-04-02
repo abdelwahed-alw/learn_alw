@@ -97,45 +97,42 @@ class _MainScreenBodyState extends State<MainScreenBody> {
   }
 
   Widget _buildHeaderBanner(AppStateModel state) {
-    return Hero(
-      tag: 'header_banner',
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: kColorSurface.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Topic: ${state.selectedTopic}',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: kColorPrimary,
-                      ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    _LanguageBadge(label: languageLabelFromCode(state.nativeLanguage)),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 12),
-                      child: Icon(Icons.arrow_forward_rounded,
-                          color: kColorTextMuted, size: 16),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: kColorSurface.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Topic: ${state.selectedTopic}',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: kColorPrimary,
                     ),
-                    _LanguageBadge(
-                      label: languageLabelFromCode(state.targetLanguage),
-                      isTarget: true,
-                    ),
-                  ],
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  _LanguageBadge(label: languageLabelFromCode(state.nativeLanguage)),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    child: Icon(Icons.arrow_forward_rounded,
+                        color: kColorTextMuted, size: 16),
+                  ),
+                  _LanguageBadge(
+                    label: languageLabelFromCode(state.targetLanguage),
+                    isTarget: true,
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -150,56 +147,53 @@ class _MainScreenBodyState extends State<MainScreenBody> {
       return _buildEmptyStateBox(
           'Select a topic from the menu to start.', Icons.lightbulb_outline);
     }
-    return Hero(
-      tag: 'question_card',
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          gradient: kCardGradient,
-          boxShadow: [
-            BoxShadow(
-              color: kColorPrimary.withValues(alpha: 0.1),
-              blurRadius: 30,
-              offset: const Offset(0, 10),
-            ),
-          ],
-          border: Border.all(color: kColorBorder),
-        ),
-        padding: const EdgeInsets.all(28),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: kColorPrimary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(Icons.school_rounded,
-                      color: kColorPrimary, size: 20),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: kCardGradient,
+        boxShadow: [
+          BoxShadow(
+            color: kColorPrimary.withValues(alpha: 0.1),
+            blurRadius: 30,
+            offset: const Offset(0, 10),
+          ),
+        ],
+        border: Border.all(color: kColorBorder),
+      ),
+      padding: const EdgeInsets.all(28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: kColorPrimary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                const SizedBox(width: 12),
-                Text(
-                  'Translate or Answer',
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: kColorTextMuted,
-                        letterSpacing: 1.2,
-                      ),
+                child: const Icon(Icons.school_rounded,
+                    color: kColorPrimary, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Translate or Answer',
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: kColorTextMuted,
+                      letterSpacing: 1.2,
+                    ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Text(
+            state.currentQuestion,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  height: 1.4,
+                  fontWeight: FontWeight.w600,
                 ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Text(
-              state.currentQuestion,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    height: 1.4,
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -237,22 +231,16 @@ class _MainScreenBodyState extends State<MainScreenBody> {
     }
     if (state.feedback.isEmpty) return const SizedBox.shrink();
     
-    // Spring Simulation for bouncy/organic entrance
+    // Smooth entrance animation
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: const Duration(milliseconds: 600),
-      curve: kSpringCurve, // Using elasticOut for bouncy feel
+      curve: kPremiumCurve,
       builder: (context, value, child) {
-        return SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(0, 0.5),
-            end: Offset.zero,
-          ).animate(CurvedAnimation(
-            parent: AlwaysStoppedAnimation(value),
-            curve: kSpringCurve,
-          )),
-          child: FadeTransition(
-            opacity: AlwaysStoppedAnimation(value),
+        return Transform.translate(
+          offset: Offset(0, 30 * (1 - value)),
+          child: Opacity(
+            opacity: value,
             child: child,
           ),
         );
@@ -263,7 +251,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
           filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            curve: kSpringCurve,
+            curve: kPremiumCurve,
             padding: const EdgeInsets.all(28),
             decoration: BoxDecoration(
               color: kColorAccent.withValues(alpha: 0.05),
@@ -540,7 +528,7 @@ class _AnimatedSubmitButtonState extends State<_AnimatedSubmitButton>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
   late final Animation<double> _scale;
-  late final Animation<double> _shimmer;
+
 
   @override
   void initState() {
@@ -552,9 +540,7 @@ class _AnimatedSubmitButtonState extends State<_AnimatedSubmitButton>
     _scale = Tween<double>(begin: 1.0, end: 0.95).animate(
       CurvedAnimation(parent: _ctrl, curve: kPremiumCurve),
     );
-    _shimmer = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
-    );
+
   }
 
   @override

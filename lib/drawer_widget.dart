@@ -44,23 +44,14 @@ class _DrawerWidgetState extends State<DrawerWidget> {
       return;
     }
     FocusScope.of(context).unfocus();
-    try {
-      await state.testAndSaveApiKey(key);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('API key verified and saved!'),
-            backgroundColor: kColorPrimary,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: kColorError),
-        );
-      }
-    }
+    final result = await state.testAndSaveApiKey(key);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(result.message),
+        backgroundColor: result.success ? kColorPrimary : kColorError,
+      ),
+    );
   }
 
   Future<void> _launchYouTube() async {

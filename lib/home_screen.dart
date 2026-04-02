@@ -233,7 +233,7 @@ class _AnimatedIconButtonState extends State<_AnimatedIconButton>
   }
   void _onTapUp(TapUpDetails d) async {
     await _ctrl.reverse();
-    widget.onTap?.call();
+    if (mounted) widget.onTap?.call();
   }
   void _onTapCancel() => _ctrl.reverse();
 

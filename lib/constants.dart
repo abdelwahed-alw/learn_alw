@@ -29,7 +29,7 @@ const List<Map<String, String>> kSupportedLanguages = [
 String languageLabelFromCode(String code) {
   return kSupportedLanguages.firstWhere(
     (l) => l['code'] == code,
-    orElse: () => {'label': code, 'code': code},
+    orElse: () => <String, String>{'label': code, 'code': code},
   )['label']!;
 }
 
