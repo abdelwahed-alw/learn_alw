@@ -1,6 +1,10 @@
 // lib/drawer_widget.dart
+// Premium redesigned drawer with refined visual hierarchy,
+// topic icons, glassmorphism touches, and smooth micro-interactions.
 
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -16,6 +20,7 @@ class DrawerWidget extends StatefulWidget {
 
 class _DrawerWidgetState extends State<DrawerWidget> {
   final TextEditingController _apiKeyController = TextEditingController();
+  bool _isKeyVisible = false;
 
   @override
   void initState() {
@@ -71,109 +76,164 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: kColorBackground,
+      backgroundColor: Colors.transparent,
       width: 320,
-      child: Consumer<AppStateModel>(
-        builder: (context, state, _) {
-          return SafeArea(
-            bottom: false,
-            child: Column(
-              children: [
-                _buildHeader(),
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topRight: Radius.circular(24),
+          bottomRight: Radius.circular(24),
+        ),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Container(
+            decoration: BoxDecoration(
+              color: kColorBackground.withValues(alpha: 0.95),
+              borderRadius: const BorderRadius.only(
+                topRight: Radius.circular(24),
+                bottomRight: Radius.circular(24),
+              ),
+              border: Border(
+                right: BorderSide(
+                  color: kColorBorder.withValues(alpha: 0.5),
+                  width: 1,
+                ),
+              ),
+            ),
+            child: Consumer<AppStateModel>(
+              builder: (context, state, _) {
+                return SafeArea(
+                  bottom: false,
+                  child: Column(
                     children: [
-                      _buildSectionLabel('API KEY', Icons.vpn_key_rounded),
-                      const SizedBox(height: 10),
-                      _buildApiKeyCard(state),
-                      const SizedBox(height: 20),
-                      _buildSectionLabel('LANGUAGES', Icons.translate_rounded),
-                      const SizedBox(height: 10),
-                      _buildLanguageCard(state),
-                      const SizedBox(height: 20),
-                      _buildSectionLabel('STUDY TOPIC', Icons.menu_book_rounded),
-                      const SizedBox(height: 10),
-                      _buildTopicList(state),
-                      const SizedBox(height: 24),
+                      _buildHeader(state),
+                      Expanded(
+                        child: ListView(
+                          padding:
+                              const EdgeInsets.fromLTRB(16, 20, 16, 24),
+                          children: [
+                            _buildApiKeySection(state),
+                            const SizedBox(height: 24),
+                            _buildLanguageSection(state),
+                            const SizedBox(height: 24),
+                            _buildTopicSection(state),
+                          ],
+                        ),
+                      ),
                       _buildFooter(),
                     ],
                   ),
-                ),
-              ],
+                );
+              },
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
 
-  // ── Header ──────────────────────────────────────────────────────────────────
-  Widget _buildHeader() {
+  // ── Header ────────────────────────────────────────────────────────────────
+  Widget _buildHeader(AppStateModel state) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(24, 28, 24, 22),
+      padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
       decoration: BoxDecoration(
-        color: kColorSurface,
-        border: Border(bottom: BorderSide(color: kColorBorder)),
+        gradient: kDrawerGradient,
       ),
       child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          // Decorative circles
+          // Decorative glow
           Positioned(
-            top: -30, right: -30,
+            top: -40,
+            right: -40,
             child: Container(
-              width: 100, height: 100,
+              width: 120,
+              height: 120,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: kColorPrimary.withValues(alpha: 0.07),
+                gradient: RadialGradient(
+                  colors: [
+                    kColorPrimary.withValues(alpha: 0.15),
+                    kColorPrimary.withValues(alpha: 0.0),
+                  ],
+                ),
               ),
             ),
           ),
           Positioned(
-            bottom: -20, left: 60,
+            bottom: -30,
+            left: 40,
             child: Container(
-              width: 70, height: 70,
+              width: 80,
+              height: 80,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: kColorAccent.withValues(alpha: 0.05),
+                gradient: RadialGradient(
+                  colors: [
+                    kColorAccent.withValues(alpha: 0.08),
+                    kColorAccent.withValues(alpha: 0.0),
+                  ],
+                ),
               ),
             ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 52, height: 52,
-                decoration: BoxDecoration(
-                  color: kColorPrimary.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: kColorPrimary.withValues(alpha: 0.3),
-                    width: 1.5,
+              Row(
+                children: [
+                  // App icon
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      gradient: kPrimaryGradient,
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(
+                          color: kColorPrimary.withValues(alpha: 0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.language_rounded,
+                      color: Colors.white,
+                      size: 24,
+                    ),
                   ),
-                ),
-                child: const Icon(
-                  Icons.language_rounded,
-                  color: kColorPrimary,
-                  size: 26,
-                ),
-              ),
-              const SizedBox(height: 14),
-              Text(
-                'Salearn',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: kColorText,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1,
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Salearn',
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge
+                              ?.copyWith(
+                                color: kColorText,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.5,
+                              ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'AI Language Tutor',
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: kColorTextMuted,
+                                    letterSpacing: 0.5,
+                                  ),
+                        ),
+                      ],
                     ),
-              ),
-              const SizedBox(height: 3),
-              Text(
-                'AI Language Tutor',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: kColorTextMuted,
-                    ),
+                  ),
+                  // API status dot
+                  _ApiStatusDot(isConnected: state.hasApiKey),
+                ],
               ),
             ],
           ),
@@ -182,282 +242,573 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     );
   }
 
-  // ── Section Label ───────────────────────────────────────────────────────────
-  Widget _buildSectionLabel(String title, IconData icon) {
-    return Row(
-      children: [
-        Icon(icon, size: 14, color: kColorTextMuted),
-        const SizedBox(width: 6),
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.w700,
-            color: kColorTextMuted,
-            letterSpacing: 1.5,
+  // ── Section Header ────────────────────────────────────────────────────────
+  Widget _buildSectionHeader(String title, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 12),
+      child: Row(
+        children: [
+          Container(
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(
+              color: kColorPrimary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Icon(icon, size: 13, color: kColorPrimary),
           ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(child: Divider(color: kColorBorder, thickness: 1, height: 1)),
-      ],
+          const SizedBox(width: 8),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: kColorTextMuted,
+              letterSpacing: 1.8,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Container(
+              height: 1,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    kColorBorder.withValues(alpha: 0.6),
+                    kColorBorder.withValues(alpha: 0.0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  // ── API Key Card ────────────────────────────────────────────────────────────
-  Widget _buildApiKeyCard(AppStateModel state) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: kColorSurface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: kColorBorder),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 30, height: 30,
-                decoration: BoxDecoration(
-                  color: kColorPrimary.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(Icons.vpn_key_rounded,
-                    color: kColorPrimary, size: 16),
-              ),
-              const SizedBox(width: 10),
-              Text(
-                'Gemini API Key',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: kColorAccent,
-                      fontWeight: FontWeight.w600,
-                    ),
+  // ── API Key Section ───────────────────────────────────────────────────────
+  Widget _buildApiKeySection(AppStateModel state) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('API KEY', Icons.vpn_key_rounded),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: kColorSurface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: kColorBorder.withValues(alpha: 0.6)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.15),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
               ),
             ],
           ),
-          const SizedBox(height: 14),
-          TextField(
-            controller: _apiKeyController,
-            obscureText: true,
-            style: const TextStyle(color: kColorText, fontSize: 14),
-            decoration: InputDecoration(
-              hintText: 'Paste your key here...',
-              fillColor: kColorBackground,
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.clear, size: 16),
-                onPressed: _apiKeyController.clear,
-                color: kColorTextMuted,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Key input with visibility toggle
+              TextField(
+                controller: _apiKeyController,
+                obscureText: !_isKeyVisible,
+                style: const TextStyle(color: kColorText, fontSize: 13),
+                decoration: InputDecoration(
+                  hintText: 'Paste your Gemini key…',
+                  hintStyle: TextStyle(
+                    color: kColorTextMuted.withValues(alpha: 0.7),
+                    fontSize: 13,
+                  ),
+                  fillColor: kColorBackground,
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 12),
+                  prefixIcon: Icon(
+                    Icons.key_rounded,
+                    size: 16,
+                    color: kColorTextMuted.withValues(alpha: 0.6),
+                  ),
+                  suffixIcon: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      GestureDetector(
+                        onTap: () =>
+                            setState(() => _isKeyVisible = !_isKeyVisible),
+                        child: Icon(
+                          _isKeyVisible
+                              ? Icons.visibility_off_rounded
+                              : Icons.visibility_rounded,
+                          size: 16,
+                          color: kColorTextMuted,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      GestureDetector(
+                        onTap: _apiKeyController.clear,
+                        child: const Icon(
+                          Icons.close_rounded,
+                          size: 16,
+                          color: kColorTextMuted,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          // Coral gradient button
-          Container(
-            height: 44,
-            decoration: BoxDecoration(
-              gradient: kPrimaryGradient,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(10),
+              const SizedBox(height: 12),
+              // Save button
+              _GradientButton(
+                label: 'Test & Save',
+                icon: Icons.check_circle_outline_rounded,
+                isLoading: state.loadingPhase == LoadingPhase.testingKey,
                 onTap: state.loadingPhase == LoadingPhase.testingKey
                     ? null
                     : () => _testAndSaveKey(state),
-                child: Center(
-                  child: state.loadingPhase == LoadingPhase.testingKey
-                      ? const SizedBox(
-                          width: 18, height: 18,
-                          child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Colors.white),
-                        )
-                      : const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.check_circle_outline,
-                                size: 16, color: Colors.white),
-                            SizedBox(width: 8),
-                            Text(
-                              'Test & Save',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
-                        ),
-                ),
               ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          // Ghost button
-          OutlinedButton.icon(
-            onPressed: _launchYouTube,
-            icon: const Icon(Icons.play_circle_fill_rounded,
-                color: kColorPrimary, size: 16),
-            label: const Text(
-              'How to get an API key',
-              style: TextStyle(
-                  color: kColorPrimary,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 12),
-            ),
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(color: kColorPrimary.withValues(alpha: 0.3)),
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ── Language Card ───────────────────────────────────────────────────────────
-  Widget _buildLanguageCard(AppStateModel state) {
-    return Container(
-      decoration: BoxDecoration(
-        color: kColorSurface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: kColorBorder),
-      ),
-      child: Column(
-        children: [
-          _DropdownRow(
-            label: 'I speak',
-            value: state.nativeLanguage,
-            items: kSupportedLanguages,
-            onChanged: (val) { if (val != null) state.setNativeLanguage(val); },
-          ),
-          Divider(height: 1, color: kColorBorder),
-          _DropdownRow(
-            label: 'I want to learn',
-            value: state.targetLanguage,
-            items: kSupportedLanguages,
-            onChanged: (val) { if (val != null) state.setTargetLanguage(val); },
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ── Topic List ──────────────────────────────────────────────────────────────
-  Widget _buildTopicList(AppStateModel state) {
-    return Container(
-      decoration: BoxDecoration(
-        color: kColorSurface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: kColorBorder),
-      ),
-      child: ListView.separated(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: kTopics.length,
-        separatorBuilder: (_, __) => Divider(height: 1, color: kColorBorder),
-        itemBuilder: (context, index) {
-          final topic = kTopics[index];
-          final isSelected = state.selectedTopic == topic;
-
-         return InkWell(
-  borderRadius: BorderRadius.circular(12),
-  onTap: () {
-    state.selectTopic(topic);
-    if (Scaffold.of(context).isDrawerOpen) {
-      Navigator.of(context).pop();
-    }
-  },
-  child: TweenAnimationBuilder<double>(
-    tween: Tween(begin: 1.0, end: isSelected ? 1.02 : 1.0),
-    duration: const Duration(milliseconds: 300),
-    curve: Curves.elasticOut,
-    builder: (context, scale, child) => Transform.scale(
-      scale: scale,
-      child: child,
-    ),
-    child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: isSelected
-            ? kColorPrimary.withValues(alpha: 0.07)
-            : Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              topic,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                color: isSelected ? kColorPrimary : kColorAccent,
+              const SizedBox(height: 8),
+              // Help link
+              _GhostButton(
+                label: 'How to get an API key',
+                icon: Icons.play_circle_outline_rounded,
+                onTap: _launchYouTube,
               ),
-            ),
+            ],
           ),
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            transitionBuilder: (child, anim) => ScaleTransition(
-              scale: anim, child: child,
-            ),
-            child: isSelected
-                ? Container(
-                    key: const ValueKey('check'),
-                    width: 20, height: 20,
-                    decoration: const BoxDecoration(
-                      color: kColorPrimary,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.check, size: 12, color: Colors.white),
-                  )
-                : const SizedBox(key: ValueKey('empty'), width: 20),
-          ),
-        ],
-      ),
-    ),
-  ),
-);
-        },
-      ),
-    );
-  }
-
-  // ── Footer ──────────────────────────────────────────────────────────────────
-  Widget _buildFooter() {
-    return Column(
-      children: [
-        Divider(color: kColorBorder),
-        const SizedBox(height: 12),
-        Text(
-          'Salearn v1.0.0',
-          style: TextStyle(
-              color: kColorTextMuted,
-              fontSize: 11,
-              fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'Powered by Abdelwahed Abdellaoui',
-          style: TextStyle(color: kColorBorder, fontSize: 10),
         ),
       ],
+    );
+  }
+
+  // ── Language Section ──────────────────────────────────────────────────────
+  Widget _buildLanguageSection(AppStateModel state) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('LANGUAGES', Icons.translate_rounded),
+        Container(
+          decoration: BoxDecoration(
+            color: kColorSurface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: kColorBorder.withValues(alpha: 0.6)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.15),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              _LanguageRow(
+                label: 'I speak',
+                icon: Icons.record_voice_over_rounded,
+                value: state.nativeLanguage,
+                items: kSupportedLanguages,
+                onChanged: (val) {
+                  if (val != null) state.setNativeLanguage(val);
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 1,
+                        color: kColorBorder.withValues(alpha: 0.5),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Container(
+                        width: 28,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          color: kColorPrimary.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.swap_vert_rounded,
+                          size: 14,
+                          color: kColorPrimary,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        height: 1,
+                        color: kColorBorder.withValues(alpha: 0.5),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              _LanguageRow(
+                label: 'I want to learn',
+                icon: Icons.school_rounded,
+                value: state.targetLanguage,
+                items: kSupportedLanguages,
+                onChanged: (val) {
+                  if (val != null) state.setTargetLanguage(val);
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ── Topic Section ─────────────────────────────────────────────────────────
+  Widget _buildTopicSection(AppStateModel state) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('STUDY TOPIC', Icons.menu_book_rounded),
+        Container(
+          decoration: BoxDecoration(
+            color: kColorSurface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: kColorBorder.withValues(alpha: 0.6)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.15),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: kTopics.asMap().entries.map((entry) {
+              final index = entry.key;
+              final topic = entry.value;
+              final isSelected = state.selectedTopic == topic;
+              final isLast = index == kTopics.length - 1;
+              final icon =
+                  kTopicIcons[topic] ?? Icons.article_outlined;
+
+              return Column(
+                children: [
+                  _TopicTile(
+                    topic: topic,
+                    icon: icon,
+                    isSelected: isSelected,
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      state.selectTopic(topic);
+                      if (Scaffold.of(context).isDrawerOpen) {
+                        Navigator.of(context).pop();
+                      }
+                    },
+                  ),
+                  if (!isLast)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Container(
+                        height: 1,
+                        color: kColorBorder.withValues(alpha: 0.3),
+                      ),
+                    ),
+                ],
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ── Footer ────────────────────────────────────────────────────────────────
+  Widget _buildFooter() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 12, 24, 20),
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(color: kColorBorder.withValues(alpha: 0.4)),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 4,
+            height: 4,
+            decoration: BoxDecoration(
+              color: kColorPrimary.withValues(alpha: 0.5),
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'Salearn v1.0.0',
+            style: TextStyle(
+              color: kColorTextMuted.withValues(alpha: 0.7),
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            '·',
+            style: TextStyle(
+              color: kColorTextMuted.withValues(alpha: 0.4),
+              fontSize: 11,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            'by Abdelwahed',
+            style: TextStyle(
+              color: kColorTextMuted.withValues(alpha: 0.5),
+              fontSize: 10,
+              letterSpacing: 0.3,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            width: 4,
+            height: 4,
+            decoration: BoxDecoration(
+              color: kColorPrimary.withValues(alpha: 0.5),
+              shape: BoxShape.circle,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
-// ── Dropdown Row ──────────────────────────────────────────────────────────────
-class _DropdownRow extends StatelessWidget {
+// ─── API Status Indicator ─────────────────────────────────────────────────────
+class _ApiStatusDot extends StatelessWidget {
+  final bool isConnected;
+  const _ApiStatusDot({required this.isConnected});
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: isConnected ? 'API Connected' : 'No API Key',
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: isConnected
+              ? const Color(0xFF2ECC71).withValues(alpha: 0.12)
+              : kColorError.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isConnected
+                ? const Color(0xFF2ECC71).withValues(alpha: 0.3)
+                : kColorError.withValues(alpha: 0.3),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 6,
+              height: 6,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color:
+                    isConnected ? const Color(0xFF2ECC71) : kColorError,
+                boxShadow: [
+                  BoxShadow(
+                    color: (isConnected
+                            ? const Color(0xFF2ECC71)
+                            : kColorError)
+                        .withValues(alpha: 0.5),
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              isConnected ? 'ON' : 'OFF',
+              style: TextStyle(
+                fontSize: 9,
+                fontWeight: FontWeight.w800,
+                color: isConnected
+                    ? const Color(0xFF2ECC71)
+                    : kColorError,
+                letterSpacing: 1,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Gradient Button ──────────────────────────────────────────────────────────
+class _GradientButton extends StatefulWidget {
   final String label;
+  final IconData icon;
+  final bool isLoading;
+  final VoidCallback? onTap;
+
+  const _GradientButton({
+    required this.label,
+    required this.icon,
+    this.isLoading = false,
+    this.onTap,
+  });
+
+  @override
+  State<_GradientButton> createState() => _GradientButtonState();
+}
+
+class _GradientButtonState extends State<_GradientButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  late final Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+    );
+    _scale = Tween<double>(begin: 1.0, end: 0.96).animate(
+      CurvedAnimation(parent: _ctrl, curve: kPremiumCurve),
+    );
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: widget.onTap != null
+          ? (_) {
+              HapticFeedback.lightImpact();
+              _ctrl.forward();
+            }
+          : null,
+      onTapUp: widget.onTap != null
+          ? (_) async {
+              await _ctrl.reverse();
+              if (mounted) widget.onTap?.call();
+            }
+          : null,
+      onTapCancel: () => _ctrl.reverse(),
+      child: ScaleTransition(
+        scale: _scale,
+        child: Container(
+          height: 44,
+          decoration: BoxDecoration(
+            gradient: kPrimaryGradient,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: kColorPrimary.withValues(alpha: 0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Center(
+            child: widget.isLoading
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(widget.icon, size: 15, color: Colors.white),
+                      const SizedBox(width: 8),
+                      Text(
+                        widget.label,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Ghost Button ─────────────────────────────────────────────────────────────
+class _GhostButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _GhostButton({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: onTap,
+        child: Container(
+          height: 38,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: kColorBorder.withValues(alpha: 0.6),
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: kColorPrimary, size: 15),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  color: kColorAccent.withValues(alpha: 0.8),
+                  fontWeight: FontWeight.w500,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Language Row ─────────────────────────────────────────────────────────────
+class _LanguageRow extends StatelessWidget {
+  final String label;
+  final IconData icon;
   final String value;
   final List<Map<String, String>> items;
   final ValueChanged<String?> onChanged;
 
-  const _DropdownRow({
+  const _LanguageRow({
     required this.label,
+    required this.icon,
     required this.value,
     required this.items,
     required this.onChanged,
@@ -466,32 +817,184 @@ class _DropdownRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label,
-              style: const TextStyle(color: kColorTextMuted, fontSize: 12)),
-          DropdownButton<String>(
-            value: value,
-            underline: const SizedBox(),
-            icon: const Icon(Icons.arrow_drop_down_rounded,
-                color: kColorPrimary),
-            dropdownColor: kColorSurface,
-            borderRadius: BorderRadius.circular(12),
-            style: const TextStyle(
+          Icon(icon, size: 16, color: kColorTextMuted),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: kColorTextMuted.withValues(alpha: 0.9),
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+            decoration: BoxDecoration(
+              color: kColorBackground.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: kColorBorder.withValues(alpha: 0.5),
+              ),
+            ),
+            child: DropdownButton<String>(
+              value: value,
+              underline: const SizedBox(),
+              isDense: true,
+              icon: const Icon(Icons.keyboard_arrow_down_rounded,
+                  color: kColorPrimary, size: 18),
+              dropdownColor: kColorSurface,
+              borderRadius: BorderRadius.circular(12),
+              style: const TextStyle(
                 color: kColorAccent,
-                fontSize: 14,
-                fontWeight: FontWeight.w600),
-            onChanged: onChanged,
-            items: items.map((lang) {
-              return DropdownMenuItem(
-                value: lang['code'],
-                child: Text(lang['label']!),
-              );
-            }).toList(),
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+              onChanged: onChanged,
+              items: items.map((lang) {
+                return DropdownMenuItem(
+                  value: lang['code'],
+                  child: Text(lang['label']!),
+                );
+              }).toList(),
+            ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ─── Topic Tile ───────────────────────────────────────────────────────────────
+class _TopicTile extends StatefulWidget {
+  final String topic;
+  final IconData icon;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _TopicTile({
+    required this.topic,
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  State<_TopicTile> createState() => _TopicTileState();
+}
+
+class _TopicTileState extends State<_TopicTile>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  late final Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 80),
+    );
+    _scale = Tween<double>(begin: 1.0, end: 0.97).animate(
+      CurvedAnimation(parent: _ctrl, curve: kPremiumCurve),
+    );
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => _ctrl.forward(),
+      onTapUp: (_) async {
+        await _ctrl.reverse();
+        if (mounted) widget.onTap();
+      },
+      onTapCancel: () => _ctrl.reverse(),
+      child: ScaleTransition(
+        scale: _scale,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          curve: kPremiumCurve,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: widget.isSelected
+                ? kColorPrimary.withValues(alpha: 0.08)
+                : Colors.transparent,
+          ),
+          child: Row(
+            children: [
+              // Topic icon
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                curve: kPremiumCurve,
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: widget.isSelected
+                      ? kColorPrimary.withValues(alpha: 0.15)
+                      : kColorBorder.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  widget.icon,
+                  size: 16,
+                  color: widget.isSelected ? kColorPrimary : kColorTextMuted,
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Topic name
+              Expanded(
+                child: Text(
+                  widget.topic,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight:
+                        widget.isSelected ? FontWeight.w600 : FontWeight.w400,
+                    color: widget.isSelected ? kColorPrimary : kColorAccent,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+              ),
+              // Selection indicator
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 250),
+                transitionBuilder: (child, anim) => ScaleTransition(
+                  scale: anim,
+                  child: child,
+                ),
+                child: widget.isSelected
+                    ? Container(
+                        key: const ValueKey('selected'),
+                        width: 22,
+                        height: 22,
+                        decoration: BoxDecoration(
+                          gradient: kPrimaryGradient,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: kColorPrimary.withValues(alpha: 0.3),
+                              blurRadius: 6,
+                            ),
+                          ],
+                        ),
+                        child: const Icon(Icons.check_rounded,
+                            size: 13, color: Colors.white),
+                      )
+                    : const SizedBox(
+                        key: ValueKey('unselected'), width: 22),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

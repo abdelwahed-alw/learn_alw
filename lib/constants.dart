@@ -49,6 +49,22 @@ const List<String> kTopics = [
   'Food & Cooking',
 ];
 
+// Topic → Icon mapping for drawer
+const Map<String, IconData> kTopicIcons = {
+  'Daily Conversations': Icons.chat_bubble_outline_rounded,
+  'Movies & TV Shows': Icons.movie_outlined,
+  'Philosophy': Icons.psychology_outlined,
+  'Vocabulary Drill': Icons.spellcheck_rounded,
+  'Grammar Practice': Icons.edit_note_rounded,
+  'Science & Nature': Icons.biotech_outlined,
+  'Travel': Icons.flight_takeoff_rounded,
+  'Technology': Icons.devices_rounded,
+  'Business & Finance': Icons.trending_up_rounded,
+  'History & Culture': Icons.account_balance_outlined,
+  'Sports': Icons.sports_soccer_rounded,
+  'Food & Cooking': Icons.restaurant_rounded,
+};
+
 // ─── Color Palette — Navy × Coral ────────────────────────────────────────────
 
 // Backgrounds (layered deep navy)
