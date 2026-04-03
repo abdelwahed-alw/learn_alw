@@ -1,5 +1,6 @@
 // lib/home_screen.dart
 // Thin shell: assembles the Scaffold with DrawerWidget + MainScreenBody.
+// Now includes level badge and custom app icon in the header.
 
 import 'dart:ui';
 
@@ -27,8 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final model = context.watch<AppStateModel>();
 
     return Scaffold(
-      key:
-          _scaffoldKey, // We need a GlobalKey<ScaffoldState> to open the drawer
+      key: _scaffoldKey,
       backgroundColor: kColorBackground,
       drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.4,
       drawerScrimColor: Colors.black54,
@@ -37,7 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Stack(
         children: [
-          // The body contains the background gradient and the scrollable content
           const MainScreenBody(),
 
           // Custom Floating AppBar (Glassmorphism)
@@ -56,12 +55,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 8),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          // Menu button with app icon
                           _AnimatedIconButton(
                             icon: Icons.menu_rounded,
-                            onTap: () => _scaffoldKey.currentState?.openDrawer(),
+                            onTap: () =>
+                                _scaffoldKey.currentState?.openDrawer(),
                           ),
+                          const SizedBox(width: 12),
+                          // App title
                           Text(
                             'Salearn',
                             style: Theme.of(context)
@@ -72,6 +74,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   letterSpacing: 1,
                                 ),
                           ),
+                          const SizedBox(width: 10),
+                          // Level badge
+                          _LevelBadge(level: model.proficiencyLevel),
+                          const Spacer(),
                           _buildRefreshButton(model, context),
                         ],
                       ),
@@ -88,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildRefreshButton(AppStateModel model, BuildContext context) {
     if (!model.hasApiKey) {
-      return const SizedBox(width: 48); // placeholder for spacing
+      return const SizedBox(width: 48);
     }
 
     if (model.isGeneratingQuestion) {
@@ -124,6 +130,49 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+// ─── Level Badge ────────────────────────────────────────────────────────────────
+class _LevelBadge extends StatelessWidget {
+  final String level;
+  const _LevelBadge({required this.level});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        gradient: kPrimaryGradient,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: kColorPrimary.withValues(alpha: 0.3),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            levelEmoji(level),
+            style: const TextStyle(fontSize: 12),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            level,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // ─── Animated Drawer with Bounce ────────────────────────────────────────────────
 class _AnimatedDrawer extends StatefulWidget {
   final Widget child;
@@ -148,13 +197,12 @@ class _AnimatedDrawerState extends State<_AnimatedDrawer>
       duration: const Duration(milliseconds: 400),
     );
 
-    // Slide-in with bounce effect using custom cubic curve
     _slideAnimation = Tween<Offset>(
       begin: const Offset(-1.0, 0.0),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _controller,
-      curve: const Cubic(0.4, 0.0, 0.2, 1.0), // Premium curve
+      curve: const Cubic(0.4, 0.0, 0.2, 1.0),
     ));
 
     _fadeAnimation = Tween<double>(
@@ -165,7 +213,6 @@ class _AnimatedDrawerState extends State<_AnimatedDrawer>
       curve: kPremiumCurve,
     ));
 
-    // Auto-open when drawer is opened
     _controller.forward();
   }
 
@@ -215,7 +262,6 @@ class _AnimatedIconButtonState extends State<_AnimatedIconButton>
       vsync: this,
       duration: const Duration(milliseconds: 100),
     );
-    // Use premium cubic curve for smoother feel
     _scale = Tween<double>(begin: 1.0, end: 0.9).animate(
       CurvedAnimation(parent: _ctrl, curve: kPremiumCurve),
     );
@@ -231,10 +277,12 @@ class _AnimatedIconButtonState extends State<_AnimatedIconButton>
     HapticFeedback.lightImpact();
     _ctrl.forward();
   }
+
   void _onTapUp(TapUpDetails d) async {
     await _ctrl.reverse();
     if (mounted) widget.onTap?.call();
   }
+
   void _onTapCancel() => _ctrl.reverse();
 
   @override

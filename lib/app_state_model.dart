@@ -10,6 +10,7 @@ enum LoadingPhase {
   testingKey,
   generatingQ,
   submitting,
+  translating,
 }
 
 class AppStateModel extends ChangeNotifier {
@@ -23,6 +24,8 @@ class AppStateModel extends ChangeNotifier {
   String _nativeLanguage = 'ar';
   String _targetLanguage = 'en';
   String _selectedTopic = kTopics.first;
+  String _proficiencyLevel = 'B1';
+  bool _onboardingDone = false;
 
   // ── Session state ────────────────────────────────────────────────────────
   String _currentQuestion = '';
@@ -31,25 +34,30 @@ class AppStateModel extends ChangeNotifier {
   LoadingPhase _loadingPhase = LoadingPhase.none;
   String _errorMessage = '';
   String _lastUserAnswer = '';
-  String _nextQuestionPreview = '';  // ← NEW
+  String _nextQuestionPreview = '';
+  String _translationResult = '';
 
   // ─── Getters ───────────────────────────────────────────────────────────────
   String get apiKey => _apiKey;
   String get nativeLanguage => _nativeLanguage;
   String get targetLanguage => _targetLanguage;
   String get selectedTopic => _selectedTopic;
+  String get proficiencyLevel => _proficiencyLevel;
+  bool get isOnboardingDone => _onboardingDone;
   String get currentQuestion => _currentQuestion;
   String get feedback => _feedback;
   List<String> get examples => List.unmodifiable(_examples);
   LoadingPhase get loadingPhase => _loadingPhase;
   String get errorMessage => _errorMessage;
   String get lastUserAnswer => _lastUserAnswer;
-  String get nextQuestionPreview => _nextQuestionPreview;  // ← NEW
+  String get nextQuestionPreview => _nextQuestionPreview;
+  String get translationResult => _translationResult;
 
   bool get isIdle => _loadingPhase == LoadingPhase.none;
   bool get isTestingKey => _loadingPhase == LoadingPhase.testingKey;
   bool get isGeneratingQuestion => _loadingPhase == LoadingPhase.generatingQ;
   bool get isSubmitting => _loadingPhase == LoadingPhase.submitting;
+  bool get isTranslating => _loadingPhase == LoadingPhase.translating;
   bool get hasApiKey => _apiKey.trim().isNotEmpty;
   bool get hasQuestion => _currentQuestion.isNotEmpty;
 
@@ -59,6 +67,23 @@ class AppStateModel extends ChangeNotifier {
     _nativeLanguage = _prefs.getString(kPrefNativeLang) ?? 'ar';
     _targetLanguage = _prefs.getString(kPrefTargetLang) ?? 'en';
     _selectedTopic = _prefs.getString(kPrefTopic) ?? kTopics.first;
+    _proficiencyLevel = _prefs.getString(kPrefLevel) ?? 'B1';
+    _onboardingDone = _prefs.getBool(kPrefOnboarding) ?? false;
+    notifyListeners();
+  }
+
+  // ─── Onboarding ────────────────────────────────────────────────────────────
+  Future<void> completeOnboarding() async {
+    _onboardingDone = true;
+    await _prefs.setBool(kPrefOnboarding, true);
+    notifyListeners();
+  }
+
+  // ─── Proficiency Level ─────────────────────────────────────────────────────
+  Future<void> setProficiencyLevel(String level) async {
+    _proficiencyLevel = level;
+    await _prefs.setString(kPrefLevel, level);
+    _clearSession();
     notifyListeners();
   }
 
@@ -117,6 +142,7 @@ class AppStateModel extends ChangeNotifier {
         nativeLanguage: languageLabelFromCode(_nativeLanguage),
         targetLanguage: languageLabelFromCode(_targetLanguage),
         topic: _selectedTopic,
+        level: _proficiencyLevel,
       );
       _currentQuestion = question;
       _setPhase(LoadingPhase.none);
@@ -140,7 +166,7 @@ class AppStateModel extends ChangeNotifier {
     _setPhase(LoadingPhase.submitting);
     _feedback = '';
     _examples = ['', '', ''];
-    _nextQuestionPreview = '';  // ← clear old preview
+    _nextQuestionPreview = '';
     notifyListeners();
 
     try {
@@ -151,12 +177,13 @@ class AppStateModel extends ChangeNotifier {
         topic: _selectedTopic,
         question: _currentQuestion,
         answer: trimmed,
+        level: _proficiencyLevel,
       );
       _feedback = analysis.feedback;
       _examples = List<String>.from(analysis.examples);
       _setPhase(LoadingPhase.none);
 
-      // ← Auto-generate next question preview in background
+      // Auto-generate next question preview in background
       _generateNextQuestionPreview();
 
       return null;
@@ -165,6 +192,35 @@ class AppStateModel extends ChangeNotifier {
       _setPhase(LoadingPhase.none);
       return e.message;
     }
+  }
+
+  // ─── Translation ───────────────────────────────────────────────────────────
+  Future<String?> translateText(String text) async {
+    if (!hasApiKey) return 'Please configure your API key first.';
+    if (text.trim().isEmpty) return 'Nothing to translate.';
+
+    _translationResult = '';
+    _setPhase(LoadingPhase.translating);
+
+    try {
+      final result = await _api.translateText(
+        apiKey: _apiKey,
+        text: text,
+        fromLanguage: languageLabelFromCode(_targetLanguage),
+        toLanguage: languageLabelFromCode(_nativeLanguage),
+      );
+      _translationResult = result;
+      _setPhase(LoadingPhase.none);
+      return null;
+    } on GeminiServiceException catch (e) {
+      _setPhase(LoadingPhase.none);
+      return e.message;
+    }
+  }
+
+  void clearTranslation() {
+    _translationResult = '';
+    notifyListeners();
   }
 
   // ─── Background preview generation ────────────────────────────────────────
@@ -177,9 +233,10 @@ class AppStateModel extends ChangeNotifier {
         topic: _selectedTopic,
         previousQuestion: _currentQuestion,
         userAnswer: _lastUserAnswer,
+        level: _proficiencyLevel,
       );
       _nextQuestionPreview = preview;
-      notifyListeners();  // ← button appears automatically when ready
+      notifyListeners();
     } catch (_) {
       _nextQuestionPreview = '';
     }
@@ -190,7 +247,6 @@ class AppStateModel extends ChangeNotifier {
     if (!hasApiKey) return 'Please configure your API key first.';
     if (_nextQuestionPreview.isEmpty) return 'Next question not ready yet.';
 
-    // ← Use the preview directly, no extra API call!
     _currentQuestion = _nextQuestionPreview;
     _nextQuestionPreview = '';
     _clearSessionKeepQuestion();
@@ -210,13 +266,15 @@ class AppStateModel extends ChangeNotifier {
     _examples = ['', '', ''];
     _errorMessage = '';
     _lastUserAnswer = '';
-    _nextQuestionPreview = '';  // ← NEW
+    _nextQuestionPreview = '';
+    _translationResult = '';
   }
 
   void _clearSessionKeepQuestion() {
     _feedback = '';
     _examples = ['', '', ''];
     _errorMessage = '';
-    _nextQuestionPreview = '';  // ← NEW
+    _nextQuestionPreview = '';
+    _translationResult = '';
   }
 }

@@ -35,6 +35,29 @@ class _MainScreenBodyState extends State<MainScreenBody> {
     }
   }
 
+  void _showTranslationSheet(BuildContext context, String text) {
+    final state = context.read<AppStateModel>();
+    if (!state.hasApiKey) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please configure your API key first.'),
+          backgroundColor: kColorError,
+        ),
+      );
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => _TranslationSheet(
+        text: text,
+        model: state,
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _answerController.dispose();
@@ -111,16 +134,53 @@ class _MainScreenBodyState extends State<MainScreenBody> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Topic: ${state.selectedTopic}',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: kColorPrimary,
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Topic: ${state.selectedTopic}',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: kColorPrimary,
+                          ),
                     ),
+                  ),
+                  // Level badge in banner
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: kColorPrimary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: kColorPrimary.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          levelEmoji(state.proficiencyLevel),
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          state.proficiencyLevel,
+                          style: const TextStyle(
+                            color: kColorPrimary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 8),
               Row(
                 children: [
-                  _LanguageBadge(label: languageLabelFromCode(state.nativeLanguage)),
+                  _LanguageBadge(
+                      label: languageLabelFromCode(state.nativeLanguage)),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 12),
                     child: Icon(Icons.arrow_forward_rounded,
@@ -176,12 +236,19 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                     color: kColorPrimary, size: 20),
               ),
               const SizedBox(width: 12),
-              Text(
-                'Translate or Answer',
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: kColorTextMuted,
-                      letterSpacing: 1.2,
-                    ),
+              Expanded(
+                child: Text(
+                  'Translate or Answer',
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: kColorTextMuted,
+                        letterSpacing: 1.2,
+                      ),
+                ),
+              ),
+              // Translate button
+              _TranslateButton(
+                onTap: () =>
+                    _showTranslationSheet(context, state.currentQuestion),
               ),
             ],
           ),
@@ -231,7 +298,6 @@ class _MainScreenBodyState extends State<MainScreenBody> {
     }
     if (state.feedback.isEmpty) return const SizedBox.shrink();
     
-    // Smooth entrance animation
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: const Duration(milliseconds: 600),
@@ -272,12 +338,19 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                   children: [
                     const Icon(Icons.auto_awesome, color: kColorAccent),
                     const SizedBox(width: 12),
-                    Text(
-                      'AI Feedback',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: kColorAccent,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    Expanded(
+                      child: Text(
+                        'AI Feedback',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: kColorAccent,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                    ),
+                    // Translate feedback
+                    _TranslateButton(
+                      onTap: () =>
+                          _showTranslationSheet(context, state.feedback),
                     ),
                   ],
                 ),
@@ -327,37 +400,37 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                 ),
           ),
         ),
-        // Staggered fade-in animation for example cards
         ...state.examples.asMap().entries.map((entry) {
           final index = entry.key;
           final example = entry.value;
           if (example.isEmpty) return const SizedBox.shrink();
-          // Staggered slide with 50ms delay increment
           return TweenAnimationBuilder<double>(
             tween: Tween(begin: 0.0, end: 1.0),
-            duration: Duration(milliseconds: 300 + (index * 50)), // 50ms delay increment
+            duration: Duration(milliseconds: 300 + (index * 50)),
             curve: kPremiumCurve,
             builder: (context, opacity, child) {
               return Opacity(
                 opacity: opacity,
                 child: Transform.translate(
-                  offset: Offset(0, 20 * (1 - opacity)), // Slide up effect
+                  offset: Offset(0, 20 * (1 - opacity)),
                   child: child,
                 ),
               );
             },
             child: Padding(
               padding: const EdgeInsets.only(bottom: 12),
-              child: _ExampleCard(index: index, text: example),
+              child: _ExampleCard(
+                index: index,
+                text: example,
+                onTranslate: () => _showTranslationSheet(context, example),
+              ),
             ),
           );
         }),
         const SizedBox(height: 24),
-        // ← Only appears when next question is ready
         if (state.nextQuestionPreview.isNotEmpty)
           _buildNextQuestionButton(state)
         else if (state.feedback.isNotEmpty)
-          // Show shimmer while preview is loading in background
           _buildShimmerBox(height: 90),
       ],
     );
@@ -418,6 +491,216 @@ class _MainScreenBodyState extends State<MainScreenBody> {
   }
 }
 
+// ─── Translate Button ─────────────────────────────────────────────────────────
+class _TranslateButton extends StatelessWidget {
+  final VoidCallback onTap;
+  const _TranslateButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        onTap();
+      },
+      child: Container(
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: kColorAccent.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: kColorAccent.withValues(alpha: 0.2),
+          ),
+        ),
+        child: const Icon(
+          Icons.translate_rounded,
+          size: 18,
+          color: kColorAccent,
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Translation Bottom Sheet ─────────────────────────────────────────────────
+class _TranslationSheet extends StatefulWidget {
+  final String text;
+  final AppStateModel model;
+
+  const _TranslationSheet({required this.text, required this.model});
+
+  @override
+  State<_TranslationSheet> createState() => _TranslationSheetState();
+}
+
+class _TranslationSheetState extends State<_TranslationSheet> {
+  bool _isLoading = true;
+  String _translation = '';
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _translate();
+  }
+
+  Future<void> _translate() async {
+    final err = await widget.model.translateText(widget.text);
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+        if (err != null) {
+          _error = err;
+        } else {
+          _translation = widget.model.translationResult;
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.6,
+      ),
+      decoration: const BoxDecoration(
+        color: kColorSurface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Handle bar
+          Container(
+            margin: const EdgeInsets.only(top: 12),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: kColorBorder,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          // Header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: kColorAccent.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.translate_rounded,
+                      color: kColorAccent, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Translation',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: kColorText,
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: const Icon(Icons.close_rounded,
+                      color: kColorTextMuted, size: 22),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Original text (collapsed)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: kColorBackground,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+              ),
+              child: Text(
+                widget.text.length > 150
+                    ? '${widget.text.substring(0, 150)}…'
+                    : widget.text,
+                style: TextStyle(
+                  color: kColorTextMuted.withValues(alpha: 0.8),
+                  fontSize: 13,
+                  height: 1.4,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Arrow
+          const Icon(Icons.arrow_downward_rounded,
+              color: kColorPrimary, size: 18),
+          const SizedBox(height: 12),
+          // Translation result
+          Flexible(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              child: _isLoading
+                  ? const Padding(
+                      padding: EdgeInsets.all(24),
+                      child: Center(
+                        child: SizedBox(
+                          width: 32,
+                          height: 32,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: kColorPrimary,
+                          ),
+                        ),
+                      ),
+                    )
+                  : _error != null
+                      ? Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: kColorError.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            _error!,
+                            style: const TextStyle(
+                                color: kColorError, fontSize: 14),
+                          ),
+                        )
+                      : Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: kColorPrimary.withValues(alpha: 0.06),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: kColorPrimary.withValues(alpha: 0.2),
+                            ),
+                          ),
+                          child: SelectableText(
+                            _translation,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge
+                                ?.copyWith(
+                                  height: 1.6,
+                                  color: kColorText,
+                                ),
+                          ),
+                        ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // ─── Language Badge ───────────────────────────────────────────────────────────
 class _LanguageBadge extends StatelessWidget {
   final String label;
@@ -437,7 +720,8 @@ class _LanguageBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.bold),
+        style: TextStyle(
+            color: color, fontSize: 12, fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -447,8 +731,13 @@ class _LanguageBadge extends StatelessWidget {
 class _ExampleCard extends StatelessWidget {
   final int index;
   final String text;
+  final VoidCallback? onTranslate;
 
-  const _ExampleCard({required this.index, required this.text});
+  const _ExampleCard({
+    required this.index,
+    required this.text,
+    this.onTranslate,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -476,7 +765,8 @@ class _ExampleCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 28, height: 28,
+                  width: 28,
+                  height: 28,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
@@ -497,8 +787,17 @@ class _ExampleCard extends StatelessWidget {
                       style: const TextStyle(fontSize: 16, height: 1.5)),
                 ),
                 const SizedBox(width: 8),
+                if (onTranslate != null)
+                  GestureDetector(
+                    onTap: onTranslate,
+                    child: Icon(Icons.translate_rounded,
+                        size: 18,
+                        color: kColorAccent.withValues(alpha: 0.5)),
+                  ),
+                const SizedBox(width: 6),
                 Icon(Icons.copy_rounded,
-                    size: 20, color: kColorTextMuted.withValues(alpha: 0.5)),
+                    size: 20,
+                    color: kColorTextMuted.withValues(alpha: 0.5)),
               ],
             ),
           ),
@@ -529,7 +828,6 @@ class _AnimatedSubmitButtonState extends State<_AnimatedSubmitButton>
   late final AnimationController _ctrl;
   late final Animation<double> _scale;
 
-
   @override
   void initState() {
     super.initState();
@@ -540,7 +838,6 @@ class _AnimatedSubmitButtonState extends State<_AnimatedSubmitButton>
     _scale = Tween<double>(begin: 1.0, end: 0.95).animate(
       CurvedAnimation(parent: _ctrl, curve: kPremiumCurve),
     );
-
   }
 
   @override
@@ -605,14 +902,17 @@ class _AnimatedSubmitButtonState extends State<_AnimatedSubmitButton>
                         height: 24,
                         child: CircularProgressIndicator(
                           strokeWidth: 3,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       )
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            isEnabled ? Icons.send_rounded : Icons.send_outlined,
+                            isEnabled
+                                ? Icons.send_rounded
+                                : Icons.send_outlined,
                             size: 20,
                             color: isEnabled ? Colors.white : kColorTextMuted,
                           ),
@@ -640,7 +940,7 @@ class _AnimatedSubmitButtonState extends State<_AnimatedSubmitButton>
 // ─── Next Question Button ─────────────────────────────────────────────────────
 class _NextQuestionButton extends StatefulWidget {
   final VoidCallback onTap;
-  final String previewText; // ← the actual next question text
+  final String previewText;
 
   const _NextQuestionButton({
     required this.onTap,
@@ -702,7 +1002,6 @@ class _NextQuestionButtonState extends State<_NextQuestionButton>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ← "Next Question" label badge
               Row(
                 children: [
                   Container(
@@ -731,7 +1030,6 @@ class _NextQuestionButtonState extends State<_NextQuestionButton>
                 ],
               ),
               const SizedBox(height: 10),
-              // ← Shows the actual question text
               Text(
                 widget.previewText,
                 style: const TextStyle(
@@ -742,7 +1040,6 @@ class _NextQuestionButtonState extends State<_NextQuestionButton>
                 ),
               ),
               const SizedBox(height: 8),
-              // ← Tap hint
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [

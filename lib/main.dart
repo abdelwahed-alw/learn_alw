@@ -1,6 +1,6 @@
 // lib/main.dart
 // App entry point for Salearn.
-// Bootstraps SharedPreferences and the Provider tree, then launches the app.
+// Routes to OnboardingScreen on first run, otherwise HomeScreen.
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,20 +9,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'app_state_model.dart';
 import 'constants.dart';
 import 'home_screen.dart';
+import 'onboarding_screen.dart';
 
 Future<void> main() async {
-  // Ensure Flutter bindings are initialized before calling native code.
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Load SharedPreferences once at startup.
   final prefs = await SharedPreferences.getInstance();
 
   runApp(
-    // Provide AppStateModel at the root — accessible throughout the widget tree.
     ChangeNotifierProvider<AppStateModel>(
       create: (_) {
         final model = AppStateModel(prefs);
-        // Eagerly load persisted settings so the first build has real data.
         model.loadFromPrefs();
         return model;
       },
@@ -44,11 +40,16 @@ class LearnAlwApp extends StatelessWidget {
       themeMode: ThemeMode.dark,
       theme: _buildLightTheme(),
       darkTheme: _buildDarkTheme(),
-      home: const HomeScreen(),
+      home: Consumer<AppStateModel>(
+        builder: (context, model, _) {
+          return model.isOnboardingDone
+              ? const HomeScreen()
+              : const OnboardingScreen();
+        },
+      ),
     );
   }
 
-  // ── Dark theme (Premium Redesign) ───────────────────────────────────────────
   ThemeData _buildDarkTheme() {
     return ThemeData(
       useMaterial3: true,
@@ -66,7 +67,7 @@ class LearnAlwApp extends StatelessWidget {
       ),
       textTheme: buildPremiumTextTheme(),
       appBarTheme: AppBarTheme(
-        backgroundColor: Colors.transparent, // Glassmorphism base
+        backgroundColor: Colors.transparent,
         foregroundColor: kColorText,
         elevation: 0,
         centerTitle: false,
@@ -120,7 +121,6 @@ class LearnAlwApp extends StatelessWidget {
     );
   }
 
-  // ── Light theme (minimal, not used by default) ─────────────────────────────
   ThemeData _buildLightTheme() {
     return ThemeData(
       useMaterial3: true,

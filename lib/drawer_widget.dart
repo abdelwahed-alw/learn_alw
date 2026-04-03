@@ -115,6 +115,8 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                             const SizedBox(height: 24),
                             _buildLanguageSection(state),
                             const SizedBox(height: 24),
+                            _buildLevelSection(state),
+                            const SizedBox(height: 24),
                             _buildTopicSection(state),
                           ],
                         ),
@@ -458,6 +460,234 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           ),
         ),
       ],
+    );
+  }
+  // ── Proficiency Level Section ──────────────────────────────────────────
+  Widget _buildLevelSection(AppStateModel state) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('PROFICIENCY', Icons.bar_chart_rounded),
+        GestureDetector(
+          onTap: () => _showLevelPicker(state),
+          child: Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: kColorSurface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: kColorBorder.withValues(alpha: 0.6)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.15),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                // Level emoji
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    gradient: kPrimaryGradient,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(
+                    child: Text(
+                      levelEmoji(state.proficiencyLevel),
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        state.proficiencyLevel,
+                        style: const TextStyle(
+                          color: kColorText,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Text(
+                        levelLabel(state.proficiencyLevel),
+                        style: TextStyle(
+                          color: kColorTextMuted.withValues(alpha: 0.8),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: kColorPrimary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    'Change',
+                    style: TextStyle(
+                      color: kColorPrimary,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showLevelPicker(AppStateModel state) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.7,
+        ),
+        decoration: const BoxDecoration(
+          color: kColorSurface,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: kColorBorder,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
+              child: Row(
+                children: [
+                  Text(
+                    'Change Level',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: kColorText,
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(Icons.close_rounded,
+                        color: kColorTextMuted, size: 22),
+                  ),
+                ],
+              ),
+            ),
+            Flexible(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                shrinkWrap: true,
+                children: kCefrLevels.map((lvl) {
+                  final isSelected = state.proficiencyLevel == lvl['code'];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: GestureDetector(
+                      onTap: () async {
+                        await state.setProficiencyLevel(lvl['code']!);
+                        if (mounted) Navigator.pop(context);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? kColorPrimary.withValues(alpha: 0.1)
+                              : kColorBackground,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: isSelected
+                                ? kColorPrimary.withValues(alpha: 0.4)
+                                : kColorBorder.withValues(alpha: 0.5),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Text(lvl['emoji']!,
+                                style: const TextStyle(fontSize: 20)),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        lvl['code']!,
+                                        style: TextStyle(
+                                          color: isSelected
+                                              ? kColorPrimary
+                                              : kColorText,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        lvl['label']!,
+                                        style: TextStyle(
+                                          color: isSelected
+                                              ? kColorPrimary
+                                              : kColorAccent,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    lvl['description']!,
+                                    style: TextStyle(
+                                      color: kColorTextMuted
+                                          .withValues(alpha: 0.7),
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (isSelected)
+                              Container(
+                                width: 22,
+                                height: 22,
+                                decoration: const BoxDecoration(
+                                  gradient: kPrimaryGradient,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.check_rounded,
+                                    size: 13, color: Colors.white),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
