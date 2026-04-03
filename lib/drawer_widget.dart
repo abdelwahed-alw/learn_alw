@@ -199,10 +199,17 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                         ),
                       ],
                     ),
-                    child: const Icon(
-                      Icons.language_rounded,
-                      color: Colors.white,
-                      size: 24,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: Image.asset(
+                        'assets/icon/icon.png',
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => const Icon(
+                          Icons.school_rounded,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 14),

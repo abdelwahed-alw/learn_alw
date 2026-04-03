@@ -46,6 +46,20 @@ class ProficiencyResult {
   const ProficiencyResult({required this.level, required this.reasoning});
 }
 
+class McqQuestion {
+  final String question;
+  final List<String> options;
+  final String correctAnswer;
+  final String level;
+
+  const McqQuestion({
+    required this.question,
+    required this.options,
+    required this.correctAnswer,
+    required this.level,
+  });
+}
+
 // ─── Service ──────────────────────────────────────────────────────────────────
 
 class GeminiApiService {
@@ -275,19 +289,21 @@ class GeminiApiService {
     });
   }
 
-  /// Generates a proficiency test question (adaptive).
-  Future<String> generateTestQuestion({
+  /// Generates a proficiency test MCQ question (adaptive).
+  Future<McqQuestion> generateTestQuestion({
     required String apiKey,
     required String targetLanguage,
     required String nativeLanguage,
     required int questionNumber,
-    required List<Map<String, String>> previousQA,
+    required int totalQuestions,
+    required List<Map<String, dynamic>> previousQA,
   }) async {
     return _withRetry(() async {
       final prompt = buildTestQuestionPrompt(
         targetLanguage: targetLanguage,
         nativeLanguage: nativeLanguage,
         questionNumber: questionNumber,
+        totalQuestions: totalQuestions,
         previousQA: previousQA,
       );
       final model = _buildModel(apiKey.trim());
@@ -300,7 +316,7 @@ class GeminiApiService {
           'Test question generation failed. Please try again.',
         );
       }
-      return text;
+      return _parseMcqQuestion(text);
     });
   }
 
@@ -309,7 +325,7 @@ class GeminiApiService {
     required String apiKey,
     required String targetLanguage,
     required String nativeLanguage,
-    required List<Map<String, String>> qaHistory,
+    required List<Map<String, dynamic>> qaHistory,
   }) async {
     return _withRetry(() async {
       final prompt = buildProficiencyEvaluationPrompt(
@@ -391,6 +407,48 @@ class GeminiApiService {
       return const ProficiencyResult(
         level: 'B1',
         reasoning: 'Could not determine level precisely. Defaulting to B1.',
+      );
+    }
+  }
+
+  McqQuestion _parseMcqQuestion(String rawText) {
+    try {
+      String cleaned = rawText;
+      if (cleaned.startsWith('```')) {
+        cleaned = cleaned
+            .replaceFirst(RegExp(r'^```(?:json)?\s*'), '')
+            .replaceFirst(RegExp(r'```\s*$'), '')
+            .trim();
+      }
+
+      final Map<String, dynamic> json =
+          jsonDecode(cleaned) as Map<String, dynamic>;
+
+      final question = (json['question'] as String? ?? '').trim();
+      final rawOptions = json['options'] as List<dynamic>? ?? [];
+      final options =
+          rawOptions.map((e) => (e as String? ?? '').trim()).toList();
+      final correctAnswer = (json['correct_answer'] as String? ?? '').trim();
+      final level = (json['level'] as String? ?? 'A2').trim().toUpperCase();
+
+      if (question.isEmpty || options.length < 2) {
+        throw const GeminiServiceException(
+          GeminiErrorType.parseError,
+          'Invalid MCQ format. Please try again.',
+        );
+      }
+
+      return McqQuestion(
+        question: question,
+        options: options,
+        correctAnswer: correctAnswer,
+        level: level,
+      );
+    } catch (e) {
+      if (e is GeminiServiceException) rethrow;
+      throw const GeminiServiceException(
+        GeminiErrorType.parseError,
+        'Could not parse MCQ question. Please try again.',
       );
     }
   }

@@ -1,7 +1,8 @@
 // lib/proficiency_test_screen.dart
-// Dynamic 5-question proficiency assessment powered by Gemini.
+// Dynamic 5-question MCQ proficiency assessment powered by Gemini.
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'app_state_model.dart';
@@ -17,11 +18,13 @@ class ProficiencyTestScreen extends StatefulWidget {
 }
 
 class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
-  final TextEditingController _answerCtrl = TextEditingController();
   final GeminiApiService _api = GeminiApiService();
 
-  final List<Map<String, String>> _qaHistory = [];
-  String _currentQuestion = '';
+  static const int _totalQuestions = 5;
+
+  final List<Map<String, dynamic>> _qaHistory = [];
+  McqQuestion? _currentMcq;
+  int? _selectedOptionIndex;
   bool _isLoading = false;
   bool _isEvaluating = false;
   String? _resultLevel;
@@ -36,30 +39,27 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _generateNextQuestion());
   }
 
-  @override
-  void dispose() {
-    _answerCtrl.dispose();
-    super.dispose();
-  }
-
   Future<void> _generateNextQuestion() async {
     final model = context.read<AppStateModel>();
     setState(() {
       _isLoading = true;
       _errorMessage = null;
+      _selectedOptionIndex = null;
+      _currentMcq = null;
     });
 
     try {
-      final question = await _api.generateTestQuestion(
+      final mcq = await _api.generateTestQuestion(
         apiKey: model.apiKey,
         targetLanguage: languageLabelFromCode(model.targetLanguage),
         nativeLanguage: languageLabelFromCode(model.nativeLanguage),
         questionNumber: _questionNumber,
+        totalQuestions: _totalQuestions,
         previousQA: _qaHistory,
       );
       if (mounted) {
         setState(() {
-          _currentQuestion = question;
+          _currentMcq = mcq;
           _isLoading = false;
         });
       }
@@ -73,16 +73,26 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
     }
   }
 
+  void _selectOption(int index) {
+    HapticFeedback.lightImpact();
+    setState(() => _selectedOptionIndex = index);
+  }
+
   Future<void> _submitAnswer() async {
-    final answer = _answerCtrl.text.trim();
-    if (answer.isEmpty) return;
+    if (_selectedOptionIndex == null || _currentMcq == null) return;
 
-    FocusScope.of(context).unfocus();
+    HapticFeedback.mediumImpact();
+    final selected = _currentMcq!.options[_selectedOptionIndex!];
 
-    _qaHistory.add({'question': _currentQuestion, 'answer': answer});
-    _answerCtrl.clear();
+    _qaHistory.add({
+      'question': _currentMcq!.question,
+      'options': _currentMcq!.options,
+      'correct_answer': _currentMcq!.correctAnswer,
+      'selected': selected,
+      'level': _currentMcq!.level,
+    });
 
-    if (_qaHistory.length >= 5) {
+    if (_qaHistory.length >= _totalQuestions) {
       await _evaluateResults();
     } else {
       await _generateNextQuestion();
@@ -196,19 +206,40 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
               const SizedBox(width: 14),
               Expanded(
                 child: Text(
-                  'Proficiency Test',
+                  'Placement Test',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
                 ),
               ),
+              // Difficulty badge
+              if (_currentMcq != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: kColorPrimary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: kColorPrimary.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Text(
+                    _currentMcq!.level,
+                    style: const TextStyle(
+                      color: kColorPrimary,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
             ],
           ),
           const SizedBox(height: 24),
           // Progress bar
           _buildProgressBar(),
           const SizedBox(height: 32),
-          // Question or loading
+          // Content
           Expanded(
             child: _isLoading || _isEvaluating
                 ? _buildLoadingState()
@@ -222,7 +253,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
   }
 
   Widget _buildProgressBar() {
-    final progress = _qaHistory.length / 5;
+    final progress = _qaHistory.length / _totalQuestions;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -230,7 +261,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Question $_questionNumber of 5',
+              'Question $_questionNumber of $_totalQuestions',
               style: const TextStyle(
                 color: kColorTextMuted,
                 fontSize: 13,
@@ -238,7 +269,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
               ),
             ),
             Text(
-              '${(_qaHistory.length * 20)}%',
+              '${(_qaHistory.length * 100 ~/ _totalQuestions)}%',
               style: TextStyle(
                 color: kColorPrimary.withValues(alpha: 0.8),
                 fontSize: 13,
@@ -292,8 +323,8 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
           const SizedBox(height: 20),
           Text(
             _isEvaluating
-                ? 'Analyzing your proficiency...'
-                : 'Preparing next question...',
+                ? 'Analyzing your proficiency…'
+                : 'Generating question…',
             style: const TextStyle(
               color: kColorTextMuted,
               fontSize: 15,
@@ -342,6 +373,10 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
   }
 
   Widget _buildQuestionArea() {
+    if (_currentMcq == null) return const SizedBox.shrink();
+
+    final hasSelected = _selectedOptionIndex != null;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -364,7 +399,8 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: kColorPrimary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
@@ -380,7 +416,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                _currentQuestion,
+                _currentMcq!.question,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       fontSize: 17,
                       height: 1.5,
@@ -390,39 +426,56 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 24),
-        // Answer input
-        TextField(
-          controller: _answerCtrl,
-          maxLines: 4,
-          minLines: 3,
-          style: const TextStyle(fontSize: 16, color: kColorText),
-          decoration: const InputDecoration(
-            hintText: 'Type your answer...',
+        const SizedBox(height: 20),
+        // MCQ Options
+        Expanded(
+          child: ListView.separated(
+            padding: EdgeInsets.zero,
+            itemCount: _currentMcq!.options.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 10),
+            itemBuilder: (context, index) {
+              final option = _currentMcq!.options[index];
+              final isSelected = _selectedOptionIndex == index;
+              return _McqOptionTile(
+                label: String.fromCharCode(65 + index), // A, B, C, D
+                text: option,
+                isSelected: isSelected,
+                onTap: () => _selectOption(index),
+              );
+            },
           ),
         ),
         const SizedBox(height: 16),
-        // Submit button
+        // Next / Submit button
         GestureDetector(
-          onTap: _answerCtrl.text.trim().isEmpty ? null : _submitAnswer,
-          child: Container(
+          onTap: hasSelected ? _submitAnswer : null,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
             height: 52,
             decoration: BoxDecoration(
-              gradient: kPrimaryGradient,
+              gradient: hasSelected ? kPrimaryGradient : null,
+              color: hasSelected ? null : kColorSurface,
               borderRadius: BorderRadius.circular(14),
-              boxShadow: [
-                BoxShadow(
-                  color: kColorPrimary.withValues(alpha: 0.3),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+              border: hasSelected
+                  ? null
+                  : Border.all(color: kColorBorder),
+              boxShadow: hasSelected
+                  ? [
+                      BoxShadow(
+                        color: kColorPrimary.withValues(alpha: 0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                  : null,
             ),
             child: Center(
               child: Text(
-                _questionNumber >= 5 ? 'Submit & Evaluate' : 'Next Question',
-                style: const TextStyle(
-                  color: Colors.white,
+                _questionNumber >= _totalQuestions
+                    ? 'Submit & Get Results'
+                    : 'Next Question →',
+                style: TextStyle(
+                  color: hasSelected ? Colors.white : kColorTextMuted,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.5,
@@ -437,6 +490,11 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
 
   // ── Result View ───────────────────────────────────────────────────────────
   Widget _buildResultView() {
+    // Count correct answers
+    final correctCount = _qaHistory.where((qa) {
+      return qa['selected'] == qa['correct_answer'];
+    }).length;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -459,7 +517,6 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
                 style: const TextStyle(fontSize: 64),
               ),
               const SizedBox(height: 20),
-              // Congratulations
               Text(
                 'Your Level',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -493,7 +550,17 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+              // Score
+              Text(
+                '$correctCount / $_totalQuestions correct',
+                style: const TextStyle(
+                  color: kColorAccent,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 20),
               // Reasoning
               if (_resultReasoning != null && _resultReasoning!.isNotEmpty)
                 Container(
@@ -544,6 +611,103 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── MCQ Option Tile ──────────────────────────────────────────────────────────
+class _McqOptionTile extends StatelessWidget {
+  final String label;
+  final String text;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _McqOptionTile({
+    required this.label,
+    required this.text,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? kColorPrimary.withValues(alpha: 0.1)
+              : kColorSurface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: isSelected
+                ? kColorPrimary.withValues(alpha: 0.5)
+                : kColorBorder.withValues(alpha: 0.5),
+            width: isSelected ? 2 : 1,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: kColorPrimary.withValues(alpha: 0.1),
+                    blurRadius: 8,
+                  ),
+                ]
+              : null,
+        ),
+        child: Row(
+          children: [
+            // Letter badge
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                gradient: isSelected ? kPrimaryGradient : null,
+                color: isSelected ? null : kColorBackground,
+                shape: BoxShape.circle,
+                border: isSelected
+                    ? null
+                    : Border.all(color: kColorBorder),
+              ),
+              child: Center(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    color: isSelected ? Colors.white : kColorTextMuted,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                text,
+                style: TextStyle(
+                  color: isSelected ? kColorText : kColorAccent,
+                  fontSize: 15,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                  height: 1.4,
+                ),
+              ),
+            ),
+            if (isSelected)
+              Container(
+                width: 22,
+                height: 22,
+                decoration: const BoxDecoration(
+                  gradient: kPrimaryGradient,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.check_rounded,
+                    size: 13, color: Colors.white),
+              ),
+          ],
         ),
       ),
     );

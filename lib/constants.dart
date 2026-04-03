@@ -330,54 +330,73 @@ String buildTestQuestionPrompt({
   required String targetLanguage,
   required String nativeLanguage,
   required int questionNumber,
-  required List<Map<String, String>> previousQA,
+  required int totalQuestions,
+  required List<Map<String, dynamic>> previousQA,
 }) {
-  final qaHistory = previousQA.map((qa) =>
-    'Q: "${qa['question']}"\nA: "${qa['answer']}"'
-  ).join('\n\n');
+  final qaHistory = previousQA.map((qa) {
+    final q = qa['question'] as String? ?? '';
+    final selected = qa['selected'] as String? ?? '';
+    final correct = qa['correct_answer'] as String? ?? '';
+    final lvl = qa['level'] as String? ?? '';
+    final wasCorrect = selected == correct;
+    return 'Q: "$q" (level: $lvl)\nStudent chose: "$selected" → ${wasCorrect ? "CORRECT" : "INCORRECT"}';
+  }).join('\n\n');
 
   final contextBlock = previousQA.isEmpty
-    ? 'This is the first question. Start at a basic level.'
-    : '''Previous questions and answers:
+    ? 'This is the first question. Start at A2 difficulty.'
+    : '''Previous questions and results:
 $qaHistory
 
-Based on the student's performance, adjust difficulty accordingly.''';
+Adapt difficulty: increase if the student answered correctly, decrease if they struggled.''';
 
-  return '''You are an expert language proficiency examiner for $targetLanguage.
+  return '''You are a linguistic expert and language proficiency examiner for $targetLanguage.
 The student speaks $nativeLanguage.
 
-This is question $questionNumber of 5 in a proficiency assessment.
+This is question $questionNumber of $totalQuestions in a placement test.
 
 $contextBlock
 
-## Rules
-- Question 1: Start at A1–A2 level (very simple)
-- Questions 2–3: Adapt based on answers (increase difficulty if correct, decrease if struggling)
-- Questions 4–5: Push toward the student's ceiling
-- Questions should test: vocabulary, grammar, comprehension, and expression
-- Each question should be in $targetLanguage or ask for a response in $targetLanguage
+## Task
+Generate a multiple-choice question to test the student's $targetLanguage proficiency.
+The question should test vocabulary, grammar, or comprehension.
 
-Reply with ONLY the question text — no explanation, no numbering.''';
+Return ONLY valid JSON (no markdown, no code fences):
+{
+  "question": "The question text in $targetLanguage or about $targetLanguage",
+  "options": ["Option A", "Option B", "Option C", "Option D"],
+  "correct_answer": "The correct option text (must exactly match one of the options)",
+  "level": "A2"
+}
+
+The "level" must be one of: A1, A2, B1, B2, C1, C2.
+Return ONLY valid JSON.''';
 }
 
 String buildProficiencyEvaluationPrompt({
   required String targetLanguage,
   required String nativeLanguage,
-  required List<Map<String, String>> qaHistory,
+  required List<Map<String, dynamic>> qaHistory,
 }) {
-  final formatted = qaHistory.asMap().entries.map((e) =>
-    'Q${e.key + 1}: "${e.value['question']}"\nA${e.key + 1}: "${e.value['answer']}"'
-  ).join('\n\n');
+  final formatted = qaHistory.asMap().entries.map((e) {
+    final qa = e.value;
+    final i = e.key + 1;
+    final q = qa['question'] as String? ?? '';
+    final selected = qa['selected'] as String? ?? '';
+    final correct = qa['correct_answer'] as String? ?? '';
+    final lvl = qa['level'] as String? ?? '';
+    final wasCorrect = selected == correct;
+    return 'Q$i ($lvl): "$q"\nStudent chose: "$selected" (correct: "$correct") → ${wasCorrect ? "CORRECT" : "INCORRECT"}';
+  }).join('\n\n');
 
   return '''You are an expert CEFR language proficiency evaluator for $targetLanguage.
 The student speaks $nativeLanguage natively.
 
-## Assessment Results (5 questions)
+## Placement Test Results
 $formatted
 
 ## Task
-Analyze all 5 answers and determine the student's CEFR proficiency level.
-Consider: vocabulary range, grammatical accuracy, sentence complexity, and communicative competence.
+Analyze all answers and determine the student's CEFR proficiency level.
+Consider: accuracy rate, the difficulty levels they handled correctly, and any patterns.
 
 Return ONLY valid JSON:
 {
