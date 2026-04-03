@@ -18,6 +18,7 @@ class MainScreenBody extends StatefulWidget {
 
 class _MainScreenBodyState extends State<MainScreenBody> {
   final TextEditingController _answerController = TextEditingController();
+  String? _selectedDashboardTopic;
 
   Future<void> _submitAnswer(AppStateModel state) async {
     final text = _answerController.text.trim();
@@ -488,48 +489,96 @@ class _MainScreenBodyState extends State<MainScreenBody> {
       emoji = '🌜';
     }
 
+    final nativeLang = languageLabelFromCode(state.nativeLanguage);
     final targetLang = languageLabelFromCode(state.targetLanguage);
 
-    return Container(
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        gradient: kCardGradient,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: kColorBorder),
-        boxShadow: [
-          BoxShadow(
-            color: kColorPrimary.withValues(alpha: 0.06),
-            blurRadius: 24,
-            offset: const Offset(0, 8),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // ── Greeting + Level Card ──
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            gradient: kCardGradient,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: kColorBorder),
+            boxShadow: [
+              BoxShadow(
+                color: kColorPrimary.withValues(alpha: 0.06),
+                blurRadius: 24,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Greeting row
-          Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(emoji, style: const TextStyle(fontSize: 32)),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '$greeting!',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: kColorText,
-                            fontWeight: FontWeight.w800,
-                            fontSize: 22,
+              // Greeting row
+              Row(
+                children: [
+                  Text(emoji, style: const TextStyle(fontSize: 32)),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '$greeting!',
+                          style:
+                              Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    color: kColorText,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 22,
+                                  ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          "Let's practice $targetLang",
+                          style: TextStyle(
+                            color: kColorTextMuted.withValues(alpha: 0.8),
+                            fontSize: 13,
                           ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 2),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              // Level badge row
+              Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: kColorPrimary.withValues(alpha: 0.06),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: kColorPrimary.withValues(alpha: 0.15),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 34,
+                      height: 34,
+                      decoration: BoxDecoration(
+                        gradient: kPrimaryGradient,
+                        borderRadius: BorderRadius.circular(9),
+                      ),
+                      child: Center(
+                        child: Text(
+                          levelEmoji(state.proficiencyLevel),
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
                     Text(
-                      "Let's practice $targetLang",
-                      style: TextStyle(
-                        color: kColorTextMuted.withValues(alpha: 0.8),
-                        fontSize: 13,
+                      '${state.proficiencyLevel} — ${levelLabel(state.proficiencyLevel)}',
+                      style: const TextStyle(
+                        color: kColorText,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
@@ -537,65 +586,197 @@ class _MainScreenBodyState extends State<MainScreenBody> {
               ),
             ],
           ),
-          const SizedBox(height: 24),
-          // Level display
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: kColorPrimary.withValues(alpha: 0.06),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: kColorPrimary.withValues(alpha: 0.15),
+        ),
+        const SizedBox(height: 16),
+        // ── Language Indicator ──
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: kColorSurface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.translate_rounded,
+                  size: 16, color: kColorPrimary.withValues(alpha: 0.7)),
+              const SizedBox(width: 10),
+              Text(
+                '$nativeLang → $targetLang',
+                style: const TextStyle(
+                  color: kColorText,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 42,
-                  height: 42,
+              const Spacer(),
+              GestureDetector(
+                onTap: () => Scaffold.of(context).openDrawer(),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    gradient: kPrimaryGradient,
-                    borderRadius: BorderRadius.circular(12),
+                    color: kColorPrimary.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(6),
                   ),
-                  child: Center(
-                    child: Text(
-                      levelEmoji(state.proficiencyLevel),
-                      style: const TextStyle(fontSize: 20),
+                  child: const Text(
+                    'Change',
+                    style: TextStyle(
+                      color: kColorPrimary,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'You are at level ${state.proficiencyLevel}!',
-                        style: const TextStyle(
-                          color: kColorText,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        levelLabel(state.proficiencyLevel),
-                        style: TextStyle(
-                          color: kColorAccent.withValues(alpha: 0.8),
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+        // ── Topic Selector ──
+        Text(
+          'What would you like to talk about?',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: kColorText,
+                fontWeight: FontWeight.w700,
+              ),
+        ),
+        const SizedBox(height: 14),
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 3,
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          childAspectRatio: 1.0,
+          children: kTopics.map((topic) {
+            final icon = kTopicIcons[topic] ?? Icons.chat_rounded;
+            final isActive = _selectedDashboardTopic == topic;
+            return GestureDetector(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                setState(() => _selectedDashboardTopic = topic);
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                decoration: BoxDecoration(
+                  color: isActive
+                      ? kColorPrimary.withValues(alpha: 0.1)
+                      : kColorSurface,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: isActive
+                        ? kColorPrimary.withValues(alpha: 0.4)
+                        : kColorBorder.withValues(alpha: 0.5),
+                    width: isActive ? 2 : 1,
                   ),
+                  boxShadow: isActive
+                      ? [
+                          BoxShadow(
+                            color: kColorPrimary.withValues(alpha: 0.08),
+                            blurRadius: 8,
+                          ),
+                        ]
+                      : null,
                 ),
-              ],
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      icon,
+                      size: 24,
+                      color: isActive ? kColorPrimary : kColorTextMuted,
+                    ),
+                    const SizedBox(height: 6),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Text(
+                        topic,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: isActive ? kColorPrimary : kColorAccent,
+                          fontSize: 10,
+                          fontWeight:
+                              isActive ? FontWeight.w700 : FontWeight.w500,
+                          height: 1.2,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 20),
+        // ── Start Learning Button ──
+        GestureDetector(
+          onTap: _selectedDashboardTopic != null
+              ? () async {
+                  HapticFeedback.mediumImpact();
+                  final error =
+                      await state.selectTopic(_selectedDashboardTopic!);
+                  if (error != null && mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text(error),
+                          backgroundColor: kColorError),
+                    );
+                  }
+                }
+              : null,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: 52,
+            decoration: BoxDecoration(
+              gradient:
+                  _selectedDashboardTopic != null ? kPrimaryGradient : null,
+              color: _selectedDashboardTopic != null ? null : kColorSurface,
+              borderRadius: BorderRadius.circular(14),
+              border: _selectedDashboardTopic != null
+                  ? null
+                  : Border.all(color: kColorBorder),
+              boxShadow: _selectedDashboardTopic != null
+                  ? [
+                      BoxShadow(
+                        color: kColorPrimary.withValues(alpha: 0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.rocket_launch_rounded,
+                    size: 18,
+                    color: _selectedDashboardTopic != null
+                        ? Colors.white
+                        : kColorTextMuted,
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Start Learning',
+                    style: TextStyle(
+                      color: _selectedDashboardTopic != null
+                          ? Colors.white
+                          : kColorTextMuted,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          const SizedBox(height: 24),
-          // CTA with animated arrow
-          const _AnimatedMenuCta(),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -1168,96 +1349,6 @@ class _NextQuestionButtonState extends State<_NextQuestionButton>
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-// ─── Animated CTA Arrow ─────────────────────────────────────────────────────
-class _AnimatedMenuCta extends StatefulWidget {
-  const _AnimatedMenuCta();
-
-  @override
-  State<_AnimatedMenuCta> createState() => _AnimatedMenuCtaState();
-}
-
-class _AnimatedMenuCtaState extends State<_AnimatedMenuCta>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _ctrl;
-  late final Animation<Offset> _slideAnim;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    )..repeat(reverse: true);
-    _slideAnim = Tween<Offset>(
-      begin: const Offset(0, 0),
-      end: const Offset(-0.25, 0),
-    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: kColorAccent.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: kColorAccent.withValues(alpha: 0.12),
-        ),
-      ),
-      child: Row(
-        children: [
-          // Animated arrow
-          SlideTransition(
-            position: _slideAnim,
-            child: Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                gradient: kPrimaryGradient,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(Icons.arrow_back_rounded,
-                  color: Colors.white, size: 18),
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Open the menu',
-                  style: TextStyle(
-                    color: kColorText,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'Choose your first topic and start practicing!',
-                  style: TextStyle(
-                    color: kColorTextMuted.withValues(alpha: 0.8),
-                    fontSize: 12,
-                    height: 1.3,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
