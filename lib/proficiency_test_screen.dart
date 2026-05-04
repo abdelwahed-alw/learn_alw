@@ -9,6 +9,7 @@ import 'app_state_model.dart';
 import 'constants.dart';
 import 'gemini_api_service.dart';
 import 'home_screen.dart';
+import 'ui_strings.dart';
 
 class ProficiencyTestScreen extends StatefulWidget {
   const ProficiencyTestScreen({super.key});
@@ -147,6 +148,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = context.watch<AppStateModel>().nativeLanguage;
     return Scaffold(
       backgroundColor: kColorBackground,
       body: Stack(
@@ -171,8 +173,8 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
           ),
           SafeArea(
             child: _resultLevel != null
-                ? _buildResultView()
-                : _buildTestView(),
+                ? _buildResultView(lang)
+                : _buildTestView(lang),
           ),
         ],
       ),
@@ -180,7 +182,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
   }
 
   // ── Test View ─────────────────────────────────────────────────────────────
-  Widget _buildTestView() {
+  Widget _buildTestView(String lang) {
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -206,7 +208,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
               const SizedBox(width: 14),
               Expanded(
                 child: Text(
-                  'Placement Test',
+                  t('placementTest', lang),
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
@@ -237,22 +239,22 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
           ),
           const SizedBox(height: 24),
           // Progress bar
-          _buildProgressBar(),
+          _buildProgressBar(lang),
           const SizedBox(height: 32),
           // Content
           Expanded(
             child: _isLoading || _isEvaluating
-                ? _buildLoadingState()
+                ? _buildLoadingState(lang)
                 : _errorMessage != null
-                    ? _buildErrorState()
-                    : _buildQuestionArea(),
+                    ? _buildErrorState(lang)
+                    : _buildQuestionArea(lang),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildProgressBar() {
+  Widget _buildProgressBar(String lang) {
     final progress = _qaHistory.length / _totalQuestions;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -261,7 +263,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Question $_questionNumber of $_totalQuestions',
+              '${t('question', lang)} $_questionNumber ${t('of', lang)} $_totalQuestions',
               style: const TextStyle(
                 color: kColorTextMuted,
                 fontSize: 13,
@@ -306,7 +308,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
     );
   }
 
-  Widget _buildLoadingState() {
+  Widget _buildLoadingState(String lang) {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -323,8 +325,8 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
           const SizedBox(height: 20),
           Text(
             _isEvaluating
-                ? 'Analyzing your proficiency…'
-                : 'Generating question…',
+                ? t('analyzingProficiency', lang)
+                : t('generatingQuestion', lang),
             style: const TextStyle(
               color: kColorTextMuted,
               fontSize: 15,
@@ -336,7 +338,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
     );
   }
 
-  Widget _buildErrorState() {
+  Widget _buildErrorState(String lang) {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -358,9 +360,9 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
                 gradient: kPrimaryGradient,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Text(
-                'Try Again',
-                style: TextStyle(
+              child: Text(
+                t('tryAgain', lang),
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
                 ),
@@ -372,7 +374,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
     );
   }
 
-  Widget _buildQuestionArea() {
+  Widget _buildQuestionArea(String lang) {
     if (_currentMcq == null) return const SizedBox.shrink();
 
     final hasSelected = _selectedOptionIndex != null;
@@ -406,7 +408,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  'Question $_questionNumber',
+                  '${t('question', lang)} $_questionNumber',
                   style: const TextStyle(
                     color: kColorPrimary,
                     fontSize: 12,
@@ -472,8 +474,8 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
             child: Center(
               child: Text(
                 _questionNumber >= _totalQuestions
-                    ? 'Submit & Get Results'
-                    : 'Next Question →',
+                    ? t('submitGetResults', lang)
+                    : t('nextQuestion', lang),
                 style: TextStyle(
                   color: hasSelected ? Colors.white : kColorTextMuted,
                   fontSize: 16,
@@ -489,7 +491,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
   }
 
   // ── Result View ───────────────────────────────────────────────────────────
-  Widget _buildResultView() {
+  Widget _buildResultView(String lang) {
     // Count correct answers
     final correctCount = _qaHistory.where((qa) {
       return qa['selected'] == qa['correct_answer'];
@@ -518,7 +520,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
               ),
               const SizedBox(height: 20),
               Text(
-                'Your Level',
+                t('yourLevel', lang),
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: kColorTextMuted,
                       fontWeight: FontWeight.w600,
@@ -553,7 +555,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
               const SizedBox(height: 16),
               // Score
               Text(
-                '$correctCount / $_totalQuestions correct',
+                '$correctCount / $_totalQuestions ${t('correct', lang)}',
                 style: const TextStyle(
                   color: kColorAccent,
                   fontSize: 14,
@@ -597,10 +599,10 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
                       ),
                     ],
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
-                      'Start Learning →',
-                      style: TextStyle(
+                      t('startLearningArrow', lang),
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w700,

@@ -65,8 +65,8 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not open YouTube link.'),
+          SnackBar(
+            content: Text(t('couldNotOpenLink', context.read<AppStateModel>().nativeLanguage)),
             backgroundColor: kColorError,
           ),
         );
@@ -231,7 +231,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'AI Language Tutor',
+                          t('aiLanguageTutor', state.nativeLanguage),
                           style:
                               Theme.of(context).textTheme.bodySmall?.copyWith(
                                     color: kColorTextMuted,

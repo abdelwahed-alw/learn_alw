@@ -27,7 +27,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   bool _isKeyVisible = false;
   bool _keyValidated = false;
-  bool _languageSelected = false;
+  bool _nativeSelected = false;
+  bool _targetSelected = false;
   String? _keyMessage;
 
   @override
@@ -189,20 +190,20 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           const SizedBox(height: 32),
                           // ── Step 1: API Key ──
                           AnimatedOpacity(
-                            opacity: _languageSelected ? 1.0 : 0.3,
+                            opacity: (_nativeSelected && _targetSelected) ? 1.0 : 0.3,
                             duration: const Duration(milliseconds: 400),
                             child: IgnorePointer(
-                              ignoring: !_languageSelected,
+                              ignoring: !(_nativeSelected && _targetSelected),
                               child: _buildApiKeySection(lang),
                             ),
                           ),
                           const SizedBox(height: 32),
                           // ── Step 2: Level selection (only after API key validated) ──
                           AnimatedOpacity(
-                            opacity: (_languageSelected && _keyValidated) ? 1.0 : 0.3,
+                            opacity: (_nativeSelected && _targetSelected && _keyValidated) ? 1.0 : 0.3,
                             duration: const Duration(milliseconds: 400),
                             child: IgnorePointer(
-                              ignoring: !(_languageSelected && _keyValidated),
+                              ignoring: !(_nativeSelected && _targetSelected && _keyValidated),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -281,18 +282,19 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   // ── Language Section ────────────────────────────────────────────────────────
   Widget _buildLanguageSection(String lang) {
     final model = context.watch<AppStateModel>();
+    final bothSelected = _nativeSelected && _targetSelected;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: kColorSurface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: _languageSelected
+          color: bothSelected
               ? Colors.green.withValues(alpha: 0.4)
               : kColorBorder.withValues(alpha: 0.6),
         ),
         boxShadow: [
-          if (_languageSelected)
+          if (bothSelected)
             BoxShadow(
               color: Colors.green.withValues(alpha: 0.1),
               blurRadius: 12,
@@ -308,17 +310,17 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: _languageSelected
+                  color: bothSelected
                       ? Colors.green.withValues(alpha: 0.15)
                       : kColorPrimary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
-                  _languageSelected
+                  bothSelected
                       ? Icons.check_circle_rounded
                       : Icons.language_rounded,
                   size: 18,
-                  color: _languageSelected ? Colors.green : kColorPrimary,
+                  color: bothSelected ? Colors.green : kColorPrimary,
                 ),
               ),
               const SizedBox(width: 12),
@@ -344,7 +346,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   ],
                 ),
               ),
-              if (_languageSelected)
+              if (bothSelected)
                 Container(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8, vertical: 3),
@@ -364,18 +366,39 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             ],
           ),
           const SizedBox(height: 16),
-          // Dropdown for language selection
+          // ── Native language dropdown ──
+          Text(
+            t('selectNativeLanguage', lang),
+            style: TextStyle(
+              color: kColorTextMuted.withValues(alpha: 0.9),
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            t('selectNativeLanguageDesc', lang),
+            style: TextStyle(
+              color: kColorTextMuted.withValues(alpha: 0.6),
+              fontSize: 11,
+            ),
+          ),
+          const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
               color: kColorBackground,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: kColorBorder),
+              border: Border.all(
+                color: _nativeSelected
+                    ? Colors.green.withValues(alpha: 0.3)
+                    : kColorBorder,
+              ),
             ),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
-                value: _languageSelected ? model.nativeLanguage : null,
-                hint: Text(t('selectLanguage', lang)),
+                value: _nativeSelected ? model.nativeLanguage : null,
+                hint: Text(t('selectNativeLanguage', lang)),
                 isExpanded: true,
                 dropdownColor: kColorSurface,
                 icon: const Icon(Icons.arrow_drop_down, color: kColorTextMuted),
@@ -392,9 +415,86 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 onChanged: (val) {
                   if (val != null) {
                     model.setNativeLanguage(val);
-                    setState(() {
-                      _languageSelected = true;
-                    });
+                    // If target is same as new native, reset target
+                    if (_targetSelected && model.targetLanguage == val) {
+                      _targetSelected = false;
+                    }
+                    setState(() => _nativeSelected = true);
+                  }
+                },
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          // ── Swap icon ──
+          Center(
+            child: Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                color: kColorPrimary.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.swap_vert_rounded,
+                size: 14,
+                color: kColorPrimary,
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          // ── Target language dropdown ──
+          Text(
+            t('selectTargetLanguage', lang),
+            style: TextStyle(
+              color: kColorTextMuted.withValues(alpha: 0.9),
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            t('selectTargetLanguageDesc', lang),
+            style: TextStyle(
+              color: kColorTextMuted.withValues(alpha: 0.6),
+              fontSize: 11,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: kColorBackground,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: _targetSelected
+                    ? Colors.green.withValues(alpha: 0.3)
+                    : kColorBorder,
+              ),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: _targetSelected ? model.targetLanguage : null,
+                hint: Text(t('selectTargetLanguage', lang)),
+                isExpanded: true,
+                dropdownColor: kColorSurface,
+                icon: const Icon(Icons.arrow_drop_down, color: kColorTextMuted),
+                style: const TextStyle(color: kColorText, fontSize: 15),
+                items: kSupportedLanguages
+                    .where((l) => !_nativeSelected || l['code'] != model.nativeLanguage)
+                    .map((l) {
+                  final code = l['code']!;
+                  final name = kLanguageNativeNames[code] ?? l['label']!;
+                  final flag = kLanguageFlags[code] ?? '🌐';
+                  return DropdownMenuItem<String>(
+                    value: code,
+                    child: Text('$flag  $name'),
+                  );
+                }).toList(),
+                onChanged: (val) {
+                  if (val != null) {
+                    model.setTargetLanguage(val);
+                    setState(() => _targetSelected = true);
                   }
                 },
               ),

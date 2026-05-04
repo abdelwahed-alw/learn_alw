@@ -146,7 +146,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                 children: [
                   Expanded(
                     child: Text(
-                      'Topic: ${state.selectedTopic}',
+                      '${t('topicLabel', state.nativeLanguage)}: ${state.selectedTopic}',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             color: kColorPrimary,
                           ),
@@ -245,7 +245,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Translate or Answer',
+                  t('translateOrAnswer', state.nativeLanguage),
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                         color: kColorTextMuted,
                         letterSpacing: 1.2,
