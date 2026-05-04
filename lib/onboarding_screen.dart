@@ -910,9 +910,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               padding: const EdgeInsets.only(bottom: 10),
               child: _LevelCard(
                 code: lvl['code']!,
-                label: lvl['label']!,
+                label: tLevel(lvl['code']!, lang),
                 emoji: lvl['emoji']!,
-                description: lvl['description']!,
+                description: tLevelDesc(lvl['code']!, lang),
                 onTap: () => _selectLevel(lvl['code']!),
               ),
             ),

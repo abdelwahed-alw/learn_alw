@@ -420,7 +420,7 @@ TextDirection textDirectionForCode(String langCode) {
 // ─── Animation Curves ───────────────────────────────────────────────────────────
 
 // Premium natural feel curve (0.4, 0, 0.2, 1)
-const Curve kPremiumCurve = Cubic(0.4, 0.0, 0.2, 1.0);
+const Curve kPremiumCurve = Curves.easeOutQuart;
 
 // Bounce curve for drawer
 const Curve kBounceCurve = Curves.elasticOut;

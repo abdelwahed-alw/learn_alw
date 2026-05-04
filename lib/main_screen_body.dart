@@ -146,7 +146,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                 children: [
                   Expanded(
                     child: Text(
-                      '${t('topicLabel', state.nativeLanguage)}: ${state.selectedTopic}',
+                      '${t('topicLabel', state.nativeLanguage)}: ${tTopic(state.selectedTopic, state.nativeLanguage)}',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             color: kColorPrimary,
                           ),
@@ -574,7 +574,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                     ),
                     const SizedBox(width: 10),
                     Text(
-                      '${state.proficiencyLevel} — ${levelLabel(state.proficiencyLevel)}',
+                      '${state.proficiencyLevel} — ${tLevel(state.proficiencyLevel, state.nativeLanguage)}',
                       style: const TextStyle(
                         color: kColorText,
                         fontSize: 14,
@@ -691,7 +691,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       child: Text(
-                        topic,
+                        tTopic(topic, state.nativeLanguage),
                         textAlign: TextAlign.center,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,

@@ -543,7 +543,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
                   ],
                 ),
                 child: Text(
-                  '${_resultLevel!} — ${levelLabel(_resultLevel!)}',
+                  '${_resultLevel!} — ${tLevel(_resultLevel!, lang)}',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 22,
