@@ -64,7 +64,7 @@ class AppStateModel extends ChangeNotifier {
   // ─── Initialization ────────────────────────────────────────────────────────
   void loadFromPrefs() {
     _apiKey = _prefs.getString(kPrefApiKey) ?? '';
-    _nativeLanguage = _prefs.getString(kPrefNativeLang) ?? 'ar';
+    _nativeLanguage = _prefs.getString(kPrefNativeLang) ?? 'en';
     _targetLanguage = _prefs.getString(kPrefTargetLang) ?? 'en';
     _selectedTopic = _prefs.getString(kPrefTopic) ?? kTopics.first;
     _proficiencyLevel = _prefs.getString(kPrefLevel) ?? 'B1';
