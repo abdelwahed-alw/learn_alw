@@ -21,7 +21,7 @@ class AppStateModel extends ChangeNotifier {
 
   // ── Persisted settings ───────────────────────────────────────────────────
   String _apiKey = '';
-  String _nativeLanguage = 'ar';
+  String _nativeLanguage = 'en';
   String _targetLanguage = 'en';
   String _selectedTopic = kTopics.first;
   String _proficiencyLevel = 'B1';

@@ -526,7 +526,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                         ),
                       ),
                       Text(
-                        levelLabel(state.proficiencyLevel),
+                        tLevel(state.proficiencyLevel, lang),
                         style: TextStyle(
                           color: kColorTextMuted.withValues(alpha: 0.8),
                           fontSize: 12,
@@ -654,7 +654,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
-                                        lvl['label']!,
+                                        tLevel(lvl['code']!, state.nativeLanguage),
                                         style: TextStyle(
                                           color: isSelected
                                               ? kColorPrimary
@@ -667,7 +667,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
-                                    lvl['description']!,
+                                    tLevelDesc(lvl['code']!, state.nativeLanguage),
                                     style: TextStyle(
                                       color: kColorTextMuted
                                           .withValues(alpha: 0.7),
@@ -735,7 +735,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               return Column(
                 children: [
                   _TopicTile(
-                    topic: topic,
+                    topic: tTopic(topic, state.nativeLanguage),
                     icon: icon,
                     isSelected: isSelected,
                     onTap: () {

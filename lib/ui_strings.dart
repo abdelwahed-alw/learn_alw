@@ -454,3 +454,186 @@ const Map<String, String> kLanguageFlags = {
 String t(String key, String langCode) {
   return _strings[langCode]?[key] ?? _strings['en']?[key] ?? key;
 }
+
+// ─── Localized Topic Names ──────────────────────────────────────────────────
+const Map<String, Map<String, String>> _topicNames = {
+  'en': {
+    'Daily Conversations': 'Daily Conversations',
+    'Movies & TV Shows': 'Movies & TV Shows',
+    'Philosophy': 'Philosophy',
+    'Vocabulary Drill': 'Vocabulary Drill',
+    'Grammar Practice': 'Grammar Practice',
+    'Science & Nature': 'Science & Nature',
+    'Travel': 'Travel',
+    'Technology': 'Technology',
+    'Business & Finance': 'Business & Finance',
+    'History & Culture': 'History & Culture',
+    'Sports': 'Sports',
+    'Food & Cooking': 'Food & Cooking',
+  },
+  'ar': {
+    'Daily Conversations': 'محادثات يومية',
+    'Movies & TV Shows': 'أفلام ومسلسلات',
+    'Philosophy': 'فلسفة',
+    'Vocabulary Drill': 'تدريب المفردات',
+    'Grammar Practice': 'تمارين القواعد',
+    'Science & Nature': 'العلوم والطبيعة',
+    'Travel': 'السفر',
+    'Technology': 'التكنولوجيا',
+    'Business & Finance': 'الأعمال والمال',
+    'History & Culture': 'التاريخ والثقافة',
+    'Sports': 'الرياضة',
+    'Food & Cooking': 'الطعام والطبخ',
+  },
+  'fr': {
+    'Daily Conversations': 'Conversations quotidiennes',
+    'Movies & TV Shows': 'Films et séries',
+    'Philosophy': 'Philosophie',
+    'Vocabulary Drill': 'Exercices de vocabulaire',
+    'Grammar Practice': 'Pratique de grammaire',
+    'Science & Nature': 'Sciences et nature',
+    'Travel': 'Voyages',
+    'Technology': 'Technologie',
+    'Business & Finance': 'Affaires et finance',
+    'History & Culture': 'Histoire et culture',
+    'Sports': 'Sports',
+    'Food & Cooking': 'Cuisine et recettes',
+  },
+  'es': {
+    'Daily Conversations': 'Conversaciones diarias',
+    'Movies & TV Shows': 'Películas y series',
+    'Philosophy': 'Filosofía',
+    'Vocabulary Drill': 'Ejercicio de vocabulario',
+    'Grammar Practice': 'Práctica de gramática',
+    'Science & Nature': 'Ciencia y naturaleza',
+    'Travel': 'Viajes',
+    'Technology': 'Tecnología',
+    'Business & Finance': 'Negocios y finanzas',
+    'History & Culture': 'Historia y cultura',
+    'Sports': 'Deportes',
+    'Food & Cooking': 'Comida y cocina',
+  },
+  'tr': {
+    'Daily Conversations': 'Günlük konuşmalar',
+    'Movies & TV Shows': 'Filmler ve diziler',
+    'Philosophy': 'Felsefe',
+    'Vocabulary Drill': 'Kelime alıştırması',
+    'Grammar Practice': 'Dil bilgisi pratiği',
+    'Science & Nature': 'Bilim ve doğa',
+    'Travel': 'Seyahat',
+    'Technology': 'Teknoloji',
+    'Business & Finance': 'İş ve finans',
+    'History & Culture': 'Tarih ve kültür',
+    'Sports': 'Spor',
+    'Food & Cooking': 'Yemek ve mutfak',
+  },
+  'de': {
+    'Daily Conversations': 'Alltagsgespräche',
+    'Movies & TV Shows': 'Filme und Serien',
+    'Philosophy': 'Philosophie',
+    'Vocabulary Drill': 'Vokabeltraining',
+    'Grammar Practice': 'Grammatikübung',
+    'Science & Nature': 'Wissenschaft und Natur',
+    'Travel': 'Reisen',
+    'Technology': 'Technologie',
+    'Business & Finance': 'Wirtschaft und Finanzen',
+    'History & Culture': 'Geschichte und Kultur',
+    'Sports': 'Sport',
+    'Food & Cooking': 'Essen und Kochen',
+  },
+};
+
+/// Get a localized topic name. Falls back to English key (= original name).
+String tTopic(String topicKey, String langCode) {
+  return _topicNames[langCode]?[topicKey] ?? topicKey;
+}
+
+// ─── Localized Level Labels ─────────────────────────────────────────────────
+const Map<String, Map<String, String>> _levelLabels = {
+  'en': {
+    'A1': 'Beginner', 'A2': 'Elementary', 'B1': 'Intermediate',
+    'B2': 'Upper Intermediate', 'C1': 'Advanced', 'C2': 'Mastery',
+  },
+  'ar': {
+    'A1': 'مبتدئ', 'A2': 'أساسي', 'B1': 'متوسط',
+    'B2': 'فوق المتوسط', 'C1': 'متقدم', 'C2': 'إتقان',
+  },
+  'fr': {
+    'A1': 'Débutant', 'A2': 'Élémentaire', 'B1': 'Intermédiaire',
+    'B2': 'Intermédiaire avancé', 'C1': 'Avancé', 'C2': 'Maîtrise',
+  },
+  'es': {
+    'A1': 'Principiante', 'A2': 'Elemental', 'B1': 'Intermedio',
+    'B2': 'Intermedio alto', 'C1': 'Avanzado', 'C2': 'Dominio',
+  },
+  'tr': {
+    'A1': 'Başlangıç', 'A2': 'Temel', 'B1': 'Orta',
+    'B2': 'Orta üstü', 'C1': 'İleri', 'C2': 'Uzman',
+  },
+  'de': {
+    'A1': 'Anfänger', 'A2': 'Grundlagen', 'B1': 'Mittelstufe',
+    'B2': 'Obere Mittelstufe', 'C1': 'Fortgeschritten', 'C2': 'Kompetent',
+  },
+};
+
+const Map<String, Map<String, String>> _levelDescs = {
+  'en': {
+    'A1': 'Basic phrases and simple interactions',
+    'A2': 'Routine tasks and familiar topics',
+    'B1': 'Main points and everyday situations',
+    'B2': 'Complex texts and abstract topics',
+    'C1': 'Fluent expression and implicit meaning',
+    'C2': 'Near-native precision and nuance',
+  },
+  'ar': {
+    'A1': 'عبارات أساسية وتفاعلات بسيطة',
+    'A2': 'مهام روتينية ومواضيع مألوفة',
+    'B1': 'النقاط الرئيسية والمواقف اليومية',
+    'B2': 'نصوص معقدة ومواضيع مجردة',
+    'C1': 'تعبير طليق ومعانٍ ضمنية',
+    'C2': 'دقة وتمييز قريبة من الناطق الأصلي',
+  },
+  'fr': {
+    'A1': 'Phrases de base et interactions simples',
+    'A2': 'Tâches courantes et sujets familiers',
+    'B1': 'Points principaux et situations quotidiennes',
+    'B2': 'Textes complexes et sujets abstraits',
+    'C1': 'Expression fluide et sens implicite',
+    'C2': 'Précision et nuance quasi natives',
+  },
+  'es': {
+    'A1': 'Frases básicas e interacciones simples',
+    'A2': 'Tareas rutinarias y temas familiares',
+    'B1': 'Puntos principales y situaciones cotidianas',
+    'B2': 'Textos complejos y temas abstractos',
+    'C1': 'Expresión fluida y significado implícito',
+    'C2': 'Precisión y matiz casi nativos',
+  },
+  'tr': {
+    'A1': 'Temel ifadeler ve basit etkileşimler',
+    'A2': 'Günlük görevler ve tanıdık konular',
+    'B1': 'Ana noktalar ve günlük durumlar',
+    'B2': 'Karmaşık metinler ve soyut konular',
+    'C1': 'Akıcı ifade ve örtük anlam',
+    'C2': 'Ana dile yakın hassasiyet ve nüans',
+  },
+  'de': {
+    'A1': 'Grundlegende Phrasen und einfache Interaktionen',
+    'A2': 'Routineaufgaben und vertraute Themen',
+    'B1': 'Hauptpunkte und Alltagssituationen',
+    'B2': 'Komplexe Texte und abstrakte Themen',
+    'C1': 'Fließender Ausdruck und implizite Bedeutung',
+    'C2': 'Nahezu muttersprachliche Präzision',
+  },
+};
+
+/// Get a localized level label. Falls back to English.
+String tLevel(String levelCode, String langCode) {
+  return _levelLabels[langCode]?[levelCode] ?? _levelLabels['en']?[levelCode] ?? levelCode;
+}
+
+/// Get a localized level description. Falls back to English.
+String tLevelDesc(String levelCode, String langCode) {
+  return _levelDescs[langCode]?[levelCode] ?? _levelDescs['en']?[levelCode] ?? '';
+}
+

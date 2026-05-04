@@ -194,7 +194,7 @@ class _AnimatedDrawerState extends State<_AnimatedDrawer>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 220),
     );
 
     _slideAnimation = Tween<Offset>(
@@ -202,7 +202,7 @@ class _AnimatedDrawerState extends State<_AnimatedDrawer>
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _controller,
-      curve: const Cubic(0.4, 0.0, 0.2, 1.0),
+      curve: Curves.easeOutCubic,
     ));
 
     _fadeAnimation = Tween<double>(
