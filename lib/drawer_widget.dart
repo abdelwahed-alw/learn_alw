@@ -10,6 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'app_state_model.dart';
 import 'constants.dart';
+import 'ui_strings.dart';
 
 class DrawerWidget extends StatefulWidget {
   const DrawerWidget({super.key});
@@ -297,10 +298,11 @@ class _DrawerWidgetState extends State<DrawerWidget> {
 
   // ── API Key Section ───────────────────────────────────────────────────────
   Widget _buildApiKeySection(AppStateModel state) {
+    final lang = state.nativeLanguage;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader('API KEY', Icons.vpn_key_rounded),
+        _buildSectionHeader(t('apiKeySetup', lang), Icons.vpn_key_rounded),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -324,7 +326,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 obscureText: !_isKeyVisible,
                 style: const TextStyle(color: kColorText, fontSize: 13),
                 decoration: InputDecoration(
-                  hintText: 'Paste your Gemini key…',
+                  hintText: t('pasteApiKey', lang),
                   hintStyle: TextStyle(
                     color: kColorTextMuted.withValues(alpha: 0.7),
                     fontSize: 13,
@@ -368,7 +370,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               const SizedBox(height: 12),
               // Save button
               _GradientButton(
-                label: 'Test & Save',
+                label: t('testAndSave', lang),
                 icon: Icons.check_circle_outline_rounded,
                 isLoading: state.loadingPhase == LoadingPhase.testingKey,
                 onTap: state.loadingPhase == LoadingPhase.testingKey
@@ -378,7 +380,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               const SizedBox(height: 8),
               // Help link
               _GhostButton(
-                label: 'How to get an API key',
+                label: t('howToGetKey', lang),
                 icon: Icons.play_circle_outline_rounded,
                 onTap: _launchYouTube,
               ),
@@ -391,10 +393,11 @@ class _DrawerWidgetState extends State<DrawerWidget> {
 
   // ── Language Section ──────────────────────────────────────────────────────
   Widget _buildLanguageSection(AppStateModel state) {
+    final lang = state.nativeLanguage;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader('LANGUAGES', Icons.translate_rounded),
+        _buildSectionHeader(t('languages', lang), Icons.translate_rounded),
         Container(
           decoration: BoxDecoration(
             color: kColorSurface,
@@ -411,7 +414,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           child: Column(
             children: [
               _LanguageRow(
-                label: 'I speak',
+                label: t('iSpeak', lang),
                 icon: Icons.record_voice_over_rounded,
                 value: state.nativeLanguage,
                 items: kSupportedLanguages,
@@ -455,7 +458,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 ),
               ),
               _LanguageRow(
-                label: 'I want to learn',
+                label: t('iWantToLearn', lang),
                 icon: Icons.school_rounded,
                 value: state.targetLanguage,
                 items: kSupportedLanguages,
@@ -471,10 +474,11 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   }
   // ── Proficiency Level Section ──────────────────────────────────────────
   Widget _buildLevelSection(AppStateModel state) {
+    final lang = state.nativeLanguage;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader('PROFICIENCY', Icons.bar_chart_rounded),
+        _buildSectionHeader(t('proficiency', lang), Icons.bar_chart_rounded),
         GestureDetector(
           onTap: () => _showLevelPicker(state),
           child: Container(
@@ -538,9 +542,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     color: kColorPrimary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Text(
-                    'Change',
-                    style: TextStyle(
+                  child: Text(
+                    t('change', lang),
+                    style: const TextStyle(
                       color: kColorPrimary,
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
@@ -586,7 +590,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               child: Row(
                 children: [
                   Text(
-                    'Change Level',
+                    t('changeLevel', state.nativeLanguage),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: kColorText,
                           fontWeight: FontWeight.w700,
@@ -700,10 +704,11 @@ class _DrawerWidgetState extends State<DrawerWidget> {
 
   // ── Topic Section ─────────────────────────────────────────────────────────
   Widget _buildTopicSection(AppStateModel state) {
+    final lang = state.nativeLanguage;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader('STUDY TOPIC', Icons.menu_book_rounded),
+        _buildSectionHeader(t('topics', lang), Icons.menu_book_rounded),
         Container(
           decoration: BoxDecoration(
             color: kColorSurface,

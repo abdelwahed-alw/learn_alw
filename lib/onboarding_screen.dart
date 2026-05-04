@@ -10,6 +10,7 @@ import 'app_state_model.dart';
 import 'constants.dart';
 import 'home_screen.dart';
 import 'proficiency_test_screen.dart';
+import 'ui_strings.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -26,6 +27,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   bool _isKeyVisible = false;
   bool _keyValidated = false;
+  bool _languageSelected = false;
   String? _keyMessage;
 
   @override
@@ -44,6 +46,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       _apiKeyCtrl.text = model.apiKey;
       _keyValidated = true;
     }
+    
+    // Check if the user previously selected a language (heuristic: onboarding done or some other flag,
+    // actually they select language first time, so we just force them to select unless already selected somehow)
+    // To make it simple, we require language selection every first run.
   }
 
   @override
@@ -56,7 +62,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   Future<void> _validateApiKey() async {
     final key = _apiKeyCtrl.text.trim();
     if (key.isEmpty) {
-      setState(() => _keyMessage = 'Please enter your API key.');
+      final lang = context.read<AppStateModel>().nativeLanguage;
+      setState(() => _keyMessage = t('pleaseEnterKey', lang));
       return;
     }
     FocusScope.of(context).unfocus();
@@ -65,7 +72,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     if (mounted) {
       setState(() {
         _keyValidated = result.success;
-        _keyMessage = result.message;
+        // The message returned by the service might not be localized easily without rewriting the service,
+        // so we can fallback to the english/service returned ones or try to map them.
+        _keyMessage = result.success ? t('apiKeyVerified', model.nativeLanguage) : result.message;
       });
     }
   }
@@ -84,8 +93,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   }
 
   void _navigateToTest() {
+    final lang = context.read<AppStateModel>().nativeLanguage;
     if (!_keyValidated) {
-      setState(() => _keyMessage = '⚠ Please validate your API key first.');
+      setState(() => _keyMessage = t('pleaseValidateKey', lang));
       return;
     }
     Navigator.of(context).push(
@@ -106,8 +116,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   }
 
   Future<void> _selectLevel(String level) async {
+    final lang = context.read<AppStateModel>().nativeLanguage;
     if (!_keyValidated) {
-      setState(() => _keyMessage = '⚠ Please validate your API key first.');
+      setState(() => _keyMessage = t('pleaseValidateKey', lang));
       return;
     }
     HapticFeedback.mediumImpact();
@@ -119,6 +130,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   @override
   Widget build(BuildContext context) {
+    final lang = context.watch<AppStateModel>().nativeLanguage;
+    
     return Scaffold(
       backgroundColor: kColorBackground,
       body: FadeTransition(
@@ -169,25 +182,35 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildHeader(),
+                          _buildHeader(lang),
+                          const SizedBox(height: 32),
+                          // ── Step 0: Language Selection ──
+                          _buildLanguageSection(lang),
                           const SizedBox(height: 32),
                           // ── Step 1: API Key ──
-                          _buildApiKeySection(),
+                          AnimatedOpacity(
+                            opacity: _languageSelected ? 1.0 : 0.3,
+                            duration: const Duration(milliseconds: 400),
+                            child: IgnorePointer(
+                              ignoring: !_languageSelected,
+                              child: _buildApiKeySection(lang),
+                            ),
+                          ),
                           const SizedBox(height: 32),
                           // ── Step 2: Level selection (only after API key validated) ──
                           AnimatedOpacity(
-                            opacity: _keyValidated ? 1.0 : 0.3,
+                            opacity: (_languageSelected && _keyValidated) ? 1.0 : 0.3,
                             duration: const Duration(milliseconds: 400),
                             child: IgnorePointer(
-                              ignoring: !_keyValidated,
+                              ignoring: !(_languageSelected && _keyValidated),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  _buildTestCard(),
+                                  _buildTestCard(lang),
                                   const SizedBox(height: 24),
-                                  _buildOrDivider(),
+                                  _buildOrDivider(lang),
                                   const SizedBox(height: 24),
-                                  _buildManualSection(),
+                                  _buildManualSection(lang),
                                 ],
                               ),
                             ),
@@ -206,7 +229,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(String lang) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -237,7 +260,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         ),
         const SizedBox(height: 24),
         Text(
-          'Welcome to Salearn',
+          t('welcomeTo', lang),
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 color: kColorText,
                 fontWeight: FontWeight.w800,
@@ -245,7 +268,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         ),
         const SizedBox(height: 8),
         Text(
-          'Set up your API key, then we\'ll find your\nlanguage level to personalize your experience.',
+          t('setupApiKey', lang),
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: kColorTextMuted,
                 height: 1.5,
@@ -255,8 +278,135 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     );
   }
 
+  // ── Language Section ────────────────────────────────────────────────────────
+  Widget _buildLanguageSection(String lang) {
+    final model = context.watch<AppStateModel>();
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: kColorSurface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: _languageSelected
+              ? Colors.green.withValues(alpha: 0.4)
+              : kColorBorder.withValues(alpha: 0.6),
+        ),
+        boxShadow: [
+          if (_languageSelected)
+            BoxShadow(
+              color: Colors.green.withValues(alpha: 0.1),
+              blurRadius: 12,
+            ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: _languageSelected
+                      ? Colors.green.withValues(alpha: 0.15)
+                      : kColorPrimary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  _languageSelected
+                      ? Icons.check_circle_rounded
+                      : Icons.language_rounded,
+                  size: 18,
+                  color: _languageSelected ? Colors.green : kColorPrimary,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      t('selectLanguage', lang),
+                      style: const TextStyle(
+                        color: kColorText,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      t('selectLanguageDesc', lang).replaceAll('\n', ' '),
+                      style: TextStyle(
+                        color: kColorTextMuted.withValues(alpha: 0.7),
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (_languageSelected)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.green.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    t('ready', lang),
+                    style: const TextStyle(
+                      color: Colors.green,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Dropdown for language selection
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: kColorBackground,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: kColorBorder),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: _languageSelected ? model.nativeLanguage : null,
+                hint: Text(t('selectLanguage', lang)),
+                isExpanded: true,
+                dropdownColor: kColorSurface,
+                icon: const Icon(Icons.arrow_drop_down, color: kColorTextMuted),
+                style: const TextStyle(color: kColorText, fontSize: 15),
+                items: kSupportedLanguages.map((l) {
+                  final code = l['code']!;
+                  final name = kLanguageNativeNames[code] ?? l['label']!;
+                  final flag = kLanguageFlags[code] ?? '🌐';
+                  return DropdownMenuItem<String>(
+                    value: code,
+                    child: Text('$flag  $name'),
+                  );
+                }).toList(),
+                onChanged: (val) {
+                  if (val != null) {
+                    model.setNativeLanguage(val);
+                    setState(() {
+                      _languageSelected = true;
+                    });
+                  }
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   // ── API Key Section ─────────────────────────────────────────────────────────
-  Widget _buildApiKeySection() {
+  Widget _buildApiKeySection(String lang) {
     final model = context.watch<AppStateModel>();
     return Container(
       padding: const EdgeInsets.all(20),
@@ -304,15 +454,15 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _keyValidated ? 'API Key Verified' : 'Step 1: API Key',
-                      style: TextStyle(
+                      _keyValidated ? t('apiKeyVerified', lang) : t('step1ApiKey', lang),
+                      style: const TextStyle(
                         color: kColorText,
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     Text(
-                      'Required to power AI features',
+                      t('apiKeyRequired', lang),
                       style: TextStyle(
                         color: kColorTextMuted.withValues(alpha: 0.7),
                         fontSize: 11,
@@ -329,9 +479,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     color: Colors.green.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: const Text(
-                    '✓ Ready',
-                    style: TextStyle(
+                  child: Text(
+                    t('ready', lang),
+                    style: const TextStyle(
                       color: Colors.green,
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
@@ -346,7 +496,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             obscureText: !_isKeyVisible,
             style: const TextStyle(color: kColorText, fontSize: 14),
             decoration: InputDecoration(
-              hintText: 'Paste your Gemini API key…',
+              hintText: t('pasteApiKey', lang),
               hintStyle: TextStyle(
                 color: kColorTextMuted.withValues(alpha: 0.7),
                 fontSize: 13,
@@ -401,15 +551,15 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           color: Colors.white,
                         ),
                       )
-                    : const Row(
+                    : Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.verified_rounded,
+                          const Icon(Icons.verified_rounded,
                               size: 16, color: Colors.white),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Text(
-                            'Validate & Save',
-                            style: TextStyle(
+                            t('validateSave', lang),
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
@@ -451,9 +601,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       Icon(Icons.help_outline_rounded,
                           size: 16, color: kColorAccent.withValues(alpha: 0.8)),
                       const SizedBox(width: 8),
-                      const Text(
-                        'How to get your API Key?',
-                        style: TextStyle(
+                      Text(
+                        t('howToGetKey', lang),
+                        style: const TextStyle(
                           color: kColorAccent,
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
@@ -462,11 +612,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     ],
                   ),
                   const SizedBox(height: 10),
-                  _HelpStep(number: '1', text: 'Visit Google AI Studio'),
+                  _HelpStep(number: '1', text: t('helpStep1', lang)),
                   const SizedBox(height: 6),
-                  _HelpStep(number: '2', text: 'Log in with your Google account'),
+                  _HelpStep(number: '2', text: t('helpStep2', lang)),
                   const SizedBox(height: 6),
-                  _HelpStep(number: '3', text: 'Click "Create API Key" and copy it'),
+                  _HelpStep(number: '3', text: t('helpStep3', lang)),
                   const SizedBox(height: 12),
                   GestureDetector(
                     onTap: () async {
@@ -492,7 +642,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                               size: 18, color: kColorPrimary.withValues(alpha: 0.8)),
                           const SizedBox(width: 8),
                           Text(
-                            'Play Tutorial',
+                            t('playTutorial', lang),
                             style: TextStyle(
                               color: kColorPrimary.withValues(alpha: 0.9),
                               fontSize: 12,
@@ -512,7 +662,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     );
   }
 
-  Widget _buildTestCard() {
+  Widget _buildTestCard(String lang) {
     return GestureDetector(
       onTap: _navigateToTest,
       child: Container(
@@ -549,9 +699,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Take the Placement Test',
-                        style: TextStyle(
+                      Text(
+                        t('takeTest', lang),
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 17,
                           fontWeight: FontWeight.w700,
@@ -559,7 +709,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '5 adaptive MCQ questions · ~2 min',
+                        t('testDesc', lang),
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.8),
                           fontSize: 13,
@@ -574,7 +724,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             ),
             const SizedBox(height: 14),
             Text(
-              'AI-generated multiple choice questions that adapt to your answers. Your exact CEFR level will be determined automatically.',
+              t('testDescLong', lang),
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.85),
                 fontSize: 13,
@@ -587,7 +737,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     );
   }
 
-  Widget _buildOrDivider() {
+  Widget _buildOrDivider(String lang) {
     return Row(
       children: [
         Expanded(
@@ -604,7 +754,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
-            'OR CHOOSE MANUALLY',
+            t('orChooseManually', lang).toUpperCase(),
             style: TextStyle(
               color: kColorTextMuted.withValues(alpha: 0.7),
               fontSize: 11,
@@ -628,12 +778,12 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     );
   }
 
-  Widget _buildManualSection() {
+  Widget _buildManualSection(String lang) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Select Your Level',
+          t('selectYourLevel', lang),
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: kColorText,
                 fontWeight: FontWeight.w700,

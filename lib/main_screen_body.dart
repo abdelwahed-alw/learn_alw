@@ -8,6 +8,7 @@ import 'package:shimmer/shimmer.dart';
 
 import 'app_state_model.dart';
 import 'constants.dart';
+import 'ui_strings.dart';
 
 class MainScreenBody extends StatefulWidget {
   const MainScreenBody({super.key});
@@ -284,8 +285,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
           minLines: 3,
           style: const TextStyle(fontSize: 18),
           decoration: InputDecoration(
-            hintText:
-                'Type your answer in ${languageLabelFromCode(state.targetLanguage)}...',
+            hintText: t('typeAnswer', state.nativeLanguage),
           ),
         ),
         const SizedBox(height: 16),
@@ -346,7 +346,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'AI Feedback',
+                        t('feedback', state.nativeLanguage),
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               color: kColorAccent,
                               fontWeight: FontWeight.bold,
@@ -399,7 +399,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
         Padding(
           padding: const EdgeInsets.only(left: 8, bottom: 16),
           child: Text(
-            'Better ways to say it:',
+            t('examples', state.nativeLanguage),
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: kColorTextMuted,
                   fontWeight: FontWeight.bold,
@@ -476,16 +476,16 @@ class _MainScreenBodyState extends State<MainScreenBody> {
     String greeting;
     String emoji;
     if (hour < 12) {
-      greeting = 'Good Morning';
+      greeting = t('goodMorning', state.nativeLanguage);
       emoji = '☀️';
     } else if (hour < 17) {
-      greeting = 'Good Afternoon';
+      greeting = t('goodAfternoon', state.nativeLanguage);
       emoji = '🌤️';
     } else if (hour < 21) {
-      greeting = 'Good Evening';
+      greeting = t('goodEvening', state.nativeLanguage);
       emoji = '🌙';
     } else {
-      greeting = 'Ready for a late session?';
+      greeting = t('lateSession', state.nativeLanguage);
       emoji = '🌜';
     }
 
@@ -533,7 +533,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          "Let's practice $targetLang",
+                          "${t('letsPractice', state.nativeLanguage)} $targetLang",
                           style: TextStyle(
                             color: kColorTextMuted.withValues(alpha: 0.8),
                             fontSize: 13,
@@ -619,9 +619,9 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                     color: kColorPrimary.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: const Text(
-                    'Change',
-                    style: TextStyle(
+                  child: Text(
+                    t('change', state.nativeLanguage),
+                    style: const TextStyle(
                       color: kColorPrimary,
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
@@ -635,7 +635,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
         const SizedBox(height: 24),
         // ── Topic Selector ──
         Text(
-          'What would you like to talk about?',
+          t('whatToTalkAbout', state.nativeLanguage),
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: kColorText,
                 fontWeight: FontWeight.w700,
@@ -761,7 +761,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    'Start Learning',
+                    t('startLearning', state.nativeLanguage),
                     style: TextStyle(
                       color: _selectedDashboardTopic != null
                           ? Colors.white
