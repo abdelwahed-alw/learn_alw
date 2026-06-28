@@ -63,7 +63,7 @@ class McqQuestion {
 // ─── Service ──────────────────────────────────────────────────────────────────
 
 class GeminiApiService {
-  static const String _modelName = 'gemini-2.5-flash';
+  static const String _modelName = 'gemini-3.1-flash-lite';
   static const Duration _timeout = Duration(seconds: 30);
 
   static const int _maxRetries = 3;
