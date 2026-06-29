@@ -18,9 +18,7 @@ Future<void> main() async {
   runApp(
     ChangeNotifierProvider<AppStateModel>(
       create: (_) {
-        final model = AppStateModel(prefs);
-        model.loadFromPrefs();
-        return model;
+        return AppStateModel(prefs)..loadFromPrefs();
       },
       child: const LearnAlwApp(),
     ),

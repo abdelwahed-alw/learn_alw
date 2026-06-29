@@ -1,8 +1,10 @@
 // lib/app_state_model.dart
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
 import 'gemini_api_service.dart';
@@ -20,9 +22,10 @@ enum AppMode { practice, ielts, beginner }
 enum IeltsExerciseType { fillBlanks, sentenceCompletion, writingPractice }
 
 class AppStateModel extends ChangeNotifier {
-  AppStateModel(this._prefs);
+  AppStateModel(this._prefs) : _secureStorage = const FlutterSecureStorage();
 
   final SharedPreferences _prefs;
+  final FlutterSecureStorage _secureStorage;
   final GeminiApiService _api = GeminiApiService();
 
   // ── Persisted settings ───────────────────────────────────────────────────
@@ -47,6 +50,7 @@ class AppStateModel extends ChangeNotifier {
   int _totalExercisesDone = 0;
   Map<String, int> _topicProgress = {};
   DateTime? _lastActiveDate;
+  int _streakCount = 0;
 
   // ── App mode ─────────────────────────────────────────────────────────────
   AppMode _appMode = AppMode.practice;
@@ -98,7 +102,7 @@ class AppStateModel extends ChangeNotifier {
   double get overallProgressPercent => _topicProgress.isEmpty
       ? 0.0
       : (_topicProgress.values.fold<int>(0, (a, b) => a + b) /
-            (_topicProgress.length * 10))
+              (_topicProgress.length * 10))
           .clamp(0.0, 1.0);
 
   bool get isIdle => _loadingPhase == LoadingPhase.none;
@@ -141,7 +145,6 @@ class AppStateModel extends ChangeNotifier {
 
   // ─── Initialization ────────────────────────────────────────────────────────
   void loadFromPrefs() {
-    _apiKey = _prefs.getString(kPrefApiKey) ?? '';
     _nativeLanguage = _prefs.getString(kPrefNativeLang) ?? 'en';
     _targetLanguage = _prefs.getString(kPrefTargetLang) ?? 'en';
     _selectedTopic = _prefs.getString(kPrefTopic) ?? kTopics.first;
@@ -150,6 +153,17 @@ class AppStateModel extends ChangeNotifier {
     _loadBeginnerVocabularyFromPrefs();
     loadProgress();
     notifyListeners();
+    // Fire-and-forget: load API key from secure storage asynchronously
+    unawaited(_loadApiKey());
+  }
+
+  Future<void> _loadApiKey() async {
+    try {
+      _apiKey = await _secureStorage.read(key: kPrefApiKey) ?? '';
+      notifyListeners();
+    } catch (_) {
+      _apiKey = '';
+    }
   }
 
   void _loadBeginnerVocabularyFromPrefs() {
@@ -196,7 +210,7 @@ class AppStateModel extends ChangeNotifier {
     try {
       await _api.testApiKey(key);
       _apiKey = key;
-      await _prefs.setString(kPrefApiKey, key);
+      await _secureStorage.write(key: kPrefApiKey, value: key);
       _setPhase(LoadingPhase.none);
       return (success: true, message: '✓ API key verified and saved!');
     } on GeminiServiceException catch (e) {
@@ -227,7 +241,8 @@ class AppStateModel extends ChangeNotifier {
     final raw = _prefs.getString(kPrefTopicProgress);
     if (raw != null && raw.isNotEmpty) {
       try {
-        final Map<String, dynamic> decoded = jsonDecode(raw) as Map<String, dynamic>;
+        final Map<String, dynamic> decoded =
+            jsonDecode(raw) as Map<String, dynamic>;
         _topicProgress = decoded.map((k, v) => MapEntry(k, (v as num).toInt()));
       } catch (_) {
         _topicProgress = {};
@@ -237,29 +252,44 @@ class AppStateModel extends ChangeNotifier {
     if (lastActive != null) {
       _lastActiveDate = DateTime.fromMillisecondsSinceEpoch(lastActive);
     }
+    _streakCount = _prefs.getInt(kPrefStreak) ?? 0;
     notifyListeners();
   }
 
   Future<void> _saveProgress() async {
     await _prefs.setInt(kPrefTotalExercises, _totalExercisesDone);
     await _prefs.setString(kPrefTopicProgress, jsonEncode(_topicProgress));
-    await _prefs.setInt(
-        kPrefLastActive, DateTime.now().millisecondsSinceEpoch);
+    await _prefs.setInt(kPrefLastActive, DateTime.now().millisecondsSinceEpoch);
+    await _prefs.setInt(kPrefStreak, _streakCount);
   }
 
   void incrementExerciseProgress(String topic) {
     _totalExercisesDone++;
     _topicProgress[topic] = (_topicProgress[topic] ?? 0) + 1;
-    _lastActiveDate = DateTime.now();
+
+    final now = DateTime.now();
+    if (_lastActiveDate != null) {
+      final diff = now.difference(_lastActiveDate!).inDays;
+      if (diff == 0) {
+        // same day — streak unchanged
+      } else if (diff == 1) {
+        _streakCount++;
+      } else {
+        _streakCount = 1;
+      }
+    } else {
+      _streakCount = 1;
+    }
+    _lastActiveDate = now;
+
     _saveProgress();
     notifyListeners();
   }
 
   int _calculateStreak() {
     if (_lastActiveDate == null) return 0;
-    final now = DateTime.now();
-    final diff = now.difference(_lastActiveDate!).inDays;
-    if (diff == 0 || diff == 1) return 1;
+    final diff = DateTime.now().difference(_lastActiveDate!).inDays;
+    if (diff <= 1) return _streakCount;
     return 0;
   }
 
@@ -374,6 +404,7 @@ class AppStateModel extends ChangeNotifier {
         ? '✓ Correct!'
         : '✗ Incorrect. The correct answer is: $_ieltsCorrectAnswer';
     notifyListeners();
+    incrementExerciseProgress(_selectedTopic);
     return null;
   }
 
@@ -396,6 +427,7 @@ class AppStateModel extends ChangeNotifier {
       _ieltsSuggestedCompletion = eval.suggestedCompletion;
       _ieltsLoading = false;
       notifyListeners();
+      incrementExerciseProgress(_selectedTopic);
       return null;
     } on GeminiServiceException catch (e) {
       _ieltsLoading = false;
@@ -424,6 +456,7 @@ class AppStateModel extends ChangeNotifier {
       _ieltsVocabSuggestions = eval.vocabularySuggestions;
       _ieltsLoading = false;
       notifyListeners();
+      incrementExerciseProgress(_selectedTopic);
       return null;
     } on GeminiServiceException catch (e) {
       _ieltsLoading = false;
@@ -483,6 +516,7 @@ class AppStateModel extends ChangeNotifier {
       _feedback = analysis.feedback;
       _examples = List<String>.from(analysis.examples);
       _setPhase(LoadingPhase.none);
+      incrementExerciseProgress(_selectedTopic);
 
       // Auto-generate next question preview in background
       _generateNextQuestionPreview();
@@ -546,9 +580,8 @@ class AppStateModel extends ChangeNotifier {
       // Determine target word: if no vocab, pick a common first word
       String targetWord;
       if (_beginnerVocabulary.isEmpty) {
-        targetWord = _targetLanguage == 'en'
-            ? 'eat'
-            : _simpleFirstWord(_targetLanguage);
+        targetWord =
+            _targetLanguage == 'en' ? 'eat' : _simpleFirstWord(_targetLanguage);
       } else {
         // Pick a word from the known list to reinforce, or introduce new
         targetWord = _pickNextBeginnerWord();
@@ -573,6 +606,7 @@ class AppStateModel extends ChangeNotifier {
       // Only new words that aren't already known will be discoverable
       _beginnerLoading = false;
       notifyListeners();
+      incrementExerciseProgress(_selectedTopic);
       return null;
     } on GeminiServiceException catch (e) {
       _beginnerLoading = false;
@@ -586,8 +620,7 @@ class AppStateModel extends ChangeNotifier {
     if (!hasApiKey) return 'Please configure your API key first.';
 
     // Check if already known
-    final alreadyKnown =
-        _beginnerVocabulary.any((e) => e['word'] == word);
+    final alreadyKnown = _beginnerVocabulary.any((e) => e['word'] == word);
     if (alreadyKnown) return null;
 
     try {
@@ -604,6 +637,7 @@ class AppStateModel extends ChangeNotifier {
       });
       await _saveBeginnerVocabulary();
       notifyListeners();
+      incrementExerciseProgress('vocabulary');
       return null;
     } on GeminiServiceException catch (e) {
       return e.message;
@@ -638,8 +672,10 @@ class AppStateModel extends ChangeNotifier {
     // Cycle through known vocabulary to pick one for reinforcement
     if (_beginnerVocabulary.isEmpty) return _simpleFirstWord(_targetLanguage);
     // Pick a random known word, or if all are well-known, just pick the first
-    final index = DateTime.now().millisecondsSinceEpoch % _beginnerVocabulary.length;
-    return _beginnerVocabulary[index]['word'] ?? _simpleFirstWord(_targetLanguage);
+    final index =
+        DateTime.now().millisecondsSinceEpoch % _beginnerVocabulary.length;
+    return _beginnerVocabulary[index]['word'] ??
+        _simpleFirstWord(_targetLanguage);
   }
 
   // ─── Background preview generation ────────────────────────────────────────

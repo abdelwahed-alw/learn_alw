@@ -3,16 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // ─── SharedPreferences keys ───────────────────────────────────────────────────
-const String kPrefApiKey        = 'api_key';
-const String kPrefNativeLang    = 'native_language';
-const String kPrefTargetLang    = 'target_language';
-const String kPrefTopic         = 'selected_topic';
-const String kPrefLevel         = 'proficiency_level';
-const String kPrefOnboarding    = 'onboarding_done';
+const String kPrefApiKey = 'api_key';
+const String kPrefNativeLang = 'native_language';
+const String kPrefTargetLang = 'target_language';
+const String kPrefTopic = 'selected_topic';
+const String kPrefLevel = 'proficiency_level';
+const String kPrefOnboarding = 'onboarding_done';
 const String kPrefBeginnerVocab = 'beginner_vocabulary';
 const String kPrefTotalExercises = 'total_exercises';
 const String kPrefTopicProgress = 'topic_progress';
 const String kPrefLastActive = 'last_active_date';
+const String kPrefStreak = 'streak';
 
 // ─── YouTube tutorial ─────────────────────────────────────────────────────────
 const String kYoutubeTutorialUrl =
@@ -20,16 +21,16 @@ const String kYoutubeTutorialUrl =
 
 // ─── Supported languages ──────────────────────────────────────────────────────
 const List<Map<String, String>> kSupportedLanguages = [
-  {'label': 'Arabic',     'code': 'ar'},
-  {'label': 'English',    'code': 'en'},
-  {'label': 'French',     'code': 'fr'},
-  {'label': 'Spanish',    'code': 'es'},
-  {'label': 'German',     'code': 'de'},
-  {'label': 'Turkish',    'code': 'tr'},
-  {'label': 'Italian',    'code': 'it'},
+  {'label': 'Arabic', 'code': 'ar'},
+  {'label': 'English', 'code': 'en'},
+  {'label': 'French', 'code': 'fr'},
+  {'label': 'Spanish', 'code': 'es'},
+  {'label': 'German', 'code': 'de'},
+  {'label': 'Turkish', 'code': 'tr'},
+  {'label': 'Italian', 'code': 'it'},
   {'label': 'Portuguese', 'code': 'pt'},
-  {'label': 'Chinese',    'code': 'zh'},
-  {'label': 'Japanese',   'code': 'ja'},
+  {'label': 'Chinese', 'code': 'zh'},
+  {'label': 'Japanese', 'code': 'ja'},
 ];
 
 String languageLabelFromCode(String code) {
@@ -128,20 +129,22 @@ const Map<String, IconData> kTopicIcons = {
 // ─── Color Palette — Navy × Coral ────────────────────────────────────────────
 
 // Backgrounds (layered deep navy)
-const Color kColorBackground  = Color(0xFF0A192F); // Page bg
-const Color kColorSurface     = Color(0xFF112240); // Cards, drawer
-const Color kColorCard        = Color(0xFF172A46); // Elevated cards
-const Color kColorBorder      = Color(0xFF1E3A5F); // Subtle borders
+const Color kColorBackground = Color(0xFF0A192F); // Page bg
+const Color kColorSurface = Color(0xFF112240); // Cards, drawer
+const Color kColorCard = Color(0xFF172A46); // Elevated cards
+const Color kColorBorder = Color(0xFF1E3A5F); // Subtle borders
 
 // Accent Colors
-const Color kColorPrimary     = Color(0xFFFF6B6B); // Coral red — buttons, highlights
-const Color kColorAccent      = Color(0xFFC7D5E8); // Steel blue — secondary accents
-const Color kColorSecondary   = Color(0xFFFF8E53); // Warm orange — gradient partner
-const Color kColorError       = Color(0xFFFF4757); // Error red
+const Color kColorPrimary =
+    Color(0xFFFF6B6B); // Coral red — buttons, highlights
+const Color kColorAccent = Color(0xFFC7D5E8); // Steel blue — secondary accents
+const Color kColorSecondary =
+    Color(0xFFFF8E53); // Warm orange — gradient partner
+const Color kColorError = Color(0xFFFF4757); // Error red
 
 // Typography
-const Color kColorText        = Color(0xFFE8EFF7); // Primary text
-const Color kColorTextMuted   = Color(0xFF5577AA); // Muted / placeholder
+const Color kColorText = Color(0xFFE8EFF7); // Primary text
+const Color kColorTextMuted = Color(0xFF5577AA); // Muted / placeholder
 
 // ─── Gradients ────────────────────────────────────────────────────────────────
 
@@ -180,10 +183,9 @@ TextTheme buildPremiumTextTheme() {
         color: kColorText, fontWeight: FontWeight.bold, letterSpacing: -1),
     titleLarge: GoogleFonts.outfit(
         color: kColorText, fontWeight: FontWeight.w700, letterSpacing: 0.5),
-    bodyLarge: GoogleFonts.outfit(
-        color: kColorText, fontSize: 16, height: 1.6),
-    bodyMedium: GoogleFonts.outfit(
-        color: kColorText, fontSize: 14, height: 1.5),
+    bodyLarge: GoogleFonts.outfit(color: kColorText, fontSize: 16, height: 1.6),
+    bodyMedium:
+        GoogleFonts.outfit(color: kColorText, fontSize: 14, height: 1.5),
     labelLarge: GoogleFonts.outfit(
         color: kColorText, fontWeight: FontWeight.bold, letterSpacing: 0.5),
   );
@@ -347,8 +349,8 @@ String buildTestQuestionPrompt({
   }).join('\n\n');
 
   final contextBlock = previousQA.isEmpty
-    ? 'This is the first question. Start at A2 difficulty.'
-    : '''Previous questions and results:
+      ? 'This is the first question. Start at A2 difficulty.'
+      : '''Previous questions and results:
 $qaHistory
 
 Adapt difficulty: increase if the student answered correctly, decrease if they struggled.''';

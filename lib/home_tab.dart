@@ -6,7 +6,9 @@ import 'app_state_model.dart';
 import 'constants.dart';
 
 class HomeTab extends StatelessWidget {
-  const HomeTab({super.key});
+  final VoidCallback? onNavigateExercises;
+
+  const HomeTab({super.key, this.onNavigateExercises});
 
   @override
   Widget build(BuildContext context) {
@@ -118,8 +120,7 @@ class HomeTab extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.trending_up_rounded,
-                  color: kColorPrimary, size: 18),
+              Icon(Icons.trending_up_rounded, color: kColorPrimary, size: 18),
               const SizedBox(width: 8),
               Text(
                 'Overall Progress',
@@ -146,18 +147,15 @@ class HomeTab extends StatelessWidget {
             child: LinearProgressIndicator(
               value: state.overallProgressPercent,
               backgroundColor: kColorBorder,
-              valueColor:
-                  AlwaysStoppedAnimation<Color>(kColorPrimary),
+              valueColor: AlwaysStoppedAnimation<Color>(kColorPrimary),
               minHeight: 8,
             ),
           ),
           const SizedBox(height: 8),
           Row(
             children: [
-              _statChip(
-                  Icons.check_circle_rounded,
-                  '${state.totalExercisesDone}',
-                  'exercises'),
+              _statChip(Icons.check_circle_rounded,
+                  '${state.totalExercisesDone}', 'exercises'),
               const SizedBox(width: 16),
               _statChip(Icons.local_fire_department_rounded,
                   '${state.streakDays}', 'day streak'),
@@ -206,8 +204,82 @@ class HomeTab extends StatelessWidget {
   }
 
   Widget _buildRecentCard(AppStateModel state) {
-    if (!state.hasApiKey || !state.ieltsHasExercise && !state.hasQuestion && !state.beginnerHasSentence) {
-      return Container(
+    if (!state.hasApiKey ||
+        !state.ieltsHasExercise &&
+            !state.hasQuestion &&
+            !state.beginnerHasSentence) {
+      return GestureDetector(
+        onTap: () {
+          HapticFeedback.mediumImpact();
+          onNavigateExercises?.call();
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: kPrimaryGradient,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: kColorPrimary.withValues(alpha: 0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Start Learning',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Pick a category or head to Exercises',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.8),
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.arrow_forward_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    String label = state.ieltsHasExercise
+        ? 'IELTS Exercise'
+        : state.beginnerHasSentence
+            ? 'Vocabulary Learning'
+            : 'Practice Session';
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.mediumImpact();
+        onNavigateExercises?.call();
+      },
+      child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           gradient: kPrimaryGradient,
@@ -227,7 +299,7 @@ class HomeTab extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Start Learning',
+                    'Continue Learning',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -236,7 +308,7 @@ class HomeTab extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Pick a category or head to Exercises',
+                    label,
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.8),
                       fontSize: 12,
@@ -252,85 +324,22 @@ class HomeTab extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: const Icon(
-                Icons.arrow_forward_rounded,
+                Icons.play_arrow_rounded,
                 color: Colors.white,
                 size: 20,
               ),
             ),
           ],
         ),
-      );
-    }
-
-    String label = state.ieltsHasExercise
-        ? 'IELTS Exercise'
-        : state.beginnerHasSentence
-            ? 'Vocabulary Learning'
-            : 'Practice Session';
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: kPrimaryGradient,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: kColorPrimary.withValues(alpha: 0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Continue Learning',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.8),
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(
-              Icons.play_arrow_rounded,
-              color: Colors.white,
-              size: 20,
-            ),
-          ),
-        ],
       ),
     );
   }
 
-  // ignore: unused_element
-  void _onCategoryTap(BuildContext context, AppStateModel state, String topic) async {
+  void _onCategoryTap(AppStateModel state, String topic) async {
     HapticFeedback.mediumImpact();
-    // Set topic and switch to exercises tab
     await state.selectTopic(topic);
     state.setAppMode(AppMode.practice);
-    if (context.mounted) {
-      // Navigate to exercises tab — handled by parent state
-    }
+    onNavigateExercises?.call();
   }
 
   Widget _buildCategoryGrid(AppStateModel state) {
@@ -356,10 +365,13 @@ class HomeTab extends StatelessWidget {
       itemBuilder: (context, index) {
         final cat = categories[index];
         final progress = (state.topicProgress[cat.$3] ?? 0) / 10.0;
-        return _CategoryCard(
-          icon: cat.$2,
-          label: cat.$1,
-          progress: progress.clamp(0.0, 1.0),
+        return GestureDetector(
+          onTap: () => _onCategoryTap(state, cat.$3),
+          child: _CategoryCard(
+            icon: cat.$2,
+            label: cat.$1,
+            progress: progress.clamp(0.0, 1.0),
+          ),
         );
       },
     );
@@ -462,9 +474,7 @@ class _CategoryCard extends StatelessWidget {
               value: progress,
               backgroundColor: kColorBorder,
               valueColor: AlwaysStoppedAnimation<Color>(
-                progress >= 0.8
-                    ? const Color(0xFF2ECC71)
-                    : kColorPrimary,
+                progress >= 0.8 ? const Color(0xFF2ECC71) : kColorPrimary,
               ),
               minHeight: 5,
             ),

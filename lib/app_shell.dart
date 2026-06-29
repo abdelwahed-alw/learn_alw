@@ -24,11 +24,12 @@ class _AppShellState extends State<AppShell> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          const HomeTab(),
+          HomeTab(
+            onNavigateExercises: () => setState(() => _currentIndex = 1),
+          ),
           const ExercisesTab(),
           ProgressTab(
-            onNavigateExercises: () =>
-                setState(() => _currentIndex = 1),
+            onNavigateExercises: () => setState(() => _currentIndex = 1),
           ),
           const ProfileTab(),
         ],
@@ -88,8 +89,9 @@ class _AppShellState extends State<AppShell> {
                       Icon(
                         items[i].$1,
                         size: 20,
-                        color:
-                            isActive ? kColorPrimary : kColorAccent.withValues(alpha: 0.6),
+                        color: isActive
+                            ? kColorPrimary
+                            : kColorAccent.withValues(alpha: 0.6),
                       ),
                       const SizedBox(width: 6),
                       Text(
