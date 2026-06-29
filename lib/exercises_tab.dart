@@ -7,6 +7,7 @@ import 'constants.dart';
 import 'ielts_screen.dart';
 import 'beginner_screen.dart';
 import 'main_screen_body.dart';
+import 'ui_strings.dart';
 
 class ExercisesTab extends StatefulWidget {
   const ExercisesTab({super.key});
@@ -100,6 +101,8 @@ class _ExercisesTabState extends State<ExercisesTab> {
           ),
           const SizedBox(height: 12),
           _buildModeSelector(state),
+          const SizedBox(height: 14),
+          _buildTopicSelector(state),
           const SizedBox(height: 2),
         ],
       ),
@@ -164,6 +167,62 @@ class _ExercisesTabState extends State<ExercisesTab> {
             ),
           ));
         }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildTopicSelector(AppStateModel state) {
+    if (state.appMode != AppMode.practice) return const SizedBox.shrink();
+    return SizedBox(
+      height: 36,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemCount: kTopics.length,
+        itemBuilder: (context, index) {
+          final topic = kTopics[index];
+          final isActive = state.selectedTopic == topic;
+          return GestureDetector(
+            onTap: () async {
+              HapticFeedback.lightImpact();
+              await state.selectTopic(topic);
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                color: isActive
+                    ? kColorPrimary.withValues(alpha: 0.12)
+                    : kColorSurface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: isActive
+                      ? kColorPrimary.withValues(alpha: 0.4)
+                      : kColorBorder.withValues(alpha: 0.5),
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    kTopicIcons[topic] ?? Icons.chat_rounded,
+                    size: 14,
+                    color: isActive ? kColorPrimary : kColorTextMuted,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    tTopic(topic, state.nativeLanguage),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                      color: isActive ? kColorPrimary : kColorAccent,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
