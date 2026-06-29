@@ -43,6 +43,11 @@ class AppStateModel extends ChangeNotifier {
   String _nextQuestionPreview = '';
   String _translationResult = '';
 
+  // ── Progress tracking ────────────────────────────────────────────────────
+  int _totalExercisesDone = 0;
+  Map<String, int> _topicProgress = {};
+  DateTime? _lastActiveDate;
+
   // ── App mode ─────────────────────────────────────────────────────────────
   AppMode _appMode = AppMode.practice;
 
@@ -85,6 +90,16 @@ class AppStateModel extends ChangeNotifier {
   String get lastUserAnswer => _lastUserAnswer;
   String get nextQuestionPreview => _nextQuestionPreview;
   String get translationResult => _translationResult;
+
+  int get totalExercisesDone => _totalExercisesDone;
+  Map<String, int> get topicProgress => Map.unmodifiable(_topicProgress);
+  DateTime? get lastActiveDate => _lastActiveDate;
+  int get streakDays => _calculateStreak();
+  double get overallProgressPercent => _topicProgress.isEmpty
+      ? 0.0
+      : (_topicProgress.values.fold<int>(0, (a, b) => a + b) /
+            (_topicProgress.length * 10))
+          .clamp(0.0, 1.0);
 
   bool get isIdle => _loadingPhase == LoadingPhase.none;
   bool get isTestingKey => _loadingPhase == LoadingPhase.testingKey;
@@ -133,6 +148,7 @@ class AppStateModel extends ChangeNotifier {
     _proficiencyLevel = _prefs.getString(kPrefLevel) ?? 'B1';
     _onboardingDone = _prefs.getBool(kPrefOnboarding) ?? false;
     _loadBeginnerVocabularyFromPrefs();
+    loadProgress();
     notifyListeners();
   }
 
@@ -202,6 +218,49 @@ class AppStateModel extends ChangeNotifier {
     _targetLanguage = code;
     await _prefs.setString(kPrefTargetLang, code);
     notifyListeners();
+  }
+
+  // ─── Progress Tracking ──────────────────────────────────────────────────────
+
+  void loadProgress() {
+    _totalExercisesDone = _prefs.getInt(kPrefTotalExercises) ?? 0;
+    final raw = _prefs.getString(kPrefTopicProgress);
+    if (raw != null && raw.isNotEmpty) {
+      try {
+        final Map<String, dynamic> decoded = jsonDecode(raw) as Map<String, dynamic>;
+        _topicProgress = decoded.map((k, v) => MapEntry(k, (v as num).toInt()));
+      } catch (_) {
+        _topicProgress = {};
+      }
+    }
+    final lastActive = _prefs.getInt(kPrefLastActive);
+    if (lastActive != null) {
+      _lastActiveDate = DateTime.fromMillisecondsSinceEpoch(lastActive);
+    }
+    notifyListeners();
+  }
+
+  Future<void> _saveProgress() async {
+    await _prefs.setInt(kPrefTotalExercises, _totalExercisesDone);
+    await _prefs.setString(kPrefTopicProgress, jsonEncode(_topicProgress));
+    await _prefs.setInt(
+        kPrefLastActive, DateTime.now().millisecondsSinceEpoch);
+  }
+
+  void incrementExerciseProgress(String topic) {
+    _totalExercisesDone++;
+    _topicProgress[topic] = (_topicProgress[topic] ?? 0) + 1;
+    _lastActiveDate = DateTime.now();
+    _saveProgress();
+    notifyListeners();
+  }
+
+  int _calculateStreak() {
+    if (_lastActiveDate == null) return 0;
+    final now = DateTime.now();
+    final diff = now.difference(_lastActiveDate!).inDays;
+    if (diff == 0 || diff == 1) return 1;
+    return 0;
   }
 
   // ─── App Mode ────────────────────────────────────────────────────────────────

@@ -181,7 +181,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                       size: 18,
                       color: isSelected
                           ? kColorPrimary
-                          : kColorTextMuted,
+                          : kColorAccent.withValues(alpha: 0.6),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -194,7 +194,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                             : FontWeight.w500,
                         color: isSelected
                             ? kColorPrimary
-                            : kColorTextMuted,
+                            : kColorAccent.withValues(alpha: 0.6),
                       ),
                     ),
                   ],

@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app_state_model.dart';
 import 'constants.dart';
-import 'home_screen.dart';
+import 'app_shell.dart';
 import 'onboarding_screen.dart';
 
 Future<void> main() async {
@@ -43,7 +43,7 @@ class LearnAlwApp extends StatelessWidget {
       home: Consumer<AppStateModel>(
         builder: (context, model, _) {
           return model.isOnboardingDone
-              ? const HomeScreen()
+              ? const AppShell()
               : const OnboardingScreen();
         },
       ),

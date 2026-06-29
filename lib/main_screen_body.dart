@@ -70,7 +70,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
   Widget build(BuildContext context) {
     return Consumer<AppStateModel>(
       builder: (context, state, child) {
-        final textDirection = textDirectionForCode(state.nativeLanguage);
+        final textDirection = textDirectionForCode(state.targetLanguage);
         return Directionality(
           textDirection: textDirection,
           child: Stack(

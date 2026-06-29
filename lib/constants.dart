@@ -10,6 +10,9 @@ const String kPrefTopic         = 'selected_topic';
 const String kPrefLevel         = 'proficiency_level';
 const String kPrefOnboarding    = 'onboarding_done';
 const String kPrefBeginnerVocab = 'beginner_vocabulary';
+const String kPrefTotalExercises = 'total_exercises';
+const String kPrefTopicProgress = 'topic_progress';
+const String kPrefLastActive = 'last_active_date';
 
 // ─── YouTube tutorial ─────────────────────────────────────────────────────────
 const String kYoutubeTutorialUrl =
