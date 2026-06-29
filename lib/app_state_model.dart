@@ -1,5 +1,7 @@
 // lib/app_state_model.dart
 
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
@@ -12,6 +14,10 @@ enum LoadingPhase {
   submitting,
   translating,
 }
+
+enum AppMode { practice, ielts, beginner }
+
+enum IeltsExerciseType { fillBlanks, sentenceCompletion, writingPractice }
 
 class AppStateModel extends ChangeNotifier {
   AppStateModel(this._prefs);
@@ -37,6 +43,33 @@ class AppStateModel extends ChangeNotifier {
   String _nextQuestionPreview = '';
   String _translationResult = '';
 
+  // ── App mode ─────────────────────────────────────────────────────────────
+  AppMode _appMode = AppMode.practice;
+
+  // ── IELTS state ──────────────────────────────────────────────────────────
+  IeltsExerciseType _ieltsExerciseType = IeltsExerciseType.fillBlanks;
+  bool _ieltsLoading = false;
+  String _ieltsPassage = '';
+  String _ieltsCorrectAnswer = '';
+  List<String> _ieltsOptions = [];
+  String _ieltsExplanation = '';
+  String _ieltsUserAnswer = '';
+  String _ieltsFeedback = '';
+  double _ieltsBandScore = 0;
+  List<String> _ieltsCorrections = [];
+  Map<String, String> _ieltsVocabSuggestions = {};
+  String _ieltsSuggestedCompletion = '';
+  bool _ieltsSentenceCorrect = false;
+  String _ieltsPromptOrStart = '';
+
+  // ── Beginner mode state ──────────────────────────────────────────────────
+  bool _beginnerLoading = false;
+  String _beginnerTargetWord = '';
+  String _beginnerSentence = '';
+  List<Map<String, String>> _beginnerVocabulary = [];
+  List<BeginnerNewWord> _beginnerCurrentNewWords = [];
+  String _beginnerError = '';
+
   // ─── Getters ───────────────────────────────────────────────────────────────
   String get apiKey => _apiKey;
   String get nativeLanguage => _nativeLanguage;
@@ -61,6 +94,36 @@ class AppStateModel extends ChangeNotifier {
   bool get hasApiKey => _apiKey.trim().isNotEmpty;
   bool get hasQuestion => _currentQuestion.isNotEmpty;
 
+  // ── Mode getters ────────────────────────────────────────────────────────────
+  AppMode get appMode => _appMode;
+  IeltsExerciseType get ieltsExerciseType => _ieltsExerciseType;
+  bool get ieltsLoading => _ieltsLoading;
+  String get ieltsPassage => _ieltsPassage;
+  String get ieltsCorrectAnswer => _ieltsCorrectAnswer;
+  List<String> get ieltsOptions => List.unmodifiable(_ieltsOptions);
+  String get ieltsExplanation => _ieltsExplanation;
+  String get ieltsUserAnswer => _ieltsUserAnswer;
+  String get ieltsFeedback => _ieltsFeedback;
+  double get ieltsBandScore => _ieltsBandScore;
+  List<String> get ieltsCorrections => List.unmodifiable(_ieltsCorrections);
+  Map<String, String> get ieltsVocabSuggestions =>
+      Map.unmodifiable(_ieltsVocabSuggestions);
+  String get ieltsSuggestedCompletion => _ieltsSuggestedCompletion;
+  bool get ieltsSentenceCorrect => _ieltsSentenceCorrect;
+  String get ieltsPromptOrStart => _ieltsPromptOrStart;
+  bool get ieltsHasExercise =>
+      _ieltsPassage.isNotEmpty || _ieltsPromptOrStart.isNotEmpty;
+
+  bool get beginnerLoading => _beginnerLoading;
+  String get beginnerTargetWord => _beginnerTargetWord;
+  String get beginnerSentence => _beginnerSentence;
+  List<Map<String, String>> get beginnerVocabulary =>
+      List.unmodifiable(_beginnerVocabulary);
+  List<BeginnerNewWord> get beginnerCurrentNewWords =>
+      List.unmodifiable(_beginnerCurrentNewWords);
+  String get beginnerError => _beginnerError;
+  bool get beginnerHasSentence => _beginnerSentence.isNotEmpty;
+
   // ─── Initialization ────────────────────────────────────────────────────────
   void loadFromPrefs() {
     _apiKey = _prefs.getString(kPrefApiKey) ?? '';
@@ -69,7 +132,26 @@ class AppStateModel extends ChangeNotifier {
     _selectedTopic = _prefs.getString(kPrefTopic) ?? kTopics.first;
     _proficiencyLevel = _prefs.getString(kPrefLevel) ?? 'B1';
     _onboardingDone = _prefs.getBool(kPrefOnboarding) ?? false;
+    _loadBeginnerVocabularyFromPrefs();
     notifyListeners();
+  }
+
+  void _loadBeginnerVocabularyFromPrefs() {
+    final raw = _prefs.getString(kPrefBeginnerVocab);
+    if (raw != null && raw.isNotEmpty) {
+      try {
+        final List<dynamic> decoded = jsonDecode(raw) as List<dynamic>;
+        _beginnerVocabulary = decoded.map((e) {
+          final m = e as Map<String, dynamic>;
+          return {
+            'word': (m['word'] as String? ?? ''),
+            'meaning': (m['meaning'] as String? ?? ''),
+          };
+        }).toList();
+      } catch (_) {
+        _beginnerVocabulary = [];
+      }
+    }
   }
 
   // ─── Onboarding ────────────────────────────────────────────────────────────
@@ -122,6 +204,19 @@ class AppStateModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ─── App Mode ────────────────────────────────────────────────────────────────
+  void setAppMode(AppMode mode) {
+    if (_appMode == mode) return;
+    _appMode = mode;
+    notifyListeners();
+  }
+
+  void setIeltsExerciseType(IeltsExerciseType type) {
+    _ieltsExerciseType = type;
+    _clearIeltsSession();
+    notifyListeners();
+  }
+
   // ─── Topic selection ───────────────────────────────────────────────────────
   Future<String?> selectTopic(String topic) async {
     _selectedTopic = topic;
@@ -129,6 +224,153 @@ class AppStateModel extends ChangeNotifier {
     _clearSession();
     notifyListeners();
     return generateQuestion();
+  }
+
+  // ─── IELTS Exercise Generation ──────────────────────────────────────────────
+
+  Future<String?> generateIeltsFillBlank() async {
+    if (!hasApiKey) return 'Please configure your API key first.';
+    _ieltsLoading = true;
+    _clearIeltsSession();
+    _ieltsExerciseType = IeltsExerciseType.fillBlanks;
+    notifyListeners();
+
+    try {
+      final exercise = await _api.generateIeltsFillBlank(
+        apiKey: _apiKey,
+        targetLanguage: languageLabelFromCode(_targetLanguage),
+        nativeLanguage: languageLabelFromCode(_nativeLanguage),
+        topic: _selectedTopic,
+      );
+      _ieltsPassage = exercise.passage;
+      _ieltsCorrectAnswer = exercise.blankWord;
+      _ieltsOptions = exercise.options;
+      _ieltsExplanation = exercise.explanation;
+      _ieltsLoading = false;
+      notifyListeners();
+      return null;
+    } on GeminiServiceException catch (e) {
+      _ieltsLoading = false;
+      notifyListeners();
+      return e.message;
+    }
+  }
+
+  Future<String?> generateIeltsSentenceStart() async {
+    if (!hasApiKey) return 'Please configure your API key first.';
+    _ieltsLoading = true;
+    _clearIeltsSession();
+    _ieltsExerciseType = IeltsExerciseType.sentenceCompletion;
+    notifyListeners();
+
+    try {
+      final sentenceStart = await _api.generateIeltsSentenceStart(
+        apiKey: _apiKey,
+        targetLanguage: languageLabelFromCode(_targetLanguage),
+        nativeLanguage: languageLabelFromCode(_nativeLanguage),
+        topic: _selectedTopic,
+      );
+      _ieltsPromptOrStart = sentenceStart;
+      _ieltsLoading = false;
+      notifyListeners();
+      return null;
+    } on GeminiServiceException catch (e) {
+      _ieltsLoading = false;
+      notifyListeners();
+      return e.message;
+    }
+  }
+
+  Future<String?> generateIeltsWritingPrompt() async {
+    if (!hasApiKey) return 'Please configure your API key first.';
+    _ieltsLoading = true;
+    _clearIeltsSession();
+    _ieltsExerciseType = IeltsExerciseType.writingPractice;
+    notifyListeners();
+
+    try {
+      final prompt = await _api.generateIeltsWritingPrompt(
+        apiKey: _apiKey,
+        targetLanguage: languageLabelFromCode(_targetLanguage),
+        nativeLanguage: languageLabelFromCode(_nativeLanguage),
+        topic: _selectedTopic,
+      );
+      _ieltsPromptOrStart = prompt;
+      _ieltsLoading = false;
+      notifyListeners();
+      return null;
+    } on GeminiServiceException catch (e) {
+      _ieltsLoading = false;
+      notifyListeners();
+      return e.message;
+    }
+  }
+
+  // ─── IELTS Submission ────────────────────────────────────────────────────────
+
+  Future<String?> submitIeltsFillBlank(String answer) async {
+    if (!hasApiKey) return 'Please configure your API key first.';
+    _ieltsUserAnswer = answer;
+    _ieltsFeedback = answer == _ieltsCorrectAnswer
+        ? '✓ Correct!'
+        : '✗ Incorrect. The correct answer is: $_ieltsCorrectAnswer';
+    notifyListeners();
+    return null;
+  }
+
+  Future<String?> submitIeltsSentenceCompletion(String completion) async {
+    if (!hasApiKey) return 'Please configure your API key first.';
+    _ieltsLoading = true;
+    _ieltsUserAnswer = completion;
+    notifyListeners();
+
+    try {
+      final eval = await _api.evaluateIeltsSentenceCompletion(
+        apiKey: _apiKey,
+        targetLanguage: languageLabelFromCode(_targetLanguage),
+        nativeLanguage: languageLabelFromCode(_nativeLanguage),
+        sentenceStart: _ieltsPromptOrStart,
+        userCompletion: completion,
+      );
+      _ieltsFeedback = eval.feedback;
+      _ieltsSentenceCorrect = eval.isCorrect;
+      _ieltsSuggestedCompletion = eval.suggestedCompletion;
+      _ieltsLoading = false;
+      notifyListeners();
+      return null;
+    } on GeminiServiceException catch (e) {
+      _ieltsLoading = false;
+      notifyListeners();
+      return e.message;
+    }
+  }
+
+  Future<String?> submitIeltsWriting(String answer) async {
+    if (!hasApiKey) return 'Please configure your API key first.';
+    _ieltsLoading = true;
+    _ieltsUserAnswer = answer;
+    notifyListeners();
+
+    try {
+      final eval = await _api.evaluateIeltsWriting(
+        apiKey: _apiKey,
+        targetLanguage: languageLabelFromCode(_targetLanguage),
+        nativeLanguage: languageLabelFromCode(_nativeLanguage),
+        prompt: _ieltsPromptOrStart,
+        userAnswer: answer,
+      );
+      _ieltsFeedback = eval.feedback;
+      _ieltsBandScore = eval.bandScore;
+      _ieltsCorrections = eval.corrections;
+      _ieltsVocabSuggestions = eval.vocabularySuggestions;
+      _ieltsLoading = false;
+      notifyListeners();
+      return null;
+    } on GeminiServiceException catch (e) {
+      _ieltsLoading = false;
+      notifyListeners();
+      return e.message;
+    }
   }
 
   // ─── Question generation ───────────────────────────────────────────────────
@@ -223,6 +465,124 @@ class AppStateModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ─── Beginner Mode ──────────────────────────────────────────────────────────
+
+  void loadBeginnerVocabulary() {
+    _loadBeginnerVocabularyFromPrefs();
+    notifyListeners();
+  }
+
+  Future<void> _saveBeginnerVocabulary() async {
+    final encoded = jsonEncode(_beginnerVocabulary);
+    await _prefs.setString(kPrefBeginnerVocab, encoded);
+  }
+
+  Future<String?> generateBeginnerSentence() async {
+    if (!hasApiKey) return 'Please configure your API key first.';
+    _beginnerLoading = true;
+    _clearBeginnerSession();
+    notifyListeners();
+
+    try {
+      // Determine target word: if no vocab, pick a common first word
+      String targetWord;
+      if (_beginnerVocabulary.isEmpty) {
+        targetWord = _targetLanguage == 'en'
+            ? 'eat'
+            : _simpleFirstWord(_targetLanguage);
+      } else {
+        // Pick a word from the known list to reinforce, or introduce new
+        targetWord = _pickNextBeginnerWord();
+      }
+
+      final knownWords =
+          _beginnerVocabulary.map((e) => e['word'] ?? '').toList();
+
+      final result = await _api.generateBeginnerSentence(
+        apiKey: _apiKey,
+        targetLanguage: languageLabelFromCode(_targetLanguage),
+        nativeLanguage: languageLabelFromCode(_nativeLanguage),
+        targetWord: targetWord,
+        knownWords: knownWords,
+      );
+
+      _beginnerTargetWord = result.targetWord;
+      _beginnerSentence = result.sentence;
+      _beginnerCurrentNewWords = result.newWords;
+
+      // Auto-discover words that were already in vocab (no need to show)
+      // Only new words that aren't already known will be discoverable
+      _beginnerLoading = false;
+      notifyListeners();
+      return null;
+    } on GeminiServiceException catch (e) {
+      _beginnerLoading = false;
+      _beginnerError = e.message;
+      notifyListeners();
+      return e.message;
+    }
+  }
+
+  Future<String?> discoverBeginnerWord(String word) async {
+    if (!hasApiKey) return 'Please configure your API key first.';
+
+    // Check if already known
+    final alreadyKnown =
+        _beginnerVocabulary.any((e) => e['word'] == word);
+    if (alreadyKnown) return null;
+
+    try {
+      final meaning = await _api.getWordMeaning(
+        apiKey: _apiKey,
+        word: word,
+        targetLanguage: languageLabelFromCode(_targetLanguage),
+        nativeLanguage: languageLabelFromCode(_nativeLanguage),
+      );
+
+      _beginnerVocabulary.add({
+        'word': meaning.word,
+        'meaning': meaning.meaning,
+      });
+      await _saveBeginnerVocabulary();
+      notifyListeners();
+      return null;
+    } on GeminiServiceException catch (e) {
+      return e.message;
+    }
+  }
+
+  void setBeginnerTargetWord(String word) {
+    _beginnerTargetWord = word;
+    _beginnerSentence = '';
+    _beginnerCurrentNewWords = [];
+    notifyListeners();
+  }
+
+  String _simpleFirstWord(String lang) {
+    // Return basic words in common languages
+    const firstWords = {
+      'en': 'eat',
+      'es': 'comer',
+      'fr': 'manger',
+      'de': 'essen',
+      'it': 'mangiare',
+      'pt': 'comer',
+      'tr': 'yemek',
+      'ar': 'أكل',
+      'zh': '吃',
+      'ja': '食べる',
+    };
+    return firstWords[lang] ?? 'eat';
+  }
+
+  String _pickNextBeginnerWord() {
+    // Cycle through known vocabulary to pick one for reinforcement
+    if (_beginnerVocabulary.isEmpty) return _simpleFirstWord(_targetLanguage);
+    // Pick a random known word, or if all are well-known, just pick the first
+    final index = DateTime.now().millisecondsSinceEpoch % _beginnerVocabulary.length;
+    return _beginnerVocabulary[index]['word'] ?? _simpleFirstWord(_targetLanguage);
+  }
+
   // ─── Background preview generation ────────────────────────────────────────
   Future<void> _generateNextQuestionPreview() async {
     try {
@@ -276,5 +636,27 @@ class AppStateModel extends ChangeNotifier {
     _errorMessage = '';
     _nextQuestionPreview = '';
     _translationResult = '';
+  }
+
+  void _clearIeltsSession() {
+    _ieltsPassage = '';
+    _ieltsCorrectAnswer = '';
+    _ieltsOptions = [];
+    _ieltsExplanation = '';
+    _ieltsUserAnswer = '';
+    _ieltsFeedback = '';
+    _ieltsBandScore = 0;
+    _ieltsCorrections = [];
+    _ieltsVocabSuggestions = {};
+    _ieltsSuggestedCompletion = '';
+    _ieltsSentenceCorrect = false;
+    _ieltsPromptOrStart = '';
+  }
+
+  void _clearBeginnerSession() {
+    _beginnerTargetWord = '';
+    _beginnerSentence = '';
+    _beginnerCurrentNewWords = [];
+    _beginnerError = '';
   }
 }

@@ -9,6 +9,7 @@ const String kPrefTargetLang    = 'target_language';
 const String kPrefTopic         = 'selected_topic';
 const String kPrefLevel         = 'proficiency_level';
 const String kPrefOnboarding    = 'onboarding_done';
+const String kPrefBeginnerVocab = 'beginner_vocabulary';
 
 // ─── YouTube tutorial ─────────────────────────────────────────────────────────
 const String kYoutubeTutorialUrl =
@@ -406,6 +407,225 @@ Return ONLY valid JSON:
 
 The level MUST be one of: A1, A2, B1, B2, C1, C2.
 Return ONLY valid JSON.''';
+}
+
+// ─── IELTS Prompt Templates ────────────────────────────────────────────────────
+
+String buildIeltsFillBlankPrompt({
+  required String targetLanguage,
+  required String nativeLanguage,
+  required String topic,
+}) {
+  return '''You are an IELTS exam preparation tutor for $targetLanguage learners who speak $nativeLanguage.
+
+## Task
+Generate an IELTS-style fill-in-the-blank exercise about "$topic".
+Create a paragraph (2-4 sentences) with exactly ONE missing word marked as "______".
+The missing word should test vocabulary appropriate for IELTS.
+
+Return ONLY valid JSON:
+{
+  "passage": "The full passage with ______ in place of the missing word.",
+  "blankWord": "the correct missing word",
+  "options": ["correct answer", "distractor1", "distractor2", "distractor3"],
+  "explanation": "Brief explanation in $nativeLanguage of why this word is correct."
+}
+
+Rules:
+- The blank word should be an IELTS-level vocabulary word
+- Options must include exactly 4 choices (1 correct + 3 plausible distractors)
+- The passage must be in $targetLanguage
+- The explanation must be in $nativeLanguage
+- Return ONLY valid JSON. No text before or after.''';
+}
+
+String buildIeltsSentenceCompletionPrompt({
+  required String targetLanguage,
+  required String nativeLanguage,
+  required String topic,
+}) {
+  return '''You are an IELTS exam preparation tutor for $targetLanguage learners who speak $nativeLanguage.
+
+## Task
+Generate an IELTS-style sentence completion exercise about "$topic".
+Provide the FIRST HALF of a sentence in $targetLanguage (a sentence stem).
+The student must complete the rest.
+
+Rules:
+- The sentence stem should be 5-12 words in $targetLanguage
+- It should clearly set up a context that can be completed in multiple valid ways
+- Suitable for IELTS level vocabulary and grammar
+- Do NOT include any punctuation at the end of the stem (no period, no question mark)
+
+Reply with ONLY the sentence stem text — no explanation, no numbering, no quotation marks.''';
+}
+
+String buildIeltsWritingPrompt({
+  required String targetLanguage,
+  required String nativeLanguage,
+  required String topic,
+}) {
+  return '''You are an IELTS Writing Task examiner for $targetLanguage.
+
+## Task
+Generate an IELTS-style writing prompt about "$topic".
+The prompt should resemble either IELTS Writing Task 1 (describing a situation) or Task 2 (essay).
+
+Rules:
+- Use standard IELTS prompt language (e.g., "Some people believe that...", "Discuss both views...", "To what extent do you agree?")
+- The prompt should be in $targetLanguage
+- It should be suitable for an IELTS academic or general training candidate
+- Length: 2-4 sentences
+
+Reply with ONLY the writing prompt text — no explanation, no numbering, no quotation marks.''';
+}
+
+String buildIeltsWritingEvaluationPrompt({
+  required String targetLanguage,
+  required String nativeLanguage,
+  required String prompt,
+  required String userAnswer,
+}) {
+  return '''You are an IELTS Writing Task examiner for $targetLanguage.
+
+## Task
+Evaluate the following IELTS writing submission.
+
+## Writing Prompt (in $targetLanguage):
+"$prompt"
+
+## Student's Response (in $targetLanguage):
+"$userAnswer"
+
+Evaluate based on the official IELTS Writing band descriptors:
+1. Task Achievement
+2. Coherence and Cohesion
+3. Lexical Resource (Vocabulary)
+4. Grammatical Range and Accuracy
+
+Return ONLY valid JSON:
+{
+  "feedback": "Detailed feedback in $nativeLanguage. Include strengths and areas for improvement.",
+  "bandScore": 6.5,
+  "corrections": [
+    "Specific grammar/vocabulary correction 1",
+    "Specific grammar/vocabulary correction 2"
+  ],
+  "vocabularySuggestions": {
+    "basic_word_1": "suggested_improvement_1",
+    "basic_word_2": "suggested_improvement_2"
+  }
+}
+
+Rules:
+- bandScore must be a number between 1.0 and 9.0 (in 0.5 increments)
+- feedback must be in $nativeLanguage
+- corrections: list of 2-4 specific corrections
+- vocabularySuggestions: map of 2-4 basic words to better IELTS-level alternatives
+- Return ONLY valid JSON. No text before or after.''';
+}
+
+String buildIeltsSentenceEvalPrompt({
+  required String targetLanguage,
+  required String nativeLanguage,
+  required String sentenceStart,
+  required String userCompletion,
+}) {
+  return '''You are an IELTS exam preparation tutor for $targetLanguage.
+
+## Task
+Evaluate a sentence completion exercise.
+
+## Sentence Start (in $targetLanguage):
+"$sentenceStart"
+
+## Student's Completion (in $targetLanguage):
+"$userCompletion"
+
+Assess the completion for:
+1. Grammatical correctness
+2. Whether it logically follows from the sentence start
+3. Vocabulary appropriateness for IELTS
+
+Return ONLY valid JSON:
+{
+  "feedback": "Brief evaluation in $nativeLanguage. Point out any errors and suggest improvements.",
+  "isCorrect": true,
+  "suggestedCompletion": "A model completion in $targetLanguage"
+}
+
+Rules:
+- isCorrect: true if the completion is grammatically valid and contextually appropriate
+- suggestedCompletion: a well-written example completion in $targetLanguage
+- Return ONLY valid JSON. No text before or after.''';
+}
+
+// ─── Beginner Mode Prompt Templates ────────────────────────────────────────────
+
+String buildBeginnerSentencePrompt({
+  required String targetLanguage,
+  required String nativeLanguage,
+  required String targetWord,
+  required List<String> knownWords,
+}) {
+  final knownList = knownWords.isEmpty
+      ? 'None yet — this is the very first word.'
+      : knownWords.join(', ');
+
+  return '''You are a patient beginner language teacher for $targetLanguage learners who speak $nativeLanguage.
+
+## Target Word
+Introduce the word: "$targetWord"
+
+## Known Vocabulary the Student Already Knows
+$knownList
+
+## Task
+Generate ONE very simple sentence in $targetLanguage that:
+1. Uses the target word "$targetWord"
+2. Uses ONLY words from the known vocabulary list (if any exist) PLUS the target word
+3. If no known vocabulary exists yet, use ONLY the target word plus the most basic common words (I, you, is, the, a, an, have, like, etc.)
+4. The sentence must be extremely simple — maximum 7 words
+5. Each word in the sentence must be a real word in $targetLanguage
+
+Return ONLY valid JSON:
+{
+  "targetWord": "$targetWord",
+  "sentence": "The generated simple sentence in $targetLanguage",
+  "newWords": [
+    {"word": "new_word_1", "meaning": "Simple definition in $nativeLanguage"},
+    {"word": "new_word_2", "meaning": "Simple definition in $nativeLanguage"}
+  ]
+}
+
+Rules:
+- newWords list should contain exactly the words in the sentence that are NOT in the known vocabulary and NOT the target word
+- If all words except the target word are known, newWords should be an empty list
+- Definitions must be very simple, suitable for absolute beginners in $nativeLanguage
+- Return ONLY valid JSON. No text before or after.''';
+}
+
+String buildWordMeaningPrompt({
+  required String word,
+  required String targetLanguage,
+  required String nativeLanguage,
+}) {
+  return '''You are a beginner language teacher.
+
+## Task
+Give a very simple explanation of the $targetLanguage word "$word" for an absolute beginner who speaks $nativeLanguage.
+
+Return ONLY valid JSON:
+{
+  "word": "$word",
+  "meaning": "Very simple definition or translation in $nativeLanguage (1-5 words)",
+  "exampleSentence": "A very simple example sentence in $targetLanguage using this word"
+}
+
+Rules:
+- Keep the definition/meaning extremely simple — suitable for someone with zero knowledge
+- The example sentence should be 3-6 words in $targetLanguage
+- Return ONLY valid JSON. No text before or after.''';
 }
 
 // ─── RTL helper ───────────────────────────────────────────────────────────────

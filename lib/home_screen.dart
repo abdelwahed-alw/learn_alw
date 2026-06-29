@@ -9,8 +9,10 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'app_state_model.dart';
+import 'beginner_screen.dart';
 import 'constants.dart';
 import 'drawer_widget.dart';
+import 'ielts_screen.dart';
 import 'main_screen_body.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -37,7 +39,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Stack(
         children: [
-          const MainScreenBody(),
+          // Body switches based on selected mode
+          if (model.appMode == AppMode.ielts)
+            const IeltsScreen()
+          else if (model.appMode == AppMode.beginner)
+            const BeginnerScreen()
+          else
+            const MainScreenBody(),
 
           // Custom Floating AppBar (Glassmorphism)
           Positioned(
@@ -54,31 +62,40 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 8),
-                      child: Row(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          // Menu button with app icon
-                          _AnimatedIconButton(
-                            icon: Icons.menu_rounded,
-                            onTap: () =>
-                                _scaffoldKey.currentState?.openDrawer(),
+                          Row(
+                            children: [
+                              _AnimatedIconButton(
+                                icon: Icons.menu_rounded,
+                                onTap: () =>
+                                    _scaffoldKey.currentState?.openDrawer(),
+                              ),
+                              const SizedBox(width: 12),
+                              // App title
+                              Text(
+                                'Salearn',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 1,
+                                    ),
+                              ),
+                              const SizedBox(width: 10),
+                              // Level badge
+                              if (model.appMode == AppMode.practice)
+                                _LevelBadge(
+                                    level: model.proficiencyLevel),
+                              const Spacer(),
+                              _buildRefreshButton(model, context),
+                            ],
                           ),
-                          const SizedBox(width: 12),
-                          // App title
-                          Text(
-                            'Salearn',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1,
-                                ),
-                          ),
-                          const SizedBox(width: 10),
-                          // Level badge
-                          _LevelBadge(level: model.proficiencyLevel),
-                          const Spacer(),
-                          _buildRefreshButton(model, context),
+                          const SizedBox(height: 10),
+                          // Mode selector
+                          _buildModeSelector(model),
                         ],
                       ),
                     ),
@@ -112,6 +129,66 @@ class _HomeScreenState extends State<HomeScreen> {
       icon: Icons.refresh_rounded,
       color: kColorAccent,
       onTap: model.isIdle ? () => _refreshQuestion(context, model) : null,
+    );
+  }
+
+  Widget _buildModeSelector(AppStateModel model) {
+    final modes = [
+      (mode: AppMode.practice, icon: Icons.chat_rounded, label: 'Practice'),
+      (mode: AppMode.ielts, icon: Icons.assignment_rounded, label: 'IELTS'),
+      (mode: AppMode.beginner, icon: Icons.auto_stories_rounded, label: 'Beginner'),
+    ];
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: kColorSurface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+      ),
+      child: Row(
+        children: modes.map((m) {
+          final isSelected = model.appMode == m.mode;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                model.setAppMode(m.mode);
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(vertical: 7),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? kColorPrimary.withValues(alpha: 0.15)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      m.icon,
+                      size: 13,
+                      color: isSelected ? kColorPrimary : kColorTextMuted,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      m.label,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight:
+                            isSelected ? FontWeight.w700 : FontWeight.w500,
+                        color:
+                            isSelected ? kColorPrimary : kColorTextMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 

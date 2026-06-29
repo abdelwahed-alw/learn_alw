@@ -19,8 +19,11 @@ dependencies:
   # Robust state management via ChangeNotifier
   provider: ^6.1.2
 
-  # Persistent local storage for API key, languages, topic
+  # Persistent local storage for languages, topic, level
   shared_preferences: ^2.3.3
+
+  # Secure storage for API key
+  flutter_secure_storage: ^9.2.4
 
   # Open YouTube link in browser
   url_launcher: ^6.3.1
