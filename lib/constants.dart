@@ -14,6 +14,7 @@ const String kPrefTotalExercises = 'total_exercises';
 const String kPrefTopicProgress = 'topic_progress';
 const String kPrefLastActive = 'last_active_date';
 const String kPrefStreak = 'streak';
+const String kPrefLastMode = 'last_mode';
 
 // ─── YouTube tutorial ─────────────────────────────────────────────────────────
 const String kYoutubeTutorialUrl =
@@ -630,6 +631,139 @@ Return ONLY valid JSON:
 Rules:
 - Keep the definition/meaning extremely simple — suitable for someone with zero knowledge
 - The example sentence should be 3-6 words in $targetLanguage
+- Return ONLY valid JSON. No text before or after.''';
+}
+
+// ─── Category Exercise Prompt Templates ─────────────────────────────────────────
+
+String buildWritingPrompt({
+  required String targetLanguage,
+  required String nativeLanguage,
+}) {
+  final topics = [
+    'a memorable journey',
+    'an unexpected discovery',
+    'a day in a different city',
+    'meeting someone inspiring',
+    'learning something new',
+    'a difficult decision',
+    'a celebration or festival',
+    'a childhood memory',
+  ];
+  final topic = (topics..shuffle()).first;
+  return '''You are a creative writing tutor for $targetLanguage learners who speak $nativeLanguage.
+
+## Task
+Give the student ONE random creative writing topic to write a short story about.
+
+Topic: Write about $topic in $targetLanguage.
+
+Return ONLY valid JSON:
+{
+  "topic": "Write about $topic",
+  "instructions": "Write a short story (3-5 paragraphs) in $targetLanguage about this topic. Focus on using descriptive language and proper sentence structure."
+}
+
+Rules:
+- The topic should be engaging and culturally neutral
+- Return ONLY valid JSON. No text before or after.''';
+}
+
+String buildWritingFeedbackPrompt({
+  required String targetLanguage,
+  required String nativeLanguage,
+  required String topic,
+  required String story,
+}) {
+  return '''You are a creative writing tutor for $targetLanguage learners who speak $nativeLanguage.
+
+## Topic
+$topic
+
+## Student's Story
+$story
+
+## Task
+Evaluate the student's story and provide constructive feedback.
+
+Return ONLY valid JSON:
+{
+  "feedback": "Detailed feedback on grammar, vocabulary, and overall quality in $nativeLanguage",
+  "suggestions": ["suggestion 1 in $nativeLanguage", "suggestion 2 in $nativeLanguage", "suggestion 3 in $nativeLanguage"],
+  "correctedVersion": "A corrected version of key sentences in $targetLanguage"
+}
+
+Rules:
+- Be encouraging and constructive
+- Focus on 2-3 specific areas for improvement
+- Provide specific examples from their story
+- Return ONLY valid JSON. No text before or after.''';
+}
+
+String buildGrammarPrompt({
+  required String targetLanguage,
+  required String nativeLanguage,
+}) {
+  return '''You are a grammar tutor for $targetLanguage learners who speak $nativeLanguage.
+
+## Task
+Generate a grammar exercise in $targetLanguage. Choose ONE of the following types randomly:
+
+Type A — Error Correction: Write a short sentence in $targetLanguage that contains ONE grammatical error. The student must identify and fix it.
+
+Type B — Fill in the Blank: Write a sentence in $targetLanguage with ONE word replaced by a blank "___". Provide 4 options where only one is grammatically correct.
+
+Return ONLY valid JSON:
+{
+  "type": "error_correction" or "fill_blank",
+  "sentence": "The sentence with the error or blank",
+  "correctAnswer": "The correct word or corrected sentence",
+  "options": ["option1", "option2", "option3", "option4"],
+  "explanation": "Brief grammar rule explanation in $nativeLanguage"
+}
+
+Rules:
+- The error should test a common grammar point (tenses, prepositions, articles, word order, agreement)
+- If type is "error_correction", options can be null or empty
+- If type is "fill_blank", provide exactly 4 options with one correct
+- The explanation should teach the rule, not just state the answer
+- Return ONLY valid JSON. No text before or after.''';
+}
+
+String buildGrammarFeedbackPrompt({
+  required String targetLanguage,
+  required String nativeLanguage,
+  required String sentence,
+  required String correctAnswer,
+  required String userAnswer,
+  required String explanation,
+}) {
+  return '''You are a grammar tutor for $targetLanguage learners who speak $nativeLanguage.
+
+## Original Exercise
+$sentence
+
+## Correct Answer
+$correctAnswer
+
+## Student's Answer
+$userAnswer
+
+## Explanation
+$explanation
+
+## Task
+Evaluate whether the student's answer is correct and provide feedback.
+
+Return ONLY valid JSON:
+{
+  "isCorrect": true or false,
+  "feedback": "Targeted feedback explaining why the answer is correct or incorrect in $nativeLanguage"
+}
+
+Rules:
+- Be encouraging even when the answer is wrong
+- Explain the grammar rule clearly
 - Return ONLY valid JSON. No text before or after.''';
 }
 

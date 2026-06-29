@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'app_state_model.dart';
 import 'constants.dart';
 import 'gemini_api_service.dart';
-import 'home_screen.dart';
+import 'app_shell.dart';
 import 'ui_strings.dart';
 
 class ProficiencyTestScreen extends StatefulWidget {
@@ -37,7 +37,8 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _generateNextQuestion());
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _generateNextQuestion());
   }
 
   Future<void> _generateNextQuestion() async {
@@ -135,7 +136,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
   void _navigateToHome() {
     Navigator.of(context).pushAndRemoveUntil(
       PageRouteBuilder(
-        pageBuilder: (_, __, ___) => const HomeScreen(),
+        pageBuilder: (_, __, ___) => const AppShell(),
         transitionDuration: const Duration(milliseconds: 500),
         transitionsBuilder: (_, anim, __, child) => FadeTransition(
           opacity: CurvedAnimation(parent: anim, curve: kPremiumCurve),
@@ -217,8 +218,8 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
               // Difficulty badge
               if (_currentMcq != null)
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: kColorPrimary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(6),
@@ -343,8 +344,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.error_outline_rounded,
-              color: kColorError, size: 48),
+          const Icon(Icons.error_outline_rounded, color: kColorError, size: 48),
           const SizedBox(height: 16),
           Text(
             _errorMessage!,
@@ -401,8 +401,8 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: kColorPrimary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
@@ -458,9 +458,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
               gradient: hasSelected ? kPrimaryGradient : null,
               color: hasSelected ? null : kColorSurface,
               borderRadius: BorderRadius.circular(14),
-              border: hasSelected
-                  ? null
-                  : Border.all(color: kColorBorder),
+              border: hasSelected ? null : Border.all(color: kColorBorder),
               boxShadow: hasSelected
                   ? [
                       BoxShadow(
@@ -529,8 +527,8 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
               const SizedBox(height: 8),
               // Level badge
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 decoration: BoxDecoration(
                   gradient: kPrimaryGradient,
                   borderRadius: BorderRadius.circular(16),
@@ -641,9 +639,8 @@ class _McqOptionTile extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected
-              ? kColorPrimary.withValues(alpha: 0.1)
-              : kColorSurface,
+          color:
+              isSelected ? kColorPrimary.withValues(alpha: 0.1) : kColorSurface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: isSelected
@@ -671,9 +668,7 @@ class _McqOptionTile extends StatelessWidget {
                 gradient: isSelected ? kPrimaryGradient : null,
                 color: isSelected ? null : kColorBackground,
                 shape: BoxShape.circle,
-                border: isSelected
-                    ? null
-                    : Border.all(color: kColorBorder),
+                border: isSelected ? null : Border.all(color: kColorBorder),
               ),
               child: Center(
                 child: Text(

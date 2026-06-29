@@ -204,6 +204,7 @@ class HomeTab extends StatelessWidget {
   }
 
   Widget _buildRecentCard(AppStateModel state) {
+    final modeLabel = _labelForMode(state.lastAccessedMode);
     if (!state.hasApiKey ||
         !state.ieltsHasExercise &&
             !state.hasQuestion &&
@@ -211,6 +212,7 @@ class HomeTab extends StatelessWidget {
       return GestureDetector(
         onTap: () {
           HapticFeedback.mediumImpact();
+          state.setAppMode(state.lastAccessedMode);
           onNavigateExercises?.call();
         },
         child: Container(
@@ -242,7 +244,7 @@ class HomeTab extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Pick a category or head to Exercises',
+                      modeLabel,
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.8),
                         fontSize: 12,
@@ -269,14 +271,10 @@ class HomeTab extends StatelessWidget {
       );
     }
 
-    String label = state.ieltsHasExercise
-        ? 'IELTS Exercise'
-        : state.beginnerHasSentence
-            ? 'Vocabulary Learning'
-            : 'Practice Session';
     return GestureDetector(
       onTap: () {
         HapticFeedback.mediumImpact();
+        state.setAppMode(state.lastAccessedMode);
         onNavigateExercises?.call();
       },
       child: Container(
@@ -308,7 +306,7 @@ class HomeTab extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    label,
+                    modeLabel,
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.8),
                       fontSize: 12,
@@ -335,11 +333,17 @@ class HomeTab extends StatelessWidget {
     );
   }
 
-  void _onCategoryTap(AppStateModel state, String topic) async {
-    HapticFeedback.mediumImpact();
-    await state.selectTopic(topic);
-    state.setAppMode(AppMode.practice);
-    onNavigateExercises?.call();
+  String _labelForMode(AppMode mode) {
+    switch (mode) {
+      case AppMode.ielts:
+        return 'IELTS Exam Prep';
+      case AppMode.beginner:
+        return 'Vocabulary Practice';
+      case AppMode.categories:
+        return 'Skill Exercises';
+      case AppMode.practice:
+        return 'Practice Session';
+    }
   }
 
   Widget _buildCategoryGrid(AppStateModel state) {
@@ -365,13 +369,10 @@ class HomeTab extends StatelessWidget {
       itemBuilder: (context, index) {
         final cat = categories[index];
         final progress = (state.topicProgress[cat.$3] ?? 0) / 10.0;
-        return GestureDetector(
-          onTap: () => _onCategoryTap(state, cat.$3),
-          child: _CategoryCard(
-            icon: cat.$2,
-            label: cat.$1,
-            progress: progress.clamp(0.0, 1.0),
-          ),
+        return _CategoryCard(
+          icon: cat.$2,
+          label: cat.$1,
+          progress: progress.clamp(0.0, 1.0),
         );
       },
     );

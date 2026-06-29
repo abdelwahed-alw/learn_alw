@@ -17,7 +17,7 @@ enum LoadingPhase {
   translating,
 }
 
-enum AppMode { practice, ielts, beginner }
+enum AppMode { practice, ielts, beginner, categories }
 
 enum IeltsExerciseType { fillBlanks, sentenceCompletion, writingPractice }
 
@@ -54,6 +54,9 @@ class AppStateModel extends ChangeNotifier {
 
   // ── App mode ─────────────────────────────────────────────────────────────
   AppMode _appMode = AppMode.practice;
+
+  // ── Last accessed mode (for Continue Learning routing) ───────────────────
+  AppMode _lastAccessedMode = AppMode.practice;
 
   // ── IELTS state ──────────────────────────────────────────────────────────
   IeltsExerciseType _ieltsExerciseType = IeltsExerciseType.fillBlanks;
@@ -94,6 +97,8 @@ class AppStateModel extends ChangeNotifier {
   String get lastUserAnswer => _lastUserAnswer;
   String get nextQuestionPreview => _nextQuestionPreview;
   String get translationResult => _translationResult;
+
+  AppMode get lastAccessedMode => _lastAccessedMode;
 
   int get totalExercisesDone => _totalExercisesDone;
   Map<String, int> get topicProgress => Map.unmodifiable(_topicProgress);
@@ -253,6 +258,12 @@ class AppStateModel extends ChangeNotifier {
       _lastActiveDate = DateTime.fromMillisecondsSinceEpoch(lastActive);
     }
     _streakCount = _prefs.getInt(kPrefStreak) ?? 0;
+    final savedMode = _prefs.getInt(kPrefLastMode);
+    if (savedMode != null &&
+        savedMode >= 0 &&
+        savedMode < AppMode.values.length) {
+      _lastAccessedMode = AppMode.values[savedMode];
+    }
     notifyListeners();
   }
 
@@ -261,6 +272,7 @@ class AppStateModel extends ChangeNotifier {
     await _prefs.setString(kPrefTopicProgress, jsonEncode(_topicProgress));
     await _prefs.setInt(kPrefLastActive, DateTime.now().millisecondsSinceEpoch);
     await _prefs.setInt(kPrefStreak, _streakCount);
+    await _prefs.setInt(kPrefLastMode, _lastAccessedMode.index);
   }
 
   void incrementExerciseProgress(String topic) {
@@ -281,6 +293,7 @@ class AppStateModel extends ChangeNotifier {
       _streakCount = 1;
     }
     _lastActiveDate = now;
+    _lastAccessedMode = _appMode;
 
     _saveProgress();
     notifyListeners();
@@ -297,6 +310,8 @@ class AppStateModel extends ChangeNotifier {
   void setAppMode(AppMode mode) {
     if (_appMode == mode) return;
     _appMode = mode;
+    _lastAccessedMode = mode;
+    _prefs.setInt(kPrefLastMode, mode.index);
     notifyListeners();
   }
 

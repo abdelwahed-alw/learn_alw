@@ -8,7 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'app_state_model.dart';
 import 'constants.dart';
-import 'home_screen.dart';
+import 'app_shell.dart';
 import 'proficiency_test_screen.dart';
 import 'ui_strings.dart';
 
@@ -47,7 +47,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       _apiKeyCtrl.text = model.apiKey;
       _keyValidated = true;
     }
-    
+
     // Check if the user previously selected a language (heuristic: onboarding done or some other flag,
     // actually they select language first time, so we just force them to select unless already selected somehow)
     // To make it simple, we require language selection every first run.
@@ -75,7 +75,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         _keyValidated = result.success;
         // The message returned by the service might not be localized easily without rewriting the service,
         // so we can fallback to the english/service returned ones or try to map them.
-        _keyMessage = result.success ? t('apiKeyVerified', model.nativeLanguage) : result.message;
+        _keyMessage = result.success
+            ? t('apiKeyVerified', model.nativeLanguage)
+            : result.message;
       });
     }
   }
@@ -83,7 +85,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   void _navigateToHome() {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (_, __, ___) => const HomeScreen(),
+        pageBuilder: (_, __, ___) => const AppShell(),
         transitionDuration: const Duration(milliseconds: 500),
         transitionsBuilder: (_, anim, __, child) => FadeTransition(
           opacity: CurvedAnimation(parent: anim, curve: kPremiumCurve),
@@ -132,7 +134,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   @override
   Widget build(BuildContext context) {
     final lang = context.watch<AppStateModel>().nativeLanguage;
-    
+
     return Scaffold(
       backgroundColor: kColorBackground,
       body: FadeTransition(
@@ -190,7 +192,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           const SizedBox(height: 32),
                           // ── Step 1: API Key ──
                           AnimatedOpacity(
-                            opacity: (_nativeSelected && _targetSelected) ? 1.0 : 0.3,
+                            opacity: (_nativeSelected && _targetSelected)
+                                ? 1.0
+                                : 0.3,
                             duration: const Duration(milliseconds: 400),
                             child: IgnorePointer(
                               ignoring: !(_nativeSelected && _targetSelected),
@@ -200,10 +204,16 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           const SizedBox(height: 32),
                           // ── Step 2: Level selection (only after API key validated) ──
                           AnimatedOpacity(
-                            opacity: (_nativeSelected && _targetSelected && _keyValidated) ? 1.0 : 0.3,
+                            opacity: (_nativeSelected &&
+                                    _targetSelected &&
+                                    _keyValidated)
+                                ? 1.0
+                                : 0.3,
                             duration: const Duration(milliseconds: 400),
                             child: IgnorePointer(
-                              ignoring: !(_nativeSelected && _targetSelected && _keyValidated),
+                              ignoring: !(_nativeSelected &&
+                                  _targetSelected &&
+                                  _keyValidated),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -254,8 +264,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             child: Image.asset(
               'assets/icon/icon.png',
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) =>
-                  const Icon(Icons.school_rounded, color: Colors.white, size: 30),
+              errorBuilder: (_, __, ___) => const Icon(Icons.school_rounded,
+                  color: Colors.white, size: 30),
             ),
           ),
         ),
@@ -348,8 +358,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               ),
               if (bothSelected)
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: Colors.green.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
@@ -481,7 +491,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 icon: const Icon(Icons.arrow_drop_down, color: kColorTextMuted),
                 style: const TextStyle(color: kColorText, fontSize: 15),
                 items: kSupportedLanguages
-                    .where((l) => !_nativeSelected || l['code'] != model.nativeLanguage)
+                    .where((l) =>
+                        !_nativeSelected || l['code'] != model.nativeLanguage)
                     .map((l) {
                   final code = l['code']!;
                   final name = kLanguageNativeNames[code] ?? l['label']!;
@@ -554,7 +565,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _keyValidated ? t('apiKeyVerified', lang) : t('step1ApiKey', lang),
+                      _keyValidated
+                          ? t('apiKeyVerified', lang)
+                          : t('step1ApiKey', lang),
                       style: const TextStyle(
                         color: kColorText,
                         fontSize: 15,
@@ -573,8 +586,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               ),
               if (_keyValidated)
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: Colors.green.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
@@ -602,16 +615,15 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 fontSize: 13,
               ),
               fillColor: kColorBackground,
-              contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 14, vertical: 12),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               prefixIcon: Icon(Icons.vpn_key_rounded,
                   size: 16, color: kColorTextMuted.withValues(alpha: 0.6)),
               suffixIcon: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   GestureDetector(
-                    onTap: () =>
-                        setState(() => _isKeyVisible = !_isKeyVisible),
+                    onTap: () => setState(() => _isKeyVisible = !_isKeyVisible),
                     child: Icon(
                       _isKeyVisible
                           ? Icons.visibility_off_rounded
@@ -722,7 +734,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     onTap: () async {
                       final uri = Uri.parse(kYoutubeTutorialUrl);
                       if (await canLaunchUrl(uri)) {
-                        await launchUrl(uri, mode: LaunchMode.externalApplication);
+                        await launchUrl(uri,
+                            mode: LaunchMode.externalApplication);
                       }
                     },
                     child: Container(
@@ -739,7 +752,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(Icons.play_circle_rounded,
-                              size: 18, color: kColorPrimary.withValues(alpha: 0.8)),
+                              size: 18,
+                              color: kColorPrimary.withValues(alpha: 0.8)),
                           const SizedBox(width: 8),
                           Text(
                             t('playTutorial', lang),

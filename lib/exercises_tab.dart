@@ -6,6 +6,7 @@ import 'app_state_model.dart';
 import 'constants.dart';
 import 'ielts_screen.dart';
 import 'beginner_screen.dart';
+import 'categories_tab.dart';
 import 'main_screen_body.dart';
 import 'ui_strings.dart';
 
@@ -32,11 +33,14 @@ class _ExercisesTabState extends State<ExercisesTab> {
                       ? 1
                       : state.appMode == AppMode.beginner
                           ? 2
-                          : 0,
+                          : state.appMode == AppMode.categories
+                              ? 3
+                              : 0,
                   children: const [
                     MainScreenBody(),
                     IeltsScreen(),
                     BeginnerScreen(),
+                    CategoriesTab(),
                   ],
                 ),
               ),
@@ -114,6 +118,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
       (AppMode.practice, 'Practice', Icons.chat_rounded),
       (AppMode.ielts, 'IELTS', Icons.assignment_rounded),
       (AppMode.beginner, 'Beginner', Icons.auto_stories_rounded),
+      (AppMode.categories, 'Categories', Icons.grid_view_rounded),
     ];
     return Container(
       padding: const EdgeInsets.all(3),
