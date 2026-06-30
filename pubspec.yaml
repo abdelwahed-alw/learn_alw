@@ -32,6 +32,12 @@ dependencies:
   google_fonts: ^6.2.1
   shimmer: ^3.0.0
 
+  # Text-to-Speech for Listening exercises
+  flutter_tts: ^4.2.2
+
+  # Speech-to-Text for Speaking exercises
+  speech_to_text: ^7.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

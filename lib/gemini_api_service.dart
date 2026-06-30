@@ -135,6 +135,42 @@ class WordMeaning {
   });
 }
 
+// ─── Skill Exercise Response Models ────────────────────────────────────────────
+
+class VocabularyQuestion {
+  final String word;
+  final String correctDefinition;
+  final List<String> options;
+  const VocabularyQuestion({
+    required this.word,
+    required this.correctDefinition,
+    required this.options,
+  });
+}
+
+class ReadingExercise {
+  final String passage;
+  final String question;
+  final List<String> options;
+  final String correctAnswer;
+  const ReadingExercise({
+    required this.passage,
+    required this.question,
+    required this.options,
+    required this.correctAnswer,
+  });
+}
+
+class DictationSentence {
+  final String sentence;
+  const DictationSentence({required this.sentence});
+}
+
+class SpeakingSentence {
+  final String sentence;
+  const SpeakingSentence({required this.sentence});
+}
+
 // ─── Category Exercise Response Models ─────────────────────────────────────────
 
 class WritingExercise {
@@ -903,6 +939,76 @@ class GeminiApiService {
     }
   }
 
+  // ── Skill Exercise Methods ────────────────────────────────────────────────
+
+  Future<VocabularyQuestion> generateVocabularyQuestion({
+    required String apiKey,
+    required String targetLanguage,
+    required String nativeLanguage,
+  }) async {
+    return _withRetry(() async {
+      final prompt = buildVocabularyPrompt(
+        targetLanguage: targetLanguage,
+        nativeLanguage: nativeLanguage,
+      );
+      final model = _buildModel(apiKey.trim());
+      final response =
+          await model.generateContent([Content.text(prompt)]).timeout(_timeout);
+      final rawText = response.text?.trim() ?? '';
+      return _parseVocabularyQuestion(rawText);
+    });
+  }
+
+  Future<ReadingExercise> generateReadingExercise({
+    required String apiKey,
+    required String targetLanguage,
+    required String nativeLanguage,
+  }) async {
+    return _withRetry(() async {
+      final prompt = buildReadingPrompt(
+        targetLanguage: targetLanguage,
+        nativeLanguage: nativeLanguage,
+      );
+      final model = _buildModel(apiKey.trim());
+      final response =
+          await model.generateContent([Content.text(prompt)]).timeout(_timeout);
+      final rawText = response.text?.trim() ?? '';
+      return _parseReadingExercise(rawText);
+    });
+  }
+
+  Future<DictationSentence> generateDictationSentence({
+    required String apiKey,
+    required String targetLanguage,
+  }) async {
+    return _withRetry(() async {
+      final prompt = buildListeningPrompt(targetLanguage: targetLanguage);
+      final model = _buildModel(apiKey.trim());
+      final response =
+          await model.generateContent([Content.text(prompt)]).timeout(_timeout);
+      final rawText = response.text?.trim() ?? '';
+      return _parseDictationSentence(rawText);
+    });
+  }
+
+  Future<SpeakingSentence> generateSpeakingSentence({
+    required String apiKey,
+    required String targetLanguage,
+    required String nativeLanguage,
+  }) async {
+    return _withRetry(() async {
+      final prompt = buildSpeakingPrompt(
+        targetLanguage: targetLanguage,
+        nativeLanguage: nativeLanguage,
+      );
+      final model = _buildModel(apiKey.trim());
+      final response =
+          await model.generateContent([Content.text(prompt)]).timeout(_timeout);
+      final rawText = response.text?.trim() ?? '';
+      return _parseSpeakingSentence(rawText);
+    });
+  }
+
   // ── Category Exercise Methods ──────────────────────────────────────────────
 
   Future<WritingExercise> generateWritingExercise({
@@ -1086,6 +1192,103 @@ class GeminiApiService {
       throw const GeminiServiceException(
         GeminiErrorType.parseError,
         'Could not parse grammar feedback. Please try again.',
+      );
+    }
+  }
+
+  // ── Skill Exercise Parsers ─────────────────────────────────────────────────
+
+  VocabularyQuestion _parseVocabularyQuestion(String raw) {
+    try {
+      final cleaned = raw.contains('```')
+          ? raw
+              .replaceFirst(RegExp(r'```\w*'), '')
+              .replaceFirst(RegExp(r'```\s*$'), '')
+              .trim()
+          : raw;
+      final Map<String, dynamic> json =
+          jsonDecode(cleaned) as Map<String, dynamic>;
+      final rawOptions = json['options'] as List<dynamic>? ?? [];
+      return VocabularyQuestion(
+        word: (json['word'] as String? ?? '').trim(),
+        correctDefinition: (json['correctDefinition'] as String? ?? '').trim(),
+        options: rawOptions.map((e) => (e as String? ?? '').trim()).toList(),
+      );
+    } catch (e) {
+      if (e is GeminiServiceException) rethrow;
+      throw const GeminiServiceException(
+        GeminiErrorType.parseError,
+        'Could not parse vocabulary question. Please try again.',
+      );
+    }
+  }
+
+  ReadingExercise _parseReadingExercise(String raw) {
+    try {
+      final cleaned = raw.contains('```')
+          ? raw
+              .replaceFirst(RegExp(r'```\w*'), '')
+              .replaceFirst(RegExp(r'```\s*$'), '')
+              .trim()
+          : raw;
+      final Map<String, dynamic> json =
+          jsonDecode(cleaned) as Map<String, dynamic>;
+      final rawOptions = json['options'] as List<dynamic>? ?? [];
+      return ReadingExercise(
+        passage: (json['passage'] as String? ?? '').trim(),
+        question: (json['question'] as String? ?? '').trim(),
+        options: rawOptions.map((e) => (e as String? ?? '').trim()).toList(),
+        correctAnswer: (json['correctAnswer'] as String? ?? '').trim(),
+      );
+    } catch (e) {
+      if (e is GeminiServiceException) rethrow;
+      throw const GeminiServiceException(
+        GeminiErrorType.parseError,
+        'Could not parse reading exercise. Please try again.',
+      );
+    }
+  }
+
+  DictationSentence _parseDictationSentence(String raw) {
+    try {
+      final cleaned = raw.contains('```')
+          ? raw
+              .replaceFirst(RegExp(r'```\w*'), '')
+              .replaceFirst(RegExp(r'```\s*$'), '')
+              .trim()
+          : raw;
+      return DictationSentence(
+        sentence: (jsonDecode(cleaned) as Map<String, dynamic>)['sentence']
+                as String? ??
+            '',
+      );
+    } catch (e) {
+      if (e is GeminiServiceException) rethrow;
+      throw const GeminiServiceException(
+        GeminiErrorType.parseError,
+        'Could not parse dictation sentence. Please try again.',
+      );
+    }
+  }
+
+  SpeakingSentence _parseSpeakingSentence(String raw) {
+    try {
+      final cleaned = raw.contains('```')
+          ? raw
+              .replaceFirst(RegExp(r'```\w*'), '')
+              .replaceFirst(RegExp(r'```\s*$'), '')
+              .trim()
+          : raw;
+      return SpeakingSentence(
+        sentence: (jsonDecode(cleaned) as Map<String, dynamic>)['sentence']
+                as String? ??
+            '',
+      );
+    } catch (e) {
+      if (e is GeminiServiceException) rethrow;
+      throw const GeminiServiceException(
+        GeminiErrorType.parseError,
+        'Could not parse speaking sentence. Please try again.',
       );
     }
   }

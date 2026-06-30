@@ -767,6 +767,101 @@ Rules:
 - Return ONLY valid JSON. No text before or after.''';
 }
 
+// ─── Vocabulary Prompt ─────────────────────────────────────────────────────────
+
+String buildVocabularyPrompt({
+  required String targetLanguage,
+  required String nativeLanguage,
+}) {
+  return '''You are a vocabulary tutor for $targetLanguage learners who speak $nativeLanguage.
+
+## Task
+Generate a vocabulary multiple-choice question.
+
+Return ONLY valid JSON:
+{
+  "word": "A level-appropriate word in $targetLanguage",
+  "correctDefinition": "The correct definition or translation in $nativeLanguage",
+  "options": ["correct definition", "wrong option 1", "wrong option 2", "wrong option 3"]
+}
+
+Rules:
+- The word should be commonly useful (not obscure)
+- The options array must contain exactly 4 strings, shuffled, with the correct definition at a random index
+- Wrong options should be plausible but clearly incorrect
+- Return ONLY valid JSON. No text before or after.''';
+}
+
+// ─── Reading Prompt ────────────────────────────────────────────────────────────
+
+String buildReadingPrompt({
+  required String targetLanguage,
+  required String nativeLanguage,
+}) {
+  return '''You are a reading comprehension tutor for $targetLanguage learners who speak $nativeLanguage.
+
+## Task
+Generate a short reading passage and one comprehension question with 4 multiple-choice options.
+
+Return ONLY valid JSON:
+{
+  "passage": "A short paragraph (3-5 sentences) in $targetLanguage at an intermediate level",
+  "question": "A comprehension question about the passage in $nativeLanguage",
+  "options": ["correct answer", "wrong option 1", "wrong option 2", "wrong option 3"],
+  "correctAnswer": "The correct answer (must match one of the options exactly)"
+}
+
+Rules:
+- The passage should be self-contained and interesting
+- The question must be answerable from the passage text
+- The options array must contain exactly 4 strings, shuffled, with the correct answer at a random index
+- Return ONLY valid JSON. No text before or after.''';
+}
+
+// ─── Listening Prompt ──────────────────────────────────────────────────────────
+
+String buildListeningPrompt({
+  required String targetLanguage,
+}) {
+  return '''You are a dictation exercise generator for $targetLanguage.
+
+## Task
+Generate a short, clear sentence suitable for a dictation exercise.
+
+Return ONLY valid JSON:
+{
+  "sentence": "A short sentence (5-12 words) in $targetLanguage"
+}
+
+Rules:
+- The sentence should be a common, everyday sentence
+- Avoid rare words or complex punctuation
+- Return ONLY valid JSON. No text before or after.''';
+}
+
+// ─── Speaking Prompt ───────────────────────────────────────────────────────────
+
+String buildSpeakingPrompt({
+  required String targetLanguage,
+  required String nativeLanguage,
+}) {
+  return '''You are a pronunciation practice generator for $targetLanguage learners who speak $nativeLanguage.
+
+## Task
+Generate a practical, everyday sentence for the student to read aloud.
+
+Return ONLY valid JSON:
+{
+  "sentence": "A natural, practical sentence in $targetLanguage (5-12 words)"
+}
+
+Rules:
+- The sentence should be useful in daily conversation
+- Include a variety of common sounds
+- Avoid rare vocabulary
+- Return ONLY valid JSON. No text before or after.''';
+}
+
 // ─── RTL helper ───────────────────────────────────────────────────────────────
 const Set<String> kRtlLanguageCodes = {'ar', 'he', 'ur', 'fa'};
 

@@ -6,6 +6,10 @@ import 'app_state_model.dart';
 import 'constants.dart';
 import 'writing_screen.dart';
 import 'grammar_screen.dart';
+import 'vocabulary_screen.dart';
+import 'reading_screen.dart';
+import 'listening_screen.dart';
+import 'speaking_screen.dart';
 
 class CategoriesTab extends StatelessWidget {
   const CategoriesTab({super.key});
@@ -41,25 +45,29 @@ class CategoriesTab extends StatelessWidget {
             'Vocabulary',
             Icons.spellcheck_rounded,
             const Color(0xFF2ECC71),
-            () => _showComingSoon(context, 'Vocabulary'),
+            () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const VocabularyScreen())),
           ),
           (
             'Reading',
             Icons.auto_stories_rounded,
             const Color(0xFF3498DB),
-            () => _showComingSoon(context, 'Reading'),
+            () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const ReadingScreen())),
           ),
           (
             'Speaking',
             Icons.record_voice_over_rounded,
             const Color(0xFF9B59B6),
-            () => _showComingSoon(context, 'Speaking'),
+            () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const SpeakingScreen())),
           ),
           (
             'Listening',
             Icons.headphones_rounded,
             const Color(0xFF1ABC9C),
-            () => _showComingSoon(context, 'Listening'),
+            () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const ListeningScreen())),
           ),
         ];
 
@@ -101,32 +109,6 @@ class CategoriesTab extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-
-  void _showComingSoon(BuildContext context, String name) {
-    HapticFeedback.lightImpact();
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: kColorSurface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          name,
-          style:
-              const TextStyle(color: kColorText, fontWeight: FontWeight.w700),
-        ),
-        content: Text(
-          '$name exercises are coming soon!',
-          style: TextStyle(color: kColorTextMuted.withValues(alpha: 0.8)),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK', style: TextStyle(color: kColorPrimary)),
-          ),
-        ],
-      ),
     );
   }
 }
