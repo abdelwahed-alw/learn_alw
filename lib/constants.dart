@@ -1,4 +1,6 @@
 // lib/constants.dart
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -15,6 +17,7 @@ const String kPrefTopicProgress = 'topic_progress';
 const String kPrefLastActive = 'last_active_date';
 const String kPrefStreak = 'streak';
 const String kPrefLastMode = 'last_mode';
+const String kPrefLocale = 'app_locale';
 
 // ─── YouTube tutorial ─────────────────────────────────────────────────────────
 const String kYoutubeTutorialUrl =
@@ -109,7 +112,19 @@ const List<String> kTopics = [
   'History & Culture',
   'Sports',
   'Food & Cooking',
+  'Weather & Seasons',
+  'Health & Fitness',
+  'Music & Arts',
+  'Fashion & Shopping',
+  'Education & Learning',
 ];
+
+/// Picks a random topic from [kTopics].
+String randomTopic() => kTopics[Random().nextInt(kTopics.length)];
+
+/// Appends a timestamp seed to break prompt caching.
+String seedSuffix() =>
+    '\n\n[Seed: ${DateTime.now().millisecondsSinceEpoch} — ensure this exercise is completely different from previous ones.]';
 
 // Topic → Icon mapping for drawer
 const Map<String, IconData> kTopicIcons = {
@@ -258,6 +273,7 @@ ${_levelRules(level)}
 ## Task
 Generate ONE practice question about "$topic" for a $level student learning $targetLanguage.
 The question must follow the level rules above strictly.
+${seedSuffix()}
 
 Reply with ONLY the question text — no explanation, no numbering, no quotation marks.''';
 }
@@ -315,6 +331,7 @@ Generate ONE natural follow-up question that:
 - Continues the conversation naturally
 - Follows the level rules above strictly
 - Is slightly more challenging than the previous question (but stays within $level)
+${seedSuffix()}
 
 Reply with ONLY the follow-up question — no explanation, no numbering.''';
 }
@@ -428,6 +445,7 @@ String buildIeltsFillBlankPrompt({
 Generate an IELTS-style fill-in-the-blank exercise about "$topic".
 Create a paragraph (2-4 sentences) with exactly ONE missing word marked as "______".
 The missing word should test vocabulary appropriate for IELTS.
+${seedSuffix()}
 
 Return ONLY valid JSON:
 {
@@ -456,6 +474,7 @@ String buildIeltsSentenceCompletionPrompt({
 Generate an IELTS-style sentence completion exercise about "$topic".
 Provide the FIRST HALF of a sentence in $targetLanguage (a sentence stem).
 The student must complete the rest.
+${seedSuffix()}
 
 Rules:
 - The sentence stem should be 5-12 words in $targetLanguage
@@ -476,6 +495,7 @@ String buildIeltsWritingPrompt({
 ## Task
 Generate an IELTS-style writing prompt about "$topic".
 The prompt should resemble either IELTS Writing Task 1 (describing a situation) or Task 2 (essay).
+${seedSuffix()}
 
 Rules:
 - Use standard IELTS prompt language (e.g., "Some people believe that...", "Discuss both views...", "To what extent do you agree?")
@@ -583,6 +603,9 @@ String buildBeginnerSentencePrompt({
 ## Target Word
 Introduce the word: "$targetWord"
 
+## Topic
+${randomTopic()}
+
 ## Known Vocabulary the Student Already Knows
 $knownList
 
@@ -593,6 +616,7 @@ Generate ONE very simple sentence in $targetLanguage that:
 3. If no known vocabulary exists yet, use ONLY the target word plus the most basic common words (I, you, is, the, a, an, have, like, etc.)
 4. The sentence must be extremely simple — maximum 7 words
 5. Each word in the sentence must be a real word in $targetLanguage
+${seedSuffix()}
 
 Return ONLY valid JSON:
 {
@@ -620,6 +644,7 @@ String buildWordMeaningPrompt({
 
 ## Task
 Give a very simple explanation of the $targetLanguage word "$word" for an absolute beginner who speaks $nativeLanguage.
+${seedSuffix()}
 
 Return ONLY valid JSON:
 {
@@ -640,17 +665,7 @@ String buildWritingPrompt({
   required String targetLanguage,
   required String nativeLanguage,
 }) {
-  final topics = [
-    'a memorable journey',
-    'an unexpected discovery',
-    'a day in a different city',
-    'meeting someone inspiring',
-    'learning something new',
-    'a difficult decision',
-    'a celebration or festival',
-    'a childhood memory',
-  ];
-  final topic = (topics..shuffle()).first;
+  final topic = randomTopic();
   return '''You are a creative writing tutor for $targetLanguage learners who speak $nativeLanguage.
 
 ## Task
@@ -666,6 +681,7 @@ Return ONLY valid JSON:
 
 Rules:
 - The topic should be engaging and culturally neutral
+${seedSuffix()}
 - Return ONLY valid JSON. No text before or after.''';
 }
 
@@ -706,6 +722,9 @@ String buildGrammarPrompt({
 }) {
   return '''You are a grammar tutor for $targetLanguage learners who speak $nativeLanguage.
 
+## Topic
+${randomTopic()}
+
 ## Task
 Generate a grammar exercise in $targetLanguage. Choose ONE of the following types randomly:
 
@@ -727,6 +746,7 @@ Rules:
 - If type is "error_correction", options can be null or empty
 - If type is "fill_blank", provide exactly 4 options with one correct
 - The explanation should teach the rule, not just state the answer
+${seedSuffix()}
 - Return ONLY valid JSON. No text before or after.''';
 }
 
@@ -775,6 +795,9 @@ String buildVocabularyPrompt({
 }) {
   return '''You are a vocabulary tutor for $targetLanguage learners who speak $nativeLanguage.
 
+## Topic
+${randomTopic()}
+
 ## Task
 Generate a vocabulary multiple-choice question.
 
@@ -789,6 +812,7 @@ Rules:
 - The word should be commonly useful (not obscure)
 - The options array must contain exactly 4 strings, shuffled, with the correct definition at a random index
 - Wrong options should be plausible but clearly incorrect
+${seedSuffix()}
 - Return ONLY valid JSON. No text before or after.''';
 }
 
@@ -799,6 +823,9 @@ String buildReadingPrompt({
   required String nativeLanguage,
 }) {
   return '''You are a reading comprehension tutor for $targetLanguage learners who speak $nativeLanguage.
+
+## Topic
+${randomTopic()}
 
 ## Task
 Generate a short reading passage and one comprehension question with 4 multiple-choice options.
@@ -815,6 +842,7 @@ Rules:
 - The passage should be self-contained and interesting
 - The question must be answerable from the passage text
 - The options array must contain exactly 4 strings, shuffled, with the correct answer at a random index
+${seedSuffix()}
 - Return ONLY valid JSON. No text before or after.''';
 }
 
@@ -824,6 +852,9 @@ String buildListeningPrompt({
   required String targetLanguage,
 }) {
   return '''You are a dictation exercise generator for $targetLanguage.
+
+## Topic
+${randomTopic()}
 
 ## Task
 Generate a short, clear sentence suitable for a dictation exercise.
@@ -836,6 +867,7 @@ Return ONLY valid JSON:
 Rules:
 - The sentence should be a common, everyday sentence
 - Avoid rare words or complex punctuation
+${seedSuffix()}
 - Return ONLY valid JSON. No text before or after.''';
 }
 
@@ -846,6 +878,9 @@ String buildSpeakingPrompt({
   required String nativeLanguage,
 }) {
   return '''You are a pronunciation practice generator for $targetLanguage learners who speak $nativeLanguage.
+
+## Topic
+${randomTopic()}
 
 ## Task
 Generate a practical, everyday sentence for the student to read aloud.
@@ -859,6 +894,7 @@ Rules:
 - The sentence should be useful in daily conversation
 - Include a variety of common sounds
 - Avoid rare vocabulary
+${seedSuffix()}
 - Return ONLY valid JSON. No text before or after.''';
 }
 

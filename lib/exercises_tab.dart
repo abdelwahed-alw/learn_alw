@@ -115,10 +115,10 @@ class _ExercisesTabState extends State<ExercisesTab> {
 
   Widget _buildModeSelector(AppStateModel state) {
     final modes = [
-      (AppMode.practice, 'Practice', Icons.chat_rounded),
+      (AppMode.practice, tr(context, 'practice'), Icons.chat_rounded),
       (AppMode.ielts, 'IELTS', Icons.assignment_rounded),
-      (AppMode.beginner, 'Beginner', Icons.auto_stories_rounded),
-      (AppMode.categories, 'Categories', Icons.grid_view_rounded),
+      (AppMode.beginner, tr(context, 'beginner'), Icons.auto_stories_rounded),
+      (AppMode.categories, tr(context, 'categories'), Icons.grid_view_rounded),
     ];
     return Container(
       padding: const EdgeInsets.all(3),

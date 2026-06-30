@@ -19,6 +19,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
   bool _submitting = false;
   GrammarQuestion? _question;
   GrammarFeedback? _feedback;
+  String? _selectedOption;
 
   @override
   void dispose() {
@@ -36,6 +37,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
       _loading = true;
       _question = null;
       _feedback = null;
+      _selectedOption = null;
       _answerController.clear();
     });
     try {
@@ -85,6 +87,8 @@ class _GrammarScreenState extends State<GrammarScreen> {
   }
 
   void _selectOption(String option) {
+    if (_feedback != null || _submitting) return;
+    setState(() => _selectedOption = option);
     _answerController.text = option;
     _submitAnswer();
   }
@@ -195,48 +199,100 @@ class _GrammarScreenState extends State<GrammarScreen> {
                         ),
                         const SizedBox(height: 12),
                         ..._question!.options!.map(
-                          (option) => Padding(
-                            padding: const EdgeInsets.only(bottom: 10),
-                            child: GestureDetector(
-                              onTap: _feedback != null
-                                  ? null
-                                  : () => _selectOption(option),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 14),
-                                decoration: BoxDecoration(
-                                  color: kColorSurface,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: kColorBorder.withValues(alpha: 0.5),
+                          (option) {
+                            final isSelected = option == _selectedOption;
+                            final isCorrectAnswer =
+                                option == _question!.correctAnswer;
+                            Color? borderColor;
+                            Color? bgColor;
+                            if (_feedback != null) {
+                              if (isCorrectAnswer) {
+                                borderColor = const Color(0xFF2ECC71);
+                                bgColor = const Color(0xFF2ECC71)
+                                    .withValues(alpha: 0.1);
+                              } else if (isSelected && !_feedback!.isCorrect) {
+                                borderColor = kColorError;
+                                bgColor = kColorError.withValues(alpha: 0.1);
+                              }
+                            } else if (isSelected) {
+                              borderColor = kColorPrimary;
+                              bgColor = kColorPrimary.withValues(alpha: 0.08);
+                            }
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: GestureDetector(
+                                onTap: (_feedback != null || _submitting)
+                                    ? null
+                                    : () => _selectOption(option),
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 14),
+                                  decoration: BoxDecoration(
+                                    color: bgColor ?? kColorSurface,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: borderColor ??
+                                          kColorBorder.withValues(alpha: 0.5),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        isSelected
+                                            ? Icons.check_circle_rounded
+                                            : Icons.circle_outlined,
+                                        size: 20,
+                                        color: _feedback != null &&
+                                                isCorrectAnswer
+                                            ? const Color(0xFF2ECC71)
+                                            : _feedback != null &&
+                                                    isSelected &&
+                                                    !_feedback!.isCorrect
+                                                ? kColorError
+                                                : isSelected
+                                                    ? kColorPrimary
+                                                    : kColorTextMuted
+                                                        .withValues(alpha: 0.6),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          option,
+                                          style: TextStyle(
+                                            color: kColorText,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                      ),
+                                      if (_submitting && isSelected)
+                                        const SizedBox(
+                                          width: 22,
+                                          height: 22,
+                                          child: CircularProgressIndicator(
+                                              strokeWidth: 2.5,
+                                              color: kColorPrimary),
+                                        ),
+                                      if (_feedback != null && isCorrectAnswer)
+                                        const Icon(Icons.check_circle_rounded,
+                                            color: Color(0xFF2ECC71), size: 22),
+                                      if (_feedback != null &&
+                                          isSelected &&
+                                          !_feedback!.isCorrect)
+                                        const Icon(Icons.cancel_rounded,
+                                            color: kColorError, size: 22),
+                                    ],
                                   ),
                                 ),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.circle_outlined,
-                                      size: 18,
-                                      color: kColorTextMuted.withValues(
-                                          alpha: 0.6),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Text(
-                                      option,
-                                      style: const TextStyle(
-                                        color: kColorText,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ],
-                                ),
                               ),
-                            ),
-                          ),
+                            );
+                          },
                         ),
                       ] else ...[
                         TextField(
                           controller: _answerController,
                           maxLines: 3,
+                          readOnly: _feedback != null,
                           decoration: InputDecoration(
                             hintText: 'Type the corrected sentence...',
                             filled: true,

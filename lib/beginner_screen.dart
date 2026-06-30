@@ -7,6 +7,7 @@ import 'package:shimmer/shimmer.dart';
 
 import 'app_state_model.dart';
 import 'constants.dart';
+import 'ui_strings.dart';
 
 class BeginnerScreen extends StatefulWidget {
   const BeginnerScreen({super.key});
@@ -16,12 +17,13 @@ class BeginnerScreen extends StatefulWidget {
 }
 
 class _BeginnerScreenState extends State<BeginnerScreen> {
+  final Set<String> _loadingWords = {};
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AppStateModel>(
       builder: (context, state, _) {
-        final textDirection =
-            textDirectionForCode(state.nativeLanguage);
+        final textDirection = textDirectionForCode(state.nativeLanguage);
         return Directionality(
           textDirection: textDirection,
           child: Stack(
@@ -47,8 +49,8 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                 slivers: [
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                          24.0, 100.0, 24.0, 24.0),
+                      padding:
+                          const EdgeInsets.fromLTRB(24.0, 100.0, 24.0, 24.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -93,8 +95,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
           decoration: BoxDecoration(
             color: kColorSurface.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-                color: kColorBorder.withValues(alpha: 0.5)),
+            border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
           ),
           child: Row(
             children: [
@@ -115,17 +116,14 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Zero to Hero',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge
-                        ?.copyWith(
+                    tr(context, 'beginner'),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           color: kColorText,
                           fontWeight: FontWeight.bold,
                         ),
                   ),
                   Text(
-                    'Learn words through context',
+                    tr(context, 'learnWordsThroughContext'),
                     style: TextStyle(
                       color: kColorTextMuted.withValues(alpha: 0.8),
                       fontSize: 12,
@@ -189,9 +187,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                     value: (count / 50).clamp(0.0, 1.0),
                     backgroundColor: kColorBorder,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      count >= 50
-                          ? const Color(0xFF2ECC71)
-                          : kColorPrimary,
+                      count >= 50 ? const Color(0xFF2ECC71) : kColorPrimary,
                     ),
                     minHeight: 6,
                   ),
@@ -275,10 +271,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
               const SizedBox(height: 24),
               Text(
                 'Start Your Journey',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge
-                    ?.copyWith(
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
               ),
@@ -342,9 +335,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
     final words = state.beginnerSentence.split(' ');
     final knownWords =
         state.beginnerVocabulary.map((e) => e['word'] ?? '').toSet();
-    final newWords = state.beginnerCurrentNewWords
-        .map((e) => e.word)
-        .toSet();
+    final newWords = state.beginnerCurrentNewWords.map((e) => e.word).toSet();
 
     return Container(
       decoration: BoxDecoration(
@@ -397,6 +388,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
           Wrap(
             spacing: 6,
             runSpacing: 6,
+            textDirection: TextDirection.ltr,
             children: words.map((word) {
               final cleanWord = word.replaceAll(RegExp(r'[^\w\s]'), '');
               final isKnown = knownWords.contains(cleanWord) ||
@@ -404,9 +396,8 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                   cleanWord.isEmpty;
               final isNew = newWords.contains(cleanWord) ||
                   newWords.contains(word.toLowerCase());
-              final isTarget =
-                  cleanWord.toLowerCase() ==
-                      state.beginnerTargetWord.toLowerCase();
+              final isTarget = cleanWord.toLowerCase() ==
+                  state.beginnerTargetWord.toLowerCase();
 
               Color bgColor;
               Color textColor;
@@ -424,31 +415,52 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                 textColor = kColorAccent;
               }
 
+              final isLoading = _loadingWords.contains(cleanWord);
               return GestureDetector(
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  _onWordTap(state, cleanWord);
-                },
-                child: Container(
+                onTap: isLoading
+                    ? null
+                    : () {
+                        HapticFeedback.lightImpact();
+                        if (isKnown) {
+                          _onWordTap(state, cleanWord);
+                        } else {
+                          setState(() => _loadingWords.add(cleanWord));
+                          _onWordTap(state, cleanWord).then((_) {
+                            if (mounted)
+                              setState(() => _loadingWords.remove(cleanWord));
+                          });
+                        }
+                      },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
                     color: bgColor,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: textColor.withValues(alpha: 0.3),
+                      color: textColor.withValues(alpha: isLoading ? 0.6 : 0.3),
                     ),
                   ),
-                  child: Text(
-                    word,
-                    style: TextStyle(
-                      color: textColor,
-                      fontSize: 20,
-                      fontWeight:
-                          isTarget ? FontWeight.w800 : FontWeight.w600,
-                      height: 1.3,
-                    ),
-                  ),
+                  child: isLoading
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: textColor.withValues(alpha: 0.6),
+                          ),
+                        )
+                      : Text(
+                          word,
+                          style: TextStyle(
+                            color: textColor,
+                            fontSize: 20,
+                            fontWeight:
+                                isTarget ? FontWeight.w800 : FontWeight.w600,
+                            height: 1.3,
+                          ),
+                        ),
                 ),
               );
             }).toList(),
@@ -528,19 +540,18 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
           ),
           const SizedBox(height: 10),
           ...newWords.map((nw) {
-            final isDiscovered = state.beginnerVocabulary
-                .any((e) => e['word'] == nw.word);
+            final isDiscovered =
+                state.beginnerVocabulary.any((e) => e['word'] == nw.word);
             if (isDiscovered) return const SizedBox.shrink();
             return Padding(
               padding: const EdgeInsets.only(bottom: 6),
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFF8E53)
-                          .withValues(alpha: 0.1),
+                      color: const Color(0xFFFF8E53).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
@@ -568,8 +579,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF2ECC71)
-                            .withValues(alpha: 0.1),
+                        color: const Color(0xFF2ECC71).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: const Row(
@@ -618,15 +628,15 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                   ),
                 ],
               ),
-              child: const Center(
+              child: Center(
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.auto_awesome_rounded,
                         color: Colors.white, size: 16),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Text(
-                      'Next Sentence',
+                      tr(context, 'nextSentence'),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 14,
@@ -692,8 +702,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                       width: 28,
                       height: 28,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF2ECC71)
-                            .withValues(alpha: 0.1),
+                        color: const Color(0xFF2ECC71).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(
@@ -761,13 +770,11 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
     }
   }
 
-  Future<void> _onWordTap(
-      AppStateModel state, String word) async {
+  Future<void> _onWordTap(AppStateModel state, String word) async {
     if (word.isEmpty) return;
 
     // Check if already known
-    final isKnown =
-        state.beginnerVocabulary.any((e) => e['word'] == word);
+    final isKnown = state.beginnerVocabulary.any((e) => e['word'] == word);
     if (isKnown) {
       final meaning = state.beginnerVocabulary
           .firstWhere((e) => e['word'] == word)['meaning'];
@@ -799,8 +806,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
     _showMeaningSheet(word, match['meaning'] ?? '', null);
   }
 
-  Future<void> _discoverWord(
-      AppStateModel state, String word) async {
+  Future<void> _discoverWord(AppStateModel state, String word) async {
     if (word.isEmpty) return;
     final error = await state.discoverBeginnerWord(word);
     if (!mounted) return;
@@ -814,8 +820,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
     }
   }
 
-  void _showMeaningSheet(
-      String word, String meaning, String? example) {
+  void _showMeaningSheet(String word, String meaning, String? example) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -879,7 +884,7 @@ class _WordMeaningSheet extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'New Word',
+                  tr(context, 'newWord'),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: kColorText,
                         fontWeight: FontWeight.w700,

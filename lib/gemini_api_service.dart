@@ -222,8 +222,11 @@ class GeminiApiService {
 
   // ── helpers ──
 
-  GenerativeModel _buildModel(String apiKey) =>
-      GenerativeModel(model: _modelName, apiKey: apiKey);
+  GenerativeModel _buildModel(String apiKey) => GenerativeModel(
+        model: _modelName,
+        apiKey: apiKey,
+        generationConfig: GenerationConfig(temperature: 0.9),
+      );
 
   Future<T> _withRetry<T>(Future<T> Function() call) async {
     for (int attempt = 0; attempt <= _maxRetries; attempt++) {

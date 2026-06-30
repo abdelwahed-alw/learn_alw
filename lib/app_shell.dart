@@ -6,6 +6,7 @@ import 'home_tab.dart';
 import 'exercises_tab.dart';
 import 'progress_tab.dart';
 import 'profile_tab.dart';
+import 'ui_strings.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
@@ -40,10 +41,10 @@ class _AppShellState extends State<AppShell> {
 
   Widget _buildBottomNav() {
     final items = [
-      (Icons.home_rounded, 'Home'),
-      (Icons.menu_book_rounded, 'Exercises'),
-      (Icons.bar_chart_rounded, 'Progress'),
-      (Icons.person_rounded, 'Profile'),
+      (Icons.home_rounded, tr(context, 'home')),
+      (Icons.menu_book_rounded, tr(context, 'exercises')),
+      (Icons.bar_chart_rounded, tr(context, 'progress')),
+      (Icons.person_rounded, tr(context, 'profile')),
     ];
 
     return Container(

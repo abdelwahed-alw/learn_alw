@@ -27,7 +27,8 @@ class _MainScreenBodyState extends State<MainScreenBody> {
     FocusScope.of(context).unfocus();
     try {
       await state.submitAnswer(text);
-      _answerController.clear();
+      // Do NOT clear the controller — the user's input must remain
+      // visible alongside the AI feedback (Task 1, Bug 1 fix).
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -189,10 +190,30 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                 children: [
                   _LanguageBadge(
                       label: languageLabelFromCode(state.nativeLanguage)),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12),
-                    child: Icon(Icons.arrow_forward_rounded,
-                        color: kColorTextMuted, size: 16),
+                  // ── Swap / Change Language button (Task 1, Bug 2 fix) ──
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.mediumImpact();
+                      context.read<AppStateModel>().swapLanguages();
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: kColorPrimary.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: kColorPrimary.withValues(alpha: 0.3),
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.swap_horiz_rounded,
+                          color: kColorPrimary,
+                          size: 16,
+                        ),
+                      ),
+                    ),
                   ),
                   _LanguageBadge(
                     label: languageLabelFromCode(state.targetLanguage),
@@ -649,7 +670,11 @@ class _MainScreenBodyState extends State<MainScreenBody> {
           mainAxisSpacing: 10,
           crossAxisSpacing: 10,
           childAspectRatio: 1.0,
-          children: kTopics.map((topic) {
+          // Task 4: Exclude topics now covered by the Categories tab.
+          children: kTopics
+              .where((topic) =>
+                  topic != 'Grammar Practice' && topic != 'Vocabulary Drill')
+              .map((topic) {
             final icon = kTopicIcons[topic] ?? Icons.chat_rounded;
             final isActive = _selectedDashboardTopic == topic;
             return GestureDetector(

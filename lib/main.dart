@@ -3,6 +3,7 @@
 // Routes to OnboardingScreen on first run, otherwise HomeScreen.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -32,19 +33,26 @@ class LearnAlwApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Salearn',
-      debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.dark,
-      theme: _buildLightTheme(),
-      darkTheme: _buildDarkTheme(),
-      home: Consumer<AppStateModel>(
-        builder: (context, model, _) {
-          return model.isOnboardingDone
+    return Consumer<AppStateModel>(
+      builder: (context, model, _) {
+        return MaterialApp(
+          title: 'Salearn',
+          locale: model.locale,
+          supportedLocales: const [Locale('en'), Locale('ar')],
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          debugShowCheckedModeBanner: false,
+          themeMode: ThemeMode.dark,
+          theme: _buildLightTheme(),
+          darkTheme: _buildDarkTheme(),
+          home: model.isOnboardingDone
               ? const AppShell()
-              : const OnboardingScreen();
-        },
-      ),
+              : const OnboardingScreen(),
+        );
+      },
     );
   }
 

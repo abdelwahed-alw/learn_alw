@@ -2,14 +2,18 @@
 // Simple localization system keyed by language code.
 // Falls back to English if a key or language is missing.
 
+import 'package:flutter/material.dart';
+
 const Map<String, Map<String, String>> _strings = {
   // ─── English ──────────────────────────────────────────────────────────────
   'en': {
     'selectLanguage': 'Select Your Language',
-    'selectLanguageDesc': 'Choose the language you speak\nto personalize your experience.',
+    'selectLanguageDesc':
+        'Choose the language you speak\nto personalize your experience.',
     'continue': 'Continue',
     'welcomeTo': 'Welcome to Salearn',
-    'setupApiKey': 'Set up your API key, then we\'ll find your\nlanguage level to personalize your experience.',
+    'setupApiKey':
+        'Set up your API key, then we\'ll find your\nlanguage level to personalize your experience.',
     'step1ApiKey': 'Step 1: API Key',
     'apiKeyVerified': 'API Key Verified',
     'apiKeyRequired': 'Required to power AI features',
@@ -23,7 +27,8 @@ const Map<String, Map<String, String>> _strings = {
     'playTutorial': 'Play Tutorial',
     'takeTest': 'Take the Placement Test',
     'testDesc': '5 adaptive MCQ questions · ~2 min',
-    'testDescLong': 'AI-generated multiple choice questions that adapt to your answers. Your exact CEFR level will be determined automatically.',
+    'testDescLong':
+        'AI-generated multiple choice questions that adapt to your answers. Your exact CEFR level will be determined automatically.',
     'orChooseManually': 'OR CHOOSE MANUALLY',
     'selectYourLevel': 'Select Your Level',
     'pleaseValidateKey': '⚠ Please validate your API key first.',
@@ -69,12 +74,67 @@ const Map<String, Map<String, String>> _strings = {
     'selectNativeLanguage': 'Which language do you speak?',
     'selectNativeLanguageDesc': 'Your interface will switch to this language.',
     'selectTargetLanguage': 'Which language do you want to learn?',
-    'selectTargetLanguageDesc': 'AI exercises will be generated in this language.',
+    'selectTargetLanguageDesc':
+        'AI exercises will be generated in this language.',
     'translateOrAnswer': 'Translate or Answer',
     'topicLabel': 'Topic',
     'configureApiKeyFirst': 'Please configure your API key first.',
     'aiLanguageTutor': 'AI Language Tutor',
     'couldNotOpenLink': 'Could not open link.',
+    'appName': 'SaLearn',
+    'homeTab': 'Home',
+    'exercisesTab': 'Exercises',
+    'progressTab': 'Progress',
+    'profileTab': 'Profile',
+    'overview': 'Overview',
+    'startPracticing': 'Start Practicing',
+    'learnWordsThroughContext': 'Learn words through context',
+    'nextSentence': 'Next Sentence',
+    'newWord': 'New Word',
+    'zeroToHero': 'Zero to Hero',
+    'dailyGoal': 'Daily Goal',
+    'exercisesDone': 'Exercises Done',
+    'skillCategories': 'Skill Categories',
+    'sayThisSentence': 'Say this sentence:',
+    'holdToSpeak': 'Hold to speak',
+    'releaseToCheck': 'Release to check',
+    'youSaid': 'You said:',
+    'greatPronunciation': 'Great pronunciation!',
+    'keepPracticing': 'Keep practicing',
+    'accuracy': 'Accuracy',
+    'newSentence': 'New Sentence',
+    'typeWhatYouHeard': 'Type what you heard...',
+    'tapToPlay': 'Tap to play audio',
+    'playing': 'Playing...',
+    'checkAnswer': 'Check Answer',
+    'theSentenceWas': 'The sentence was:',
+    'selectOption': 'Select an option',
+    'grammarRule': 'Grammar Rule:',
+    'findTheError': 'Find the Error',
+    'fillInBlank': 'Fill in the Blank',
+    'chooseCorrectOption': 'Choose the correct option:',
+    'startExercise': 'Start Exercise',
+    'grammarPractice': 'Grammar Practice',
+    'grammarDesc':
+        'Test your grammar with error correction\nand fill-in-the-blank exercises.',
+    'vocabQuestion': 'What does this word mean?',
+    'nextWord': 'Next Word',
+    'readingPassage': 'Reading Passage',
+    'nextPassage': 'Next Passage',
+    'noExercises': 'No exercises yet. Start practicing!',
+    'vocabulary': 'Vocabulary',
+    'writing': 'Writing',
+    'grammar': 'Grammar',
+    'reading': 'Reading',
+    'listening': 'Listening',
+    'speaking': 'Speaking',
+    'correction': 'Correction',
+    'fillBlank': 'Fill Blank',
+    'streak': 'Day Streak',
+    'beginner': 'Beginner',
+    'practice': 'Practice',
+    'ielts': 'IELTS',
+    'categories': 'Categories',
   },
   // ─── Arabic ───────────────────────────────────────────────────────────────
   'ar': {
@@ -82,7 +142,8 @@ const Map<String, Map<String, String>> _strings = {
     'selectLanguageDesc': 'اختر اللغة التي تتحدثها\nلتخصيص تجربتك.',
     'continue': 'متابعة',
     'welcomeTo': 'مرحبًا بك في Salearn',
-    'setupApiKey': 'أدخل مفتاح API الخاص بك، ثم سنحدد\nمستوى لغتك لتخصيص تجربتك.',
+    'setupApiKey':
+        'أدخل مفتاح API الخاص بك، ثم سنحدد\nمستوى لغتك لتخصيص تجربتك.',
     'step1ApiKey': 'الخطوة 1: مفتاح API',
     'apiKeyVerified': 'تم التحقق من المفتاح',
     'apiKeyRequired': 'مطلوب لتشغيل ميزات الذكاء الاصطناعي',
@@ -96,7 +157,8 @@ const Map<String, Map<String, String>> _strings = {
     'playTutorial': 'شاهد الشرح',
     'takeTest': 'خذ اختبار تحديد المستوى',
     'testDesc': '5 أسئلة تكيفية · ~2 دقيقة',
-    'testDescLong': 'أسئلة اختيار من متعدد مولّدة بالذكاء الاصطناعي تتكيف مع إجاباتك. سيتم تحديد مستواك CEFR تلقائيًا.',
+    'testDescLong':
+        'أسئلة اختيار من متعدد مولّدة بالذكاء الاصطناعي تتكيف مع إجاباتك. سيتم تحديد مستواك CEFR تلقائيًا.',
     'orChooseManually': 'أو اختر يدويًا',
     'selectYourLevel': 'اختر مستواك',
     'pleaseValidateKey': '⚠ يرجى التحقق من مفتاح API أولاً.',
@@ -138,20 +200,76 @@ const Map<String, Map<String, String>> _strings = {
     'selectNativeLanguage': 'ما هي لغتك الأم؟',
     'selectNativeLanguageDesc': 'ستتحول واجهة التطبيق إلى هذه اللغة.',
     'selectTargetLanguage': 'ما هي اللغة التي تريد تعلمها؟',
-    'selectTargetLanguageDesc': 'سيتم إنشاء تمارين الذكاء الاصطناعي بهذه اللغة.',
+    'selectTargetLanguageDesc':
+        'سيتم إنشاء تمارين الذكاء الاصطناعي بهذه اللغة.',
     'translateOrAnswer': 'ترجم أو أجب',
     'topicLabel': 'الموضوع',
     'configureApiKeyFirst': 'يرجى إعداد مفتاح API أولاً.',
     'aiLanguageTutor': 'مدرّس لغات بالذكاء الاصطناعي',
     'couldNotOpenLink': 'تعذّر فتح الرابط.',
+    'appName': 'سا ليرن',
+    'homeTab': 'الرئيسية',
+    'exercisesTab': 'التمارين',
+    'progressTab': 'التقدم',
+    'profileTab': 'الملف الشخصي',
+    'overview': 'نظرة عامة',
+    'startPracticing': 'ابدأ التدرب',
+    'learnWordsThroughContext': 'تعلم الكلمات من خلال السياق',
+    'nextSentence': 'الجملة التالية',
+    'newWord': 'كلمة جديدة',
+    'zeroToHero': 'من الصفر إلى البطولة',
+    'dailyGoal': 'الهدف اليومي',
+    'exercisesDone': 'التمارين المنجزة',
+    'skillCategories': 'تصنيفات المهارات',
+    'sayThisSentence': 'قل هذه الجملة:',
+    'holdToSpeak': 'اضغط للتحدث',
+    'releaseToCheck': 'أفلص للتحقق',
+    'youSaid': 'قلت:',
+    'greatPronunciation': 'نطق رائع!',
+    'keepPracticing': 'استمر في الممارسة',
+    'accuracy': 'الدقة',
+    'newSentence': 'جملة جديدة',
+    'typeWhatYouHeard': 'اكتب ما سمعته...',
+    'tapToPlay': 'اضغط لتشغيل الصوت',
+    'playing': 'جارٍ التشغيل...',
+    'checkAnswer': 'تحقق من الإجابة',
+    'theSentenceWas': 'الجملة كانت:',
+    'selectOption': 'اختر خياراً',
+    'grammarRule': 'قاعدة نحوية:',
+    'findTheError': 'ابحث عن الخطأ',
+    'fillInBlank': 'املأ الفراغ',
+    'chooseCorrectOption': 'اختر الخيار الصحيح:',
+    'startExercise': 'ابدأ التمرين',
+    'grammarPractice': 'تمرين القواعد',
+    'grammarDesc': 'اختبر قواعدك اللغوية من خلال\nتصحيح الأخطاء وملء الفراغات.',
+    'vocabQuestion': 'ماذا تعني هذه الكلمة؟',
+    'nextWord': 'الكلمة التالية',
+    'readingPassage': 'نص القراءة',
+    'nextPassage': 'النص التالي',
+    'noExercises': 'لا توجد تمارين بعد. ابدأ بالتدرب!',
+    'vocabulary': 'المفردات',
+    'writing': 'الكتابة',
+    'grammar': 'القواعد',
+    'reading': 'القراءة',
+    'listening': 'الاستماع',
+    'speaking': 'التحدث',
+    'correction': 'تصحيح',
+    'fillBlank': 'املأ الفراغ',
+    'streak': 'أيام متتالية',
+    'beginner': 'مبتدئ',
+    'practice': 'تمرين',
+    'ielts': 'IELTS',
+    'categories': 'التصنيفات',
   },
   // ─── French ───────────────────────────────────────────────────────────────
   'fr': {
     'selectLanguage': 'Choisissez votre langue',
-    'selectLanguageDesc': 'Choisissez la langue que vous parlez\npour personnaliser votre expérience.',
+    'selectLanguageDesc':
+        'Choisissez la langue que vous parlez\npour personnaliser votre expérience.',
     'continue': 'Continuer',
     'welcomeTo': 'Bienvenue sur Salearn',
-    'setupApiKey': 'Configurez votre clé API, puis nous trouverons\nvotre niveau pour personnaliser votre expérience.',
+    'setupApiKey':
+        'Configurez votre clé API, puis nous trouverons\nvotre niveau pour personnaliser votre expérience.',
     'step1ApiKey': 'Étape 1 : Clé API',
     'apiKeyVerified': 'Clé API vérifiée',
     'apiKeyRequired': 'Nécessaire pour les fonctionnalités IA',
@@ -165,7 +283,8 @@ const Map<String, Map<String, String>> _strings = {
     'playTutorial': 'Voir le tutoriel',
     'takeTest': 'Passer le test de placement',
     'testDesc': '5 questions adaptatives · ~2 min',
-    'testDescLong': 'Questions à choix multiples générées par IA qui s\'adaptent à vos réponses. Votre niveau CECR sera déterminé automatiquement.',
+    'testDescLong':
+        'Questions à choix multiples générées par IA qui s\'adaptent à vos réponses. Votre niveau CECR sera déterminé automatiquement.',
     'orChooseManually': 'OU CHOISIR MANUELLEMENT',
     'selectYourLevel': 'Sélectionnez votre niveau',
     'pleaseValidateKey': '⚠ Veuillez d\'abord valider votre clé API.',
@@ -207,7 +326,8 @@ const Map<String, Map<String, String>> _strings = {
     'selectNativeLanguage': 'Quelle langue parlez-vous ?',
     'selectNativeLanguageDesc': "L'interface passera dans cette langue.",
     'selectTargetLanguage': 'Quelle langue voulez-vous apprendre ?',
-    'selectTargetLanguageDesc': 'Les exercices IA seront générés dans cette langue.',
+    'selectTargetLanguageDesc':
+        'Les exercices IA seront générés dans cette langue.',
     'translateOrAnswer': 'Traduire ou répondre',
     'topicLabel': 'Sujet',
     'configureApiKeyFirst': "Veuillez d'abord configurer votre clé API.",
@@ -217,10 +337,12 @@ const Map<String, Map<String, String>> _strings = {
   // ─── Spanish ──────────────────────────────────────────────────────────────
   'es': {
     'selectLanguage': 'Elige tu idioma',
-    'selectLanguageDesc': 'Elige el idioma que hablas\npara personalizar tu experiencia.',
+    'selectLanguageDesc':
+        'Elige el idioma que hablas\npara personalizar tu experiencia.',
     'continue': 'Continuar',
     'welcomeTo': 'Bienvenido a Salearn',
-    'setupApiKey': 'Configura tu clave API, luego encontraremos\ntu nivel para personalizar tu experiencia.',
+    'setupApiKey':
+        'Configura tu clave API, luego encontraremos\ntu nivel para personalizar tu experiencia.',
     'step1ApiKey': 'Paso 1: Clave API',
     'apiKeyVerified': 'Clave API verificada',
     'apiKeyRequired': 'Necesario para funciones de IA',
@@ -234,7 +356,8 @@ const Map<String, Map<String, String>> _strings = {
     'playTutorial': 'Ver tutorial',
     'takeTest': 'Hacer el test de nivel',
     'testDesc': '5 preguntas adaptativas · ~2 min',
-    'testDescLong': 'Preguntas de opción múltiple generadas por IA que se adaptan a tus respuestas. Tu nivel MCER se determinará automáticamente.',
+    'testDescLong':
+        'Preguntas de opción múltiple generadas por IA que se adaptan a tus respuestas. Tu nivel MCER se determinará automáticamente.',
     'orChooseManually': 'O ELEGIR MANUALMENTE',
     'selectYourLevel': 'Selecciona tu nivel',
     'pleaseValidateKey': '⚠ Por favor valida tu clave API primero.',
@@ -276,7 +399,8 @@ const Map<String, Map<String, String>> _strings = {
     'selectNativeLanguage': '¿Qué idioma hablas?',
     'selectNativeLanguageDesc': 'La interfaz cambiará a este idioma.',
     'selectTargetLanguage': '¿Qué idioma quieres aprender?',
-    'selectTargetLanguageDesc': 'Los ejercicios de IA se generarán en este idioma.',
+    'selectTargetLanguageDesc':
+        'Los ejercicios de IA se generarán en este idioma.',
     'translateOrAnswer': 'Traducir o responder',
     'topicLabel': 'Tema',
     'configureApiKeyFirst': 'Por favor configura tu clave API primero.',
@@ -286,10 +410,12 @@ const Map<String, Map<String, String>> _strings = {
   // ─── Turkish ──────────────────────────────────────────────────────────────
   'tr': {
     'selectLanguage': 'Dilinizi seçin',
-    'selectLanguageDesc': 'Deneyiminizi kişiselleştirmek için\nkonuştuğunuz dili seçin.',
+    'selectLanguageDesc':
+        'Deneyiminizi kişiselleştirmek için\nkonuştuğunuz dili seçin.',
     'continue': 'Devam',
     'welcomeTo': 'Salearn\'e hoş geldiniz',
-    'setupApiKey': 'API anahtarınızı girin, ardından deneyiminizi\nkişiselleştirmek için seviyenizi belirleyelim.',
+    'setupApiKey':
+        'API anahtarınızı girin, ardından deneyiminizi\nkişiselleştirmek için seviyenizi belirleyelim.',
     'step1ApiKey': 'Adım 1: API Anahtarı',
     'apiKeyVerified': 'API Anahtarı doğrulandı',
     'apiKeyRequired': 'Yapay zeka özellikleri için gerekli',
@@ -303,7 +429,8 @@ const Map<String, Map<String, String>> _strings = {
     'playTutorial': 'Öğreticiyi izle',
     'takeTest': 'Seviye testini yapın',
     'testDesc': '5 uyarlanabilir soru · ~2 dk',
-    'testDescLong': 'Cevaplarınıza göre uyarlanan yapay zeka üretimi çoktan seçmeli sorular. CEFR seviyeniz otomatik olarak belirlenecektir.',
+    'testDescLong':
+        'Cevaplarınıza göre uyarlanan yapay zeka üretimi çoktan seçmeli sorular. CEFR seviyeniz otomatik olarak belirlenecektir.',
     'orChooseManually': 'VEYA MANUEL SEÇİN',
     'selectYourLevel': 'Seviyenizi seçin',
     'pleaseValidateKey': '⚠ Lütfen önce API anahtarınızı doğrulayın.',
@@ -345,7 +472,8 @@ const Map<String, Map<String, String>> _strings = {
     'selectNativeLanguage': 'Hangi dili konuşuyorsunuz?',
     'selectNativeLanguageDesc': 'Arayüz bu dile geçecektir.',
     'selectTargetLanguage': 'Hangi dili öğrenmek istiyorsunuz?',
-    'selectTargetLanguageDesc': 'Yapay zeka alıştırmaları bu dilde oluşturulacaktır.',
+    'selectTargetLanguageDesc':
+        'Yapay zeka alıştırmaları bu dilde oluşturulacaktır.',
     'translateOrAnswer': 'Çevir veya cevapla',
     'topicLabel': 'Konu',
     'configureApiKeyFirst': 'Lütfen önce API anahtarınızı yapılandırın.',
@@ -355,10 +483,12 @@ const Map<String, Map<String, String>> _strings = {
   // ─── German ───────────────────────────────────────────────────────────────
   'de': {
     'selectLanguage': 'Wählen Sie Ihre Sprache',
-    'selectLanguageDesc': 'Wählen Sie Ihre Sprache,\num Ihr Erlebnis zu personalisieren.',
+    'selectLanguageDesc':
+        'Wählen Sie Ihre Sprache,\num Ihr Erlebnis zu personalisieren.',
     'continue': 'Weiter',
     'welcomeTo': 'Willkommen bei Salearn',
-    'setupApiKey': 'Richten Sie Ihren API-Schlüssel ein, dann\nbestimmen wir Ihr Niveau.',
+    'setupApiKey':
+        'Richten Sie Ihren API-Schlüssel ein, dann\nbestimmen wir Ihr Niveau.',
     'step1ApiKey': 'Schritt 1: API-Schlüssel',
     'apiKeyVerified': 'API-Schlüssel verifiziert',
     'apiKeyRequired': 'Erforderlich für KI-Funktionen',
@@ -372,7 +502,8 @@ const Map<String, Map<String, String>> _strings = {
     'playTutorial': 'Tutorial ansehen',
     'takeTest': 'Einstufungstest machen',
     'testDesc': '5 adaptive Fragen · ~2 Min',
-    'testDescLong': 'KI-generierte Multiple-Choice-Fragen, die sich an Ihre Antworten anpassen. Ihr GER-Niveau wird automatisch bestimmt.',
+    'testDescLong':
+        'KI-generierte Multiple-Choice-Fragen, die sich an Ihre Antworten anpassen. Ihr GER-Niveau wird automatisch bestimmt.',
     'orChooseManually': 'ODER MANUELL WÄHLEN',
     'selectYourLevel': 'Wählen Sie Ihr Niveau',
     'pleaseValidateKey': '⚠ Bitte überprüfen Sie zuerst Ihren API-Schlüssel.',
@@ -412,22 +543,26 @@ const Map<String, Map<String, String>> _strings = {
     'apiKeySetup': 'API-SCHLÜSSEL',
     'testAndSave': 'Testen & speichern',
     'selectNativeLanguage': 'Welche Sprache sprechen Sie?',
-    'selectNativeLanguageDesc': 'Die Oberfläche wird in diese Sprache wechseln.',
+    'selectNativeLanguageDesc':
+        'Die Oberfläche wird in diese Sprache wechseln.',
     'selectTargetLanguage': 'Welche Sprache möchten Sie lernen?',
     'selectTargetLanguageDesc': 'KI-Übungen werden in dieser Sprache erstellt.',
     'translateOrAnswer': 'Übersetzen oder antworten',
     'topicLabel': 'Thema',
-    'configureApiKeyFirst': 'Bitte konfigurieren Sie zuerst Ihren API-Schlüssel.',
+    'configureApiKeyFirst':
+        'Bitte konfigurieren Sie zuerst Ihren API-Schlüssel.',
     'aiLanguageTutor': 'KI-Sprachlehrer',
     'couldNotOpenLink': 'Link konnte nicht geöffnet werden.',
   },
   // ─── Italian ──────────────────────────────────────────────────────────────
   'it': {
     'selectLanguage': 'Seleziona la tua lingua',
-    'selectLanguageDesc': 'Scegli la lingua che parli\nper personalizzare la tua esperienza.',
+    'selectLanguageDesc':
+        'Scegli la lingua che parli\nper personalizzare la tua esperienza.',
     'continue': 'Continua',
     'welcomeTo': 'Benvenuto in Salearn',
-    'setupApiKey': 'Imposta la tua chiave API, poi troveremo il tuo\nlivello per personalizzare l\'esperienza.',
+    'setupApiKey':
+        'Imposta la tua chiave API, poi troveremo il tuo\nlivello per personalizzare l\'esperienza.',
     'step1ApiKey': 'Passo 1: Chiave API',
     'apiKeyVerified': 'Chiave API verificata',
     'apiKeyRequired': 'Richiesto per le funzioni IA',
@@ -441,7 +576,8 @@ const Map<String, Map<String, String>> _strings = {
     'playTutorial': 'Guarda il tutorial',
     'takeTest': 'Fai il test di livello',
     'testDesc': '5 domande a scelta multipla · ~2 min',
-    'testDescLong': 'Domande a scelta multipla generate dall\'IA che si adattano alle tue risposte. Il tuo livello CEFR esatto verrà determinato automaticamente.',
+    'testDescLong':
+        'Domande a scelta multipla generate dall\'IA che si adattano alle tue risposte. Il tuo livello CEFR esatto verrà determinato automaticamente.',
     'orChooseManually': 'OPPURE SCEGLI MANUALMENTE',
     'selectYourLevel': 'Seleziona il tuo livello',
     'pleaseValidateKey': '⚠ Convalida prima la tua chiave API.',
@@ -483,7 +619,8 @@ const Map<String, Map<String, String>> _strings = {
     'selectNativeLanguage': 'Quale lingua parli?',
     'selectNativeLanguageDesc': 'La tua interfaccia passerà a questa lingua.',
     'selectTargetLanguage': 'Quale lingua vuoi imparare?',
-    'selectTargetLanguageDesc': 'Gli esercizi dell\'IA saranno generati in questa lingua.',
+    'selectTargetLanguageDesc':
+        'Gli esercizi dell\'IA saranno generati in questa lingua.',
     'translateOrAnswer': 'Traduci o Rispondi',
     'topicLabel': 'Argomento',
     'configureApiKeyFirst': 'Configura prima la tua chiave API.',
@@ -493,10 +630,12 @@ const Map<String, Map<String, String>> _strings = {
   // ─── Portuguese ───────────────────────────────────────────────────────────
   'pt': {
     'selectLanguage': 'Selecione seu idioma',
-    'selectLanguageDesc': 'Escolha o idioma que você fala\npara personalizar sua experiência.',
+    'selectLanguageDesc':
+        'Escolha o idioma que você fala\npara personalizar sua experiência.',
     'continue': 'Continuar',
     'welcomeTo': 'Bem-vindo ao Salearn',
-    'setupApiKey': 'Configure sua chave API, então encontraremos seu\nnível para personalizar sua experiência.',
+    'setupApiKey':
+        'Configure sua chave API, então encontraremos seu\nnível para personalizar sua experiência.',
     'step1ApiKey': 'Passo 1: Chave API',
     'apiKeyVerified': 'Chave API verificada',
     'apiKeyRequired': 'Necessário para recursos de IA',
@@ -510,7 +649,8 @@ const Map<String, Map<String, String>> _strings = {
     'playTutorial': 'Assistir ao tutorial',
     'takeTest': 'Fazer Teste de Nivelamento',
     'testDesc': '5 questões de múltipla escolha · ~2 min',
-    'testDescLong': 'Questões geradas por IA que se adaptam às suas respostas. Seu nível CEFR exato será determinado automaticamente.',
+    'testDescLong':
+        'Questões geradas por IA que se adaptam às suas respostas. Seu nível CEFR exato será determinado automaticamente.',
     'orChooseManually': 'OU ESCOLHA MANUALMENTE',
     'selectYourLevel': 'Selecione seu Nível',
     'pleaseValidateKey': '⚠ Por favor, valide sua chave API primeiro.',
@@ -731,6 +871,10 @@ String t(String key, String langCode) {
   return _strings[langCode]?[key] ?? _strings['en']?[key] ?? key;
 }
 
+/// Convenience: gets a localized UI string using [context]'s locale.
+String tr(BuildContext context, String key) =>
+    t(key, Localizations.localeOf(context).languageCode);
+
 // ─── Localized Topic Names ──────────────────────────────────────────────────
 const Map<String, Map<String, String>> _topicNames = {
   'en': {
@@ -883,44 +1027,84 @@ String tTopic(String topicKey, String langCode) {
 // ─── Localized Level Labels ─────────────────────────────────────────────────
 const Map<String, Map<String, String>> _levelLabels = {
   'en': {
-    'A1': 'Beginner', 'A2': 'Elementary', 'B1': 'Intermediate',
-    'B2': 'Upper Intermediate', 'C1': 'Advanced', 'C2': 'Mastery',
+    'A1': 'Beginner',
+    'A2': 'Elementary',
+    'B1': 'Intermediate',
+    'B2': 'Upper Intermediate',
+    'C1': 'Advanced',
+    'C2': 'Mastery',
   },
   'ar': {
-    'A1': 'مبتدئ', 'A2': 'أساسي', 'B1': 'متوسط',
-    'B2': 'فوق المتوسط', 'C1': 'متقدم', 'C2': 'إتقان',
+    'A1': 'مبتدئ',
+    'A2': 'أساسي',
+    'B1': 'متوسط',
+    'B2': 'فوق المتوسط',
+    'C1': 'متقدم',
+    'C2': 'إتقان',
   },
   'fr': {
-    'A1': 'Débutant', 'A2': 'Élémentaire', 'B1': 'Intermédiaire',
-    'B2': 'Intermédiaire avancé', 'C1': 'Avancé', 'C2': 'Maîtrise',
+    'A1': 'Débutant',
+    'A2': 'Élémentaire',
+    'B1': 'Intermédiaire',
+    'B2': 'Intermédiaire avancé',
+    'C1': 'Avancé',
+    'C2': 'Maîtrise',
   },
   'es': {
-    'A1': 'Principiante', 'A2': 'Elemental', 'B1': 'Intermedio',
-    'B2': 'Intermedio alto', 'C1': 'Avanzado', 'C2': 'Dominio',
+    'A1': 'Principiante',
+    'A2': 'Elemental',
+    'B1': 'Intermedio',
+    'B2': 'Intermedio alto',
+    'C1': 'Avanzado',
+    'C2': 'Dominio',
   },
   'tr': {
-    'A1': 'Başlangıç', 'A2': 'Temel', 'B1': 'Orta',
-    'B2': 'Orta üstü', 'C1': 'İleri', 'C2': 'Uzman',
+    'A1': 'Başlangıç',
+    'A2': 'Temel',
+    'B1': 'Orta',
+    'B2': 'Orta üstü',
+    'C1': 'İleri',
+    'C2': 'Uzman',
   },
   'de': {
-    'A1': 'Anfänger', 'A2': 'Grundlagen', 'B1': 'Mittelstufe',
-    'B2': 'Obere Mittelstufe', 'C1': 'Fortgeschritten', 'C2': 'Kompetent',
+    'A1': 'Anfänger',
+    'A2': 'Grundlagen',
+    'B1': 'Mittelstufe',
+    'B2': 'Obere Mittelstufe',
+    'C1': 'Fortgeschritten',
+    'C2': 'Kompetent',
   },
   'it': {
-    'A1': 'Principiante', 'A2': 'Elementare', 'B1': 'Intermedio',
-    'B2': 'Intermedio alto', 'C1': 'Avanzato', 'C2': 'Padronanza',
+    'A1': 'Principiante',
+    'A2': 'Elementare',
+    'B1': 'Intermedio',
+    'B2': 'Intermedio alto',
+    'C1': 'Avanzato',
+    'C2': 'Padronanza',
   },
   'pt': {
-    'A1': 'Iniciante', 'A2': 'Básico', 'B1': 'Intermediário',
-    'B2': 'Intermediário superior', 'C1': 'Avançado', 'C2': 'Fluente',
+    'A1': 'Iniciante',
+    'A2': 'Básico',
+    'B1': 'Intermediário',
+    'B2': 'Intermediário superior',
+    'C1': 'Avançado',
+    'C2': 'Fluente',
   },
   'zh': {
-    'A1': '入门', 'A2': '初级', 'B1': '中级',
-    'B2': '中高级', 'C1': '高级', 'C2': '精通',
+    'A1': '入门',
+    'A2': '初级',
+    'B1': '中级',
+    'B2': '中高级',
+    'C1': '高级',
+    'C2': '精通',
   },
   'ja': {
-    'A1': '入門', 'A2': '初級', 'B1': '中級',
-    'B2': '中上級', 'C1': '上級', 'C2': 'マスター',
+    'A1': '入門',
+    'A2': '初級',
+    'B1': '中級',
+    'B2': '中上級',
+    'C1': '上級',
+    'C2': 'マスター',
   },
 };
 
@@ -1009,11 +1193,14 @@ const Map<String, Map<String, String>> _levelDescs = {
 
 /// Get a localized level label. Falls back to English.
 String tLevel(String levelCode, String langCode) {
-  return _levelLabels[langCode]?[levelCode] ?? _levelLabels['en']?[levelCode] ?? levelCode;
+  return _levelLabels[langCode]?[levelCode] ??
+      _levelLabels['en']?[levelCode] ??
+      levelCode;
 }
 
 /// Get a localized level description. Falls back to English.
 String tLevelDesc(String levelCode, String langCode) {
-  return _levelDescs[langCode]?[levelCode] ?? _levelDescs['en']?[levelCode] ?? '';
+  return _levelDescs[langCode]?[levelCode] ??
+      _levelDescs['en']?[levelCode] ??
+      '';
 }
-

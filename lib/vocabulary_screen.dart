@@ -184,22 +184,28 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(
-                                  _isCorrect!
-                                      ? Icons.check_circle_rounded
-                                      : Icons.cancel_rounded,
-                                  color: _isCorrect!
-                                      ? const Color(0xFF2ECC71)
-                                      : kColorError,
-                                  size: 20),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 2),
+                                child: Icon(
+                                    _isCorrect!
+                                        ? Icons.check_circle_rounded
+                                        : Icons.cancel_rounded,
+                                    color: _isCorrect!
+                                        ? const Color(0xFF2ECC71)
+                                        : kColorError,
+                                    size: 20),
+                              ),
                               const SizedBox(width: 10),
-                              Text(
-                                _isCorrect!
-                                    ? '✓ Correct! The answer is: ${_question!.correctDefinition}'
-                                    : '✗ The correct answer is: ${_question!.correctDefinition}',
-                                style: const TextStyle(
-                                    color: kColorText, fontSize: 14),
+                              Expanded(
+                                child: Text(
+                                  _isCorrect!
+                                      ? '✓ Correct! The answer is: ${_question!.correctDefinition}'
+                                      : '✗ The correct answer is: ${_question!.correctDefinition}',
+                                  style: const TextStyle(
+                                      color: kColorText, fontSize: 14),
+                                ),
                               ),
                             ],
                           ),

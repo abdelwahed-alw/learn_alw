@@ -21,6 +21,14 @@ class _WritingScreenState extends State<WritingScreen> {
   WritingFeedback? _feedback;
 
   @override
+  void initState() {
+    super.initState();
+    // Listen for text changes so the Submit button reactivates when the
+    // user types — fixes Task 3 (button was permanently disabled).
+    _storyController.addListener(() => setState(() {}));
+  }
+
+  @override
   void dispose() {
     _storyController.dispose();
     super.dispose();
