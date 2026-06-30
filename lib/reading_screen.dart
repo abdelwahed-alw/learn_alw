@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
 
 import 'app_state_model.dart';
@@ -14,10 +15,13 @@ class ReadingScreen extends StatefulWidget {
 
 class _ReadingScreenState extends State<ReadingScreen> {
   final GeminiApiService _api = GeminiApiService();
+  final FlutterTts _tts = FlutterTts();
   bool _loading = false;
   ReadingExercise? _exercise;
   String? _selectedOption;
   bool? _isCorrect;
+  bool _showTranslation = false;
+  bool _isSpeaking = false;
 
   @override
   void initState() {
@@ -36,12 +40,14 @@ class _ReadingScreenState extends State<ReadingScreen> {
       _exercise = null;
       _selectedOption = null;
       _isCorrect = null;
+      _showTranslation = false;
     });
     try {
       final ex = await _api.generateReadingExercise(
         apiKey: state.apiKey,
         targetLanguage: languageLabelFromCode(state.targetLanguage),
         nativeLanguage: languageLabelFromCode(state.nativeLanguage),
+        userLevel: state.proficiencyLevel,
       );
       if (mounted)
         setState(() {
@@ -52,6 +58,25 @@ class _ReadingScreenState extends State<ReadingScreen> {
       if (mounted) _showError(e.message);
       setState(() => _loading = false);
     }
+  }
+
+  @override
+  void dispose() {
+    _tts.stop();
+    super.dispose();
+  }
+
+  Future<void> _speakPassage() async {
+    if (_exercise == null) return;
+    if (_isSpeaking) {
+      await _tts.stop();
+      setState(() => _isSpeaking = false);
+      return;
+    }
+    setState(() => _isSpeaking = true);
+    await _tts.setLanguage('en-US');
+    await _tts.speak(_exercise!.passage);
+    if (mounted) setState(() => _isSpeaking = false);
   }
 
   void _selectOption(String option) {
@@ -116,18 +141,90 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                       color: kColorPrimary, size: 18),
                                 ),
                                 const SizedBox(width: 12),
+                                GestureDetector(
+                                  onTap: _speakPassage,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: _isSpeaking
+                                          ? kColorPrimary.withValues(alpha: 0.2)
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Icon(
+                                      _isSpeaking
+                                          ? Icons.volume_up_rounded
+                                          : Icons.volume_up_outlined,
+                                      size: 18,
+                                      color: _isSpeaking
+                                          ? kColorPrimary
+                                          : kColorTextMuted,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
                                 const Text('Reading Passage',
                                     style: TextStyle(
                                         color: kColorText,
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600)),
+                                const Spacer(),
+                                GestureDetector(
+                                  onTap: () => setState(() =>
+                                      _showTranslation = !_showTranslation),
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: _showTranslation
+                                          ? kColorPrimary.withValues(alpha: 0.2)
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                        color: _showTranslation
+                                            ? kColorPrimary.withValues(
+                                                alpha: 0.4)
+                                            : kColorBorder.withValues(
+                                                alpha: 0.5),
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.translate_rounded,
+                                      size: 18,
+                                      color: _showTranslation
+                                          ? kColorPrimary
+                                          : kColorTextMuted,
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                             const SizedBox(height: 16),
-                            Text(
-                              _exercise!.passage,
-                              style: const TextStyle(
-                                  color: kColorText, fontSize: 15, height: 1.7),
+                            AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 300),
+                              transitionBuilder:
+                                  (Widget child, Animation<double> a) =>
+                                      FadeTransition(opacity: a, child: child),
+                              child: _showTranslation
+                                  ? Text(
+                                      _exercise!.passageTranslation.isEmpty
+                                          ? _exercise!.passage
+                                          : _exercise!.passageTranslation,
+                                      key: const ValueKey('translation'),
+                                      textDirection: TextDirection.rtl,
+                                      style: const TextStyle(
+                                          color: kColorText,
+                                          fontSize: 15,
+                                          height: 1.7),
+                                    )
+                                  : Text(
+                                      _exercise!.passage,
+                                      key: const ValueKey('original'),
+                                      style: const TextStyle(
+                                          color: kColorText,
+                                          fontSize: 15,
+                                          height: 1.7),
+                                    ),
                             ),
                           ],
                         ),

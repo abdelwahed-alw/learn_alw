@@ -328,7 +328,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
                             ),
                           ),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Row(
                                 children: [
@@ -359,6 +359,8 @@ class _GrammarScreenState extends State<GrammarScreen> {
                               const SizedBox(height: 10),
                               Text(
                                 _feedback!.feedback,
+                                textDirection: TextDirection.rtl,
+                                textAlign: TextAlign.right,
                                 style: const TextStyle(
                                   color: kColorText,
                                   fontSize: 14,
@@ -380,7 +382,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
                               ),
                             ),
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 const Text(
                                   'Grammar Rule:',
@@ -393,6 +395,8 @@ class _GrammarScreenState extends State<GrammarScreen> {
                                 const SizedBox(height: 6),
                                 Text(
                                   _question!.explanation,
+                                  textDirection: TextDirection.rtl,
+                                  textAlign: TextAlign.right,
                                   style: TextStyle(
                                     color:
                                         kColorTextMuted.withValues(alpha: 0.8),

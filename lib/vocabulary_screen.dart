@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
 
 import 'app_state_model.dart';
@@ -14,6 +15,7 @@ class VocabularyScreen extends StatefulWidget {
 
 class _VocabularyScreenState extends State<VocabularyScreen> {
   final GeminiApiService _api = GeminiApiService();
+  final FlutterTts _tts = FlutterTts();
   bool _loading = false;
   VocabularyQuestion? _question;
   String? _selectedOption;
@@ -54,12 +56,24 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
     }
   }
 
+  @override
+  void dispose() {
+    _tts.stop();
+    super.dispose();
+  }
+
   void _selectOption(String option) {
     if (_isCorrect != null) return;
     setState(() {
       _selectedOption = option;
-      _isCorrect = option == _question!.correctDefinition;
+      _isCorrect = option == _question!.correctOption;
     });
+  }
+
+  Future<void> _speakWord() async {
+    if (_question == null) return;
+    await _tts.setLanguage('en-US');
+    await _tts.speak(_question!.word);
   }
 
   void _showError(String msg) {
@@ -107,17 +121,43 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                         ),
                         child: Column(
                           children: [
-                            Text('What does this word mean?',
-                                style: TextStyle(
-                                    color: Colors.white.withValues(alpha: 0.7),
-                                    fontSize: 13)),
+                            Directionality(
+                              textDirection: TextDirection.ltr,
+                              child: Text('What does this word mean?',
+                                  style: TextStyle(
+                                      color:
+                                          Colors.white.withValues(alpha: 0.7),
+                                      fontSize: 13)),
+                            ),
                             const SizedBox(height: 12),
-                            Text(_question!.word,
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.w800,
-                                    letterSpacing: 0.5)),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(_question!.word,
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: 0.5)),
+                                const SizedBox(width: 12),
+                                GestureDetector(
+                                  onTap: _speakWord,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          Colors.white.withValues(alpha: 0.2),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: const Icon(
+                                      Icons.volume_up_rounded,
+                                      color: Colors.white,
+                                      size: 22,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -126,7 +166,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                         Color? borderColor;
                         Color? bgColor;
                         if (_selectedOption != null) {
-                          if (opt == _question!.correctDefinition) {
+                          if (opt == _question!.correctOption) {
                             borderColor = const Color(0xFF2ECC71);
                             bgColor =
                                 const Color(0xFF2ECC71).withValues(alpha: 0.1);
@@ -158,12 +198,12 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                                               color: kColorText,
                                               fontSize: 15))),
                                   if (_selectedOption != null &&
-                                      opt == _question!.correctDefinition)
+                                      opt == _question!.correctOption)
                                     const Icon(Icons.check_circle_rounded,
                                         color: Color(0xFF2ECC71), size: 22),
                                   if (_selectedOption == opt &&
                                       _isCorrect == false &&
-                                      opt != _question!.correctDefinition)
+                                      opt != _question!.correctOption)
                                     const Icon(Icons.cancel_rounded,
                                         color: kColorError, size: 22),
                                 ],
@@ -199,12 +239,15 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                               ),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: Text(
-                                  _isCorrect!
-                                      ? '✓ Correct! The answer is: ${_question!.correctDefinition}'
-                                      : '✗ The correct answer is: ${_question!.correctDefinition}',
-                                  style: const TextStyle(
-                                      color: kColorText, fontSize: 14),
+                                child: Directionality(
+                                  textDirection: TextDirection.ltr,
+                                  child: Text(
+                                    _isCorrect!
+                                        ? 'Correct! The answer is: ${_question!.correctOption}'
+                                        : 'The correct answer is: ${_question!.correctOption}',
+                                    style: const TextStyle(
+                                        color: kColorText, fontSize: 14),
+                                  ),
                                 ),
                               ),
                             ],

@@ -188,9 +188,25 @@ class AppStateModel extends ChangeNotifier {
             'meaning': (m['meaning'] as String? ?? ''),
           };
         }).toList();
+        _deduplicateBeginnerVocabulary();
       } catch (_) {
         _beginnerVocabulary = [];
       }
+    }
+  }
+
+  void _deduplicateBeginnerVocabulary() {
+    final seen = <String>{};
+    final unique = <Map<String, String>>[];
+    for (final entry in _beginnerVocabulary) {
+      final key = (entry['word'] ?? '').trim().toLowerCase();
+      if (key.isEmpty || seen.contains(key)) continue;
+      seen.add(key);
+      unique.add(entry);
+    }
+    if (unique.length != _beginnerVocabulary.length) {
+      _beginnerVocabulary = unique;
+      _saveBeginnerVocabulary();
     }
   }
 
@@ -652,8 +668,10 @@ class AppStateModel extends ChangeNotifier {
   Future<String?> discoverBeginnerWord(String word) async {
     if (!hasApiKey) return 'Please configure your API key first.';
 
-    // Check if already known
-    final alreadyKnown = _beginnerVocabulary.any((e) => e['word'] == word);
+    final clean = word.trim().toLowerCase();
+    // Check if already known (ignore case, spacing, and meaning)
+    final alreadyKnown = _beginnerVocabulary
+        .any((e) => (e['word'] ?? '').trim().toLowerCase() == clean);
     if (alreadyKnown) return null;
 
     try {

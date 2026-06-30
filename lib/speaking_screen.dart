@@ -5,6 +5,7 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'app_state_model.dart';
 import 'constants.dart';
 import 'gemini_api_service.dart';
+import 'string_utils.dart';
 
 class SpeakingScreen extends StatefulWidget {
   const SpeakingScreen({super.key});
@@ -22,7 +23,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
   bool _speechAvailable = false;
   String? _targetSentence;
   String _recognizedText = '';
-  bool? _isCorrect;
+  int _matchPercent = 0;
   @override
   void initState() {
     super.initState();
@@ -57,7 +58,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
       _loading = true;
       _targetSentence = null;
       _submitted = false;
-      _isCorrect = null;
+      _matchPercent = 0;
       _recognizedText = '';
     });
     try {
@@ -105,7 +106,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
       _listening = true;
       _recognizedText = '';
       _submitted = false;
-      _isCorrect = null;
+      _matchPercent = 0;
     });
     await _speech.listen(
       onResult: (result) {
@@ -120,31 +121,13 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
   Future<void> _stopListening() async {
     await _speech.stop();
     if (mounted && _targetSentence != null) {
-      final normalize = (String s) => s
-          .trim()
-          .toLowerCase()
-          .replaceAll(RegExp(r'[^\w\s]'), '')
-          .replaceAll(RegExp(r'\s+'), ' ')
-          .trim();
-      final correct = normalize(_recognizedText) == normalize(_targetSentence!);
+      final pct = similarityPercent(_recognizedText, _targetSentence!);
       setState(() {
         _listening = false;
         _submitted = true;
-        _isCorrect = correct;
+        _matchPercent = pct;
       });
     }
-  }
-
-  int _accuracyPercent() {
-    if (_recognizedText.isEmpty || _targetSentence == null) return 0;
-    final a = _recognizedText.trim().toLowerCase().split(RegExp(r'\s+'));
-    final b = _targetSentence!.trim().toLowerCase().split(RegExp(r'\s+'));
-    if (a.isEmpty || b.isEmpty) return 0;
-    int matches = 0;
-    for (final w in a) {
-      if (b.contains(w)) matches++;
-    }
-    return ((matches / b.length) * 100).round();
   }
 
   void _showError(String msg) {
@@ -191,17 +174,23 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Say this sentence:',
-                              style: TextStyle(
-                                  color: Colors.white.withValues(alpha: 0.7),
-                                  fontSize: 12)),
+                          Directionality(
+                            textDirection: TextDirection.ltr,
+                            child: Text('Say this sentence:',
+                                style: TextStyle(
+                                    color: Colors.white.withValues(alpha: 0.7),
+                                    fontSize: 12)),
+                          ),
                           const SizedBox(height: 8),
-                          Text(_targetSentence!,
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                  height: 1.3)),
+                          Directionality(
+                            textDirection: TextDirection.ltr,
+                            child: Text(_targetSentence!,
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w700,
+                                    height: 1.3)),
+                          ),
                         ],
                       ),
                     ),
@@ -271,54 +260,8 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
                     ],
                     if (_submitted) ...[
                       const SizedBox(height: 16),
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: (_isCorrect!
-                                  ? const Color(0xFF2ECC71)
-                                  : kColorError)
-                              .withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                              color: (_isCorrect!
-                                      ? const Color(0xFF2ECC71)
-                                      : kColorError)
-                                  .withValues(alpha: 0.3)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(
-                                    _isCorrect!
-                                        ? Icons.check_circle_rounded
-                                        : Icons.cancel_rounded,
-                                    color: _isCorrect!
-                                        ? const Color(0xFF2ECC71)
-                                        : kColorError,
-                                    size: 20),
-                                const SizedBox(width: 8),
-                                Text(
-                                    _isCorrect!
-                                        ? 'Great pronunciation!'
-                                        : 'Keep practicing',
-                                    style: TextStyle(
-                                        color: _isCorrect!
-                                            ? const Color(0xFF2ECC71)
-                                            : kColorError,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700)),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text('Accuracy: ${_accuracyPercent()}%',
-                                style: TextStyle(
-                                    color:
-                                        kColorTextMuted.withValues(alpha: 0.8),
-                                    fontSize: 14)),
-                          ],
-                        ),
+                      _SpeakingFeedbackCard(
+                        matchPercent: _matchPercent,
                       ),
                       const SizedBox(height: 20),
                       _NextButton(onTap: _generateSentence),
@@ -327,6 +270,44 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
                 ],
               ),
             ),
+    );
+  }
+}
+
+class _SpeakingFeedbackCard extends StatelessWidget {
+  final int matchPercent;
+  const _SpeakingFeedbackCard({required this.matchPercent});
+
+  @override
+  Widget build(BuildContext context) {
+    final (color, icon, label) = matchFeedback(matchPercent);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: color, size: 20),
+              const SizedBox(width: 8),
+              Text(label,
+                  style: TextStyle(
+                      color: color, fontSize: 16, fontWeight: FontWeight.w700)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text('Match: $matchPercent%',
+              style: TextStyle(
+                  color: color.withValues(alpha: 0.9),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600)),
+        ],
+      ),
     );
   }
 }

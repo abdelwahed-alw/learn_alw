@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'app_state_model.dart';
 import 'constants.dart';
 import 'gemini_api_service.dart';
+import 'string_utils.dart';
 
 class ListeningScreen extends StatefulWidget {
   const ListeningScreen({super.key});
@@ -19,18 +20,27 @@ class _ListeningScreenState extends State<ListeningScreen> {
   final TextEditingController _answerController = TextEditingController();
   bool _loading = false;
   bool _playing = false;
+  bool _playingSlow = false;
   bool _submitted = false;
   String? _targetSentence;
-  bool? _isCorrect;
+  int _matchPercent = 0;
 
   @override
   void initState() {
     super.initState();
     _tts.setCompletionHandler(() {
-      if (mounted) setState(() => _playing = false);
+      if (mounted)
+        setState(() {
+          _playing = false;
+          _playingSlow = false;
+        });
     });
     _tts.setErrorHandler((_) {
-      if (mounted) setState(() => _playing = false);
+      if (mounted)
+        setState(() {
+          _playing = false;
+          _playingSlow = false;
+        });
     });
     _generateSentence();
   }
@@ -68,7 +78,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
       _loading = true;
       _targetSentence = null;
       _submitted = false;
-      _isCorrect = null;
+      _matchPercent = 0;
       _answerController.clear();
     });
     try {
@@ -90,23 +100,28 @@ class _ListeningScreenState extends State<ListeningScreen> {
   }
 
   Future<void> _playAudio() async {
-    if (_targetSentence == null || _playing) return;
+    if (_targetSentence == null || _playing || _playingSlow) return;
     setState(() => _playing = true);
+    await _tts.setSpeechRate(0.5);
+    await _tts.speak(_targetSentence!);
+  }
+
+  Future<void> _playAudioSlowly() async {
+    if (_targetSentence == null || _playing || _playingSlow) return;
+    setState(() => _playingSlow = true);
+    await _tts.setSpeechRate(0.2);
     await _tts.speak(_targetSentence!);
   }
 
   void _submitAnswer() {
     if (_targetSentence == null) return;
-    final answer = _answerController.text.trim().toLowerCase();
-    final target = _targetSentence!.trim().toLowerCase();
-    final normalize = (String s) => s
-        .replaceAll(RegExp(r'[^\w\s]'), '')
-        .replaceAll(RegExp(r'\s+'), ' ')
-        .trim();
-    final correct = normalize(answer) == normalize(target);
+    final pct = similarityPercent(
+      _answerController.text,
+      _targetSentence!,
+    );
     setState(() {
       _submitted = true;
-      _isCorrect = correct;
+      _matchPercent = pct;
     });
   }
 
@@ -181,10 +196,55 @@ class _ListeningScreenState extends State<ListeningScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    _playing ? 'Playing...' : 'Tap to play audio',
+                    _playing
+                        ? 'Playing...'
+                        : _playingSlow
+                            ? 'Playing slowly...'
+                            : 'Tap to play audio',
                     style: TextStyle(
                         color: kColorTextMuted.withValues(alpha: 0.7),
                         fontSize: 13),
+                  ),
+                  const SizedBox(height: 12),
+                  GestureDetector(
+                    onTap: _playAudioSlowly,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: _playingSlow
+                            ? kColorAccent.withValues(alpha: 0.2)
+                            : kColorSurface,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: kColorAccent.withValues(alpha: 0.4),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _playingSlow
+                                ? Icons.volume_up_rounded
+                                : Icons.speed_rounded,
+                            size: 18,
+                            color:
+                                _playingSlow ? kColorAccent : kColorTextMuted,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '0.5x',
+                            style: TextStyle(
+                              color:
+                                  _playingSlow ? kColorAccent : kColorTextMuted,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                   const Spacer(flex: 1),
                   TextField(
@@ -230,50 +290,9 @@ class _ListeningScreenState extends State<ListeningScreen> {
                       ),
                     ),
                   if (_submitted) ...[
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: (_isCorrect!
-                                ? const Color(0xFF2ECC71)
-                                : kColorError)
-                            .withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                            color: (_isCorrect!
-                                    ? const Color(0xFF2ECC71)
-                                    : kColorError)
-                                .withValues(alpha: 0.3)),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                  _isCorrect!
-                                      ? Icons.check_circle_rounded
-                                      : Icons.cancel_rounded,
-                                  color: _isCorrect!
-                                      ? const Color(0xFF2ECC71)
-                                      : kColorError,
-                                  size: 20),
-                              const SizedBox(width: 8),
-                              Text(_isCorrect! ? 'Correct!' : 'Not quite',
-                                  style: TextStyle(
-                                      color: _isCorrect!
-                                          ? const Color(0xFF2ECC71)
-                                          : kColorError,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700)),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Text('The sentence was: $_targetSentence',
-                              style: TextStyle(
-                                  color: kColorTextMuted.withValues(alpha: 0.8),
-                                  fontSize: 14)),
-                        ],
-                      ),
+                    _FeedbackCard(
+                      matchPercent: _matchPercent,
+                      targetSentence: _targetSentence!,
                     ),
                     const SizedBox(height: 16),
                     _NextButton(onTap: _generateSentence),
@@ -282,6 +301,52 @@ class _ListeningScreenState extends State<ListeningScreen> {
                 ],
               ),
             ),
+    );
+  }
+}
+
+class _FeedbackCard extends StatelessWidget {
+  final int matchPercent;
+  final String targetSentence;
+  const _FeedbackCard({
+    required this.matchPercent,
+    required this.targetSentence,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final (color, icon, label) = matchFeedback(matchPercent);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: color, size: 20),
+              const SizedBox(width: 8),
+              Text(label,
+                  style: TextStyle(
+                      color: color, fontSize: 16, fontWeight: FontWeight.w700)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text('Match: $matchPercent%',
+              style: TextStyle(
+                  color: color.withValues(alpha: 0.9),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600)),
+          const SizedBox(height: 4),
+          Text('The sentence was: $targetSentence',
+              style: TextStyle(
+                  color: kColorTextMuted.withValues(alpha: 0.8), fontSize: 14)),
+        ],
+      ),
     );
   }
 }

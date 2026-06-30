@@ -176,16 +176,19 @@ class _ExercisesTabState extends State<ExercisesTab> {
     );
   }
 
+  static const _excludedTopics = {'Vocabulary Drill', 'Grammar Practice'};
+
   Widget _buildTopicSelector(AppStateModel state) {
     if (state.appMode != AppMode.practice) return const SizedBox.shrink();
+    final topics = kTopics.where((t) => !_excludedTopics.contains(t)).toList();
     return SizedBox(
       height: 36,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         separatorBuilder: (_, __) => const SizedBox(width: 8),
-        itemCount: kTopics.length,
+        itemCount: topics.length,
         itemBuilder: (context, index) {
-          final topic = kTopics[index];
+          final topic = topics[index];
           final isActive = state.selectedTopic == topic;
           return GestureDetector(
             onTap: () async {

@@ -139,22 +139,24 @@ class WordMeaning {
 
 class VocabularyQuestion {
   final String word;
-  final String correctDefinition;
+  final String correctOption;
   final List<String> options;
   const VocabularyQuestion({
     required this.word,
-    required this.correctDefinition,
+    required this.correctOption,
     required this.options,
   });
 }
 
 class ReadingExercise {
   final String passage;
+  final String passageTranslation;
   final String question;
   final List<String> options;
   final String correctAnswer;
   const ReadingExercise({
     required this.passage,
+    required this.passageTranslation,
     required this.question,
     required this.options,
     required this.correctAnswer,
@@ -966,11 +968,13 @@ class GeminiApiService {
     required String apiKey,
     required String targetLanguage,
     required String nativeLanguage,
+    required String userLevel,
   }) async {
     return _withRetry(() async {
       final prompt = buildReadingPrompt(
         targetLanguage: targetLanguage,
         nativeLanguage: nativeLanguage,
+        userLevel: userLevel,
       );
       final model = _buildModel(apiKey.trim());
       final response =
@@ -1211,11 +1215,27 @@ class GeminiApiService {
           : raw;
       final Map<String, dynamic> json =
           jsonDecode(cleaned) as Map<String, dynamic>;
-      final rawOptions = json['options'] as List<dynamic>? ?? [];
+
+      final word = (json['target_word'] as String? ?? '').trim();
+      final correctOption = (json['correct_option'] as String? ?? '').trim();
+      final rawWrong = json['wrong_options'] as List<dynamic>? ?? [];
+      final wrongOptions =
+          rawWrong.map((e) => (e as String? ?? '').trim()).toList();
+
+      final options = [correctOption, ...wrongOptions];
+      options.shuffle();
+
+      if (word.isEmpty || correctOption.isEmpty || options.length < 2) {
+        throw const GeminiServiceException(
+          GeminiErrorType.parseError,
+          'Invalid vocabulary question format. Please try again.',
+        );
+      }
+
       return VocabularyQuestion(
-        word: (json['word'] as String? ?? '').trim(),
-        correctDefinition: (json['correctDefinition'] as String? ?? '').trim(),
-        options: rawOptions.map((e) => (e as String? ?? '').trim()).toList(),
+        word: word,
+        correctOption: correctOption,
+        options: options,
       );
     } catch (e) {
       if (e is GeminiServiceException) rethrow;
@@ -1239,6 +1259,8 @@ class GeminiApiService {
       final rawOptions = json['options'] as List<dynamic>? ?? [];
       return ReadingExercise(
         passage: (json['passage'] as String? ?? '').trim(),
+        passageTranslation:
+            (json['passageTranslation'] as String? ?? '').trim(),
         question: (json['question'] as String? ?? '').trim(),
         options: rawOptions.map((e) => (e as String? ?? '').trim()).toList(),
         correctAnswer: (json['correctAnswer'] as String? ?? '').trim(),

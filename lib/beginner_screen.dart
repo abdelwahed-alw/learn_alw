@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -17,6 +18,7 @@ class BeginnerScreen extends StatefulWidget {
 }
 
 class _BeginnerScreenState extends State<BeginnerScreen> {
+  final FlutterTts _tts = FlutterTts();
   final Set<String> _loadingWords = {};
 
   @override
@@ -49,8 +51,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                 slivers: [
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding:
-                          const EdgeInsets.fromLTRB(24.0, 100.0, 24.0, 24.0),
+                      padding: const EdgeInsets.fromLTRB(24.0, 100.0, 24.0, 0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -70,11 +71,46 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                             _buildActions(state),
                           ],
                           const SizedBox(height: 24),
-                          _buildVocabList(state),
-                          const SizedBox(height: 100),
                         ],
                       ),
                     ),
+                  ),
+                  if (state.beginnerVocabulary.isNotEmpty) ...[
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      sliver: SliverToBoxAdapter(
+                        child: _buildVocabHeader(state),
+                      ),
+                    ),
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (ctx, i) =>
+                              _buildVocabItem(i, state.beginnerVocabulary),
+                          childCount: state.beginnerVocabulary.length,
+                        ),
+                      ),
+                    ),
+                    if (state.beginnerVocabulary.length > 20)
+                      SliverPadding(
+                        padding:
+                            const EdgeInsets.only(left: 24, right: 24, top: 8),
+                        sliver: SliverToBoxAdapter(
+                          child: Center(
+                            child: Text(
+                              '+ ${state.beginnerVocabulary.length - 20} more words',
+                              style: TextStyle(
+                                color: kColorTextMuted.withValues(alpha: 0.6),
+                                fontSize: 11,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                  const SliverPadding(
+                    padding: EdgeInsets.only(bottom: 100),
                   ),
                 ],
               ),
@@ -333,8 +369,9 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
 
   Widget _buildSentenceCard(AppStateModel state) {
     final words = state.beginnerSentence.split(' ');
-    final knownWords =
-        state.beginnerVocabulary.map((e) => e['word'] ?? '').toSet();
+    final knownWords = state.beginnerVocabulary
+        .map((e) => (e['word'] ?? '').trim().toLowerCase())
+        .toSet();
     final newWords = state.beginnerCurrentNewWords.map((e) => e.word).toSet();
 
     return Container(
@@ -391,7 +428,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
             textDirection: TextDirection.ltr,
             children: words.map((word) {
               final cleanWord = word.replaceAll(RegExp(r'[^\w\s]'), '');
-              final isKnown = knownWords.contains(cleanWord) ||
+              final isKnown = knownWords.contains(cleanWord.toLowerCase()) ||
                   knownWords.contains(word.toLowerCase()) ||
                   cleanWord.isEmpty;
               final isNew = newWords.contains(cleanWord) ||
@@ -540,8 +577,9 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
           ),
           const SizedBox(height: 10),
           ...newWords.map((nw) {
-            final isDiscovered =
-                state.beginnerVocabulary.any((e) => e['word'] == nw.word);
+            final isDiscovered = state.beginnerVocabulary.any((e) =>
+                (e['word'] ?? '').trim().toLowerCase() ==
+                nw.word.trim().toLowerCase());
             if (isDiscovered) return const SizedBox.shrink();
             return Padding(
               padding: const EdgeInsets.only(bottom: 6),
@@ -653,109 +691,120 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
     );
   }
 
-  Widget _buildVocabList(AppStateModel state) {
+  Widget _buildVocabHeader(AppStateModel state) {
     final vocab = state.beginnerVocabulary;
     if (vocab.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 12),
+      child: Row(
+        children: [
+          const Icon(Icons.menu_book_rounded, color: kColorTextMuted, size: 16),
+          const SizedBox(width: 8),
+          Text(
+            'My Vocabulary (${vocab.length})',
+            style: TextStyle(
+              color: kColorTextMuted.withValues(alpha: 0.8),
+              fontWeight: FontWeight.w700,
+              fontSize: 12,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 12),
-          child: Row(
-            children: [
-              const Icon(Icons.menu_book_rounded,
-                  color: kColorTextMuted, size: 16),
-              const SizedBox(width: 8),
-              Text(
-                'My Vocabulary (${vocab.length})',
-                style: TextStyle(
-                  color: kColorTextMuted.withValues(alpha: 0.8),
-                  fontWeight: FontWeight.w700,
-                  fontSize: 12,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ],
-          ),
+  Widget _buildVocabItem(int index, List<Map<String, String>> vocab) {
+    final entry = vocab[index];
+    final word = entry['word'] ?? '';
+    final isFirst = index == 0;
+    final isLast = index == vocab.length - 1;
+    return Container(
+      decoration: BoxDecoration(
+        color: kColorSurface.withValues(alpha: 0.5),
+        borderRadius: isFirst && isLast
+            ? BorderRadius.circular(16)
+            : isFirst
+                ? const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  )
+                : isLast
+                    ? const BorderRadius.only(
+                        bottomLeft: Radius.circular(16),
+                        bottomRight: Radius.circular(16),
+                      )
+                    : null,
+        border: Border(
+          bottom: isLast
+              ? BorderSide.none
+              : BorderSide(color: kColorBorder.withValues(alpha: 0.3)),
         ),
-        Container(
-          decoration: BoxDecoration(
-            color: kColorSurface.withValues(alpha: 0.5),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+      ),
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+      child: Row(
+        children: [
+          Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              color: const Color(0xFF2ECC71).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(
+              Icons.check_rounded,
+              color: Color(0xFF2ECC71),
+              size: 16,
+            ),
           ),
-          child: ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(12),
-            itemCount: vocab.length.clamp(0, 20),
-            separatorBuilder: (_, __) =>
-                Divider(color: kColorBorder.withValues(alpha: 0.3)),
-            itemBuilder: (context, index) {
-              final entry = vocab[index];
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 28,
-                      height: 28,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF2ECC71).withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(
-                        Icons.check_rounded,
-                        color: Color(0xFF2ECC71),
-                        size: 16,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      entry['word'] ?? '',
-                      style: const TextStyle(
-                        color: kColorText,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        entry['meaning'] ?? '',
-                        style: TextStyle(
-                          color: kColorTextMuted.withValues(alpha: 0.7),
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                    Icon(
-                      Icons.volume_up_rounded,
-                      size: 16,
-                      color: kColorTextMuted.withValues(alpha: 0.5),
-                    ),
-                  ],
-                ),
-              );
-            },
+          const SizedBox(width: 12),
+          Text(
+            word,
+            style: const TextStyle(
+              color: kColorText,
+              fontWeight: FontWeight.w600,
+              fontSize: 15,
+            ),
           ),
-        ),
-        if (vocab.length > 20)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Center(
-              child: Text(
-                '+ ${vocab.length - 20} more words',
-                style: TextStyle(
-                  color: kColorTextMuted.withValues(alpha: 0.6),
-                  fontSize: 11,
-                ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              entry['meaning'] ?? '',
+              style: TextStyle(
+                color: kColorTextMuted.withValues(alpha: 0.7),
+                fontSize: 13,
               ),
             ),
           ),
-      ],
+          GestureDetector(
+            onTap: () => _speakVocabWord(word),
+            child: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: kColorPrimary.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.volume_up_rounded,
+                size: 16,
+                color: kColorPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
+  }
+
+  @override
+  void dispose() {
+    _tts.stop();
+    super.dispose();
+  }
+
+  Future<void> _speakVocabWord(String word) async {
+    await _tts.setLanguage('en-US');
+    await _tts.speak(word);
   }
 
   Future<void> _generateNewSentence(AppStateModel state) async {
@@ -773,8 +822,10 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
   Future<void> _onWordTap(AppStateModel state, String word) async {
     if (word.isEmpty) return;
 
-    // Check if already known
-    final isKnown = state.beginnerVocabulary.any((e) => e['word'] == word);
+    // Check if already known (ignore case, spacing, and meaning)
+    final clean = word.trim().toLowerCase();
+    final isKnown = state.beginnerVocabulary
+        .any((e) => (e['word'] ?? '').trim().toLowerCase() == clean);
     if (isKnown) {
       final meaning = state.beginnerVocabulary
           .firstWhere((e) => e['word'] == word)['meaning'];

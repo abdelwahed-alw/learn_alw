@@ -122,9 +122,12 @@ const List<String> kTopics = [
 /// Picks a random topic from [kTopics].
 String randomTopic() => kTopics[Random().nextInt(kTopics.length)];
 
-/// Appends a timestamp seed to break prompt caching.
-String seedSuffix() =>
-    '\n\n[Seed: ${DateTime.now().millisecondsSinceEpoch} — ensure this exercise is completely different from previous ones.]';
+/// Appends a timestamp + random seed to break prompt caching.
+String seedSuffix() {
+  final ts = DateTime.now().millisecondsSinceEpoch;
+  final rnd = Random().nextInt(999999);
+  return '\n\n[Seed: $ts-$rnd — CRITICAL: Generate exactly ONE unique response. Do NOT repeat or paraphrase any previous response.]';
+}
 
 // Topic → Icon mapping for drawer
 const Map<String, IconData> kTopicIcons = {
@@ -803,15 +806,16 @@ Generate a vocabulary multiple-choice question.
 
 Return ONLY valid JSON:
 {
-  "word": "A level-appropriate word in $targetLanguage",
-  "correctDefinition": "The correct definition or translation in $nativeLanguage",
-  "options": ["correct definition", "wrong option 1", "wrong option 2", "wrong option 3"]
+  "target_word": "A level-appropriate word in $targetLanguage",
+  "correct_option": "The correct definition or translation in $nativeLanguage",
+  "wrong_options": ["plausible wrong option 1", "plausible wrong option 2", "plausible wrong option 3"]
 }
 
 Rules:
 - The word should be commonly useful (not obscure)
-- The options array must contain exactly 4 strings, shuffled, with the correct definition at a random index
-- Wrong options should be plausible but clearly incorrect
+- wrong_options must contain exactly 3 plausible but clearly incorrect options
+- Do NOT shuffle or merge the options — return correct_option and wrong_options separately
+- The correct_option is a single string, not an array
 ${seedSuffix()}
 - Return ONLY valid JSON. No text before or after.''';
 }
@@ -821,24 +825,38 @@ ${seedSuffix()}
 String buildReadingPrompt({
   required String targetLanguage,
   required String nativeLanguage,
+  required String userLevel,
 }) {
+  final isBeginner = userLevel == 'A1' || userLevel == 'A2';
+  final qLang = isBeginner ? nativeLanguage : targetLanguage;
+
   return '''You are a reading comprehension tutor for $targetLanguage learners who speak $nativeLanguage.
+
+## Level
+$userLevel
 
 ## Topic
 ${randomTopic()}
 
-## Task
-Generate a short reading passage and one comprehension question with 4 multiple-choice options.
+## Generation Rules (strict)
+- Generate a short reading passage in $targetLanguage (3-5 sentences) that is COMPLETELY different from any passage you have generated before.
+- Use a unique scenario, vocabulary set, and sentence structure every time.
+- Do NOT repeat topics, settings, or character names from previous generations.
 
+## Output format
 Return ONLY valid JSON:
 {
-  "passage": "A short paragraph (3-5 sentences) in $targetLanguage at an intermediate level",
-  "question": "A comprehension question about the passage in $nativeLanguage",
-  "options": ["correct answer", "wrong option 1", "wrong option 2", "wrong option 3"],
-  "correctAnswer": "The correct answer (must match one of the options exactly)"
+  "passage": "A short paragraph (3-5 sentences) in $targetLanguage",
+  "passageTranslation": "The exact same passage translated into $nativeLanguage",
+  "question": "A comprehension question about the passage in $qLang",
+  "options": ["correct answer in $qLang", "wrong option 1 in $qLang", "wrong option 2 in $qLang", "wrong option 3 in $qLang"],
+  "correctAnswer": "The correct answer in $qLang (must match one of the options exactly)"
 }
 
 Rules:
+- The passage must be in $targetLanguage
+- passageTranslation must be the full passage translated into $nativeLanguage
+- The question and all 4 options must be in $qLang
 - The passage should be self-contained and interesting
 - The question must be answerable from the passage text
 - The options array must contain exactly 4 strings, shuffled, with the correct answer at a random index
@@ -856,9 +874,12 @@ String buildListeningPrompt({
 ## Topic
 ${randomTopic()}
 
-## Task
-Generate a short, clear sentence suitable for a dictation exercise.
+## Generation Rules (strict)
+- Generate exactly ONE short sentence (5-12 words) in $targetLanguage.
+- The sentence must be COMPLETELY different from any sentence you have generated before.
+- Use a unique combination of words every time — avoid repeating vocabulary from recent generations.
 
+## Output format
 Return ONLY valid JSON:
 {
   "sentence": "A short sentence (5-12 words) in $targetLanguage"
@@ -882,9 +903,13 @@ String buildSpeakingPrompt({
 ## Topic
 ${randomTopic()}
 
-## Task
-Generate a practical, everyday sentence for the student to read aloud.
+## Generation Rules (strict)
+- Generate exactly ONE short sentence (5-12 words) in $targetLanguage for the student to read aloud.
+- The sentence must be COMPLETELY different from any sentence you have ever generated before.
+- Use a unique combination of words, structure, and scenario every time.
+- Avoid repeating words from recent generations — prefer fresh vocabulary each call.
 
+## Output format
 Return ONLY valid JSON:
 {
   "sentence": "A natural, practical sentence in $targetLanguage (5-12 words)"
