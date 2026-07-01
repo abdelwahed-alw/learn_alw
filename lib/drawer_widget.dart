@@ -3,6 +3,7 @@
 // topic icons, glassmorphism touches, and smooth micro-interactions.
 
 import 'dart:ui';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -419,7 +420,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 value: state.nativeLanguage,
                 items: kSupportedLanguages,
                 onChanged: (val) {
-                  if (val != null) state.setNativeLanguage(val);
+                  if (val != null) {
+                    state.setNativeLanguage(val);
+                    context.setLocale(Locale(val));
+                  }
                 },
               ),
               Padding(

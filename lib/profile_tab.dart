@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -485,7 +486,10 @@ class _ProfileTabState extends State<ProfileTab> {
                 value: state.nativeLanguage,
                 items: kSupportedLanguages,
                 onChanged: (val) {
-                  if (val != null) state.setNativeLanguage(val);
+                  if (val != null) {
+                    state.setNativeLanguage(val);
+                    context.setLocale(Locale(val));
+                  }
                 },
               ),
               Divider(

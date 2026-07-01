@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide tr;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -66,7 +67,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
           Row(
             children: [
               Text(
-                'Exercises',
+                'exercisesTab'.tr(),
                 style: const TextStyle(
                   color: kColorText,
                   fontSize: 22,
@@ -116,7 +117,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
   Widget _buildModeSelector(AppStateModel state) {
     final modes = [
       (AppMode.practice, tr(context, 'practice'), Icons.chat_rounded),
-      (AppMode.ielts, 'IELTS', Icons.assignment_rounded),
+      (AppMode.ielts, 'ielts'.tr(), Icons.assignment_rounded),
       (AppMode.beginner, tr(context, 'beginner'), Icons.auto_stories_rounded),
       (AppMode.categories, tr(context, 'categories'), Icons.grid_view_rounded),
     ];

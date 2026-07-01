@@ -1,6 +1,7 @@
 // lib/onboarding_screen.dart
 // First-run onboarding: API key setup → level selection or proficiency test.
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -422,9 +423,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     child: Text('$flag  $name'),
                   );
                 }).toList(),
-                onChanged: (val) {
+                  onChanged: (val) {
                   if (val != null) {
                     model.setNativeLanguage(val);
+                    context.setLocale(Locale(val));
                     // If target is same as new native, reset target
                     if (_targetSelected && model.targetLanguage == val) {
                       _targetSelected = false;

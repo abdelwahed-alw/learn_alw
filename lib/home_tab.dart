@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -18,16 +19,16 @@ class HomeTab extends StatelessWidget {
         String greeting;
         String emoji;
         if (hour < 12) {
-          greeting = 'Good Morning';
+          greeting = 'goodMorning'.tr();
           emoji = '☀️';
         } else if (hour < 17) {
-          greeting = 'Good Afternoon';
+          greeting = 'goodAfternoon'.tr();
           emoji = '🌤️';
         } else if (hour < 21) {
-          greeting = 'Good Evening';
+          greeting = 'goodEvening'.tr();
           emoji = '🌙';
         } else {
-          greeting = 'Ready for a late session?';
+          greeting = 'lateSession'.tr();
           emoji = '🌜';
         }
 
@@ -45,15 +46,15 @@ class HomeTab extends StatelessWidget {
                       const SizedBox(height: 24),
                       _buildGlobalProgress(state),
                       const SizedBox(height: 24),
-                      _buildSectionTitle('Continue Learning'),
+                      _buildSectionTitle('continueLearning'.tr()),
                       const SizedBox(height: 14),
                       _buildRecentCard(state),
                       const SizedBox(height: 24),
-                      _buildSectionTitle('Exercise Categories'),
+                      _buildSectionTitle('exerciseCategories'.tr()),
                       const SizedBox(height: 14),
                       _buildCategoryGrid(state),
                       const SizedBox(height: 24),
-                      _buildSectionTitle('Quick Stats'),
+                      _buildSectionTitle('quickStats'.tr()),
                       const SizedBox(height: 14),
                       _buildStatsRow(state),
                       const SizedBox(height: 32),
@@ -71,36 +72,38 @@ class HomeTab extends StatelessWidget {
   Widget _buildHeader(AppStateModel state, String greeting, String emoji) {
     return Row(
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(emoji, style: const TextStyle(fontSize: 24)),
-                const SizedBox(width: 8),
-                Text(
-                  'Salearn',
-                  style: TextStyle(
-                    color: kColorText.withValues(alpha: 0.5),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 1,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(emoji, style: const TextStyle(fontSize: 24)),
+                  const SizedBox(width: 8),
+                  Text(
+                    'salearn'.tr(),
+                    style: TextStyle(
+                      color: kColorText.withValues(alpha: 0.5),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 1,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              greeting,
-              style: const TextStyle(
-                color: kColorText,
-                fontSize: 24,
-                fontWeight: FontWeight.w800,
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 4),
+              Text(
+                greeting,
+                style: const TextStyle(
+                  color: kColorText,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
         ),
-        const Spacer(),
+        const SizedBox(width: 12),
         _LevelBadge(level: state.proficiencyLevel),
       ],
     );
@@ -123,7 +126,7 @@ class HomeTab extends StatelessWidget {
               Icon(Icons.trending_up_rounded, color: kColorPrimary, size: 18),
               const SizedBox(width: 8),
               Text(
-                'Overall Progress',
+                'overallProgress'.tr(),
                 style: TextStyle(
                   color: kColorText.withValues(alpha: 0.7),
                   fontSize: 13,
@@ -155,10 +158,10 @@ class HomeTab extends StatelessWidget {
           Row(
             children: [
               _statChip(Icons.check_circle_rounded,
-                  '${state.totalExercisesDone}', 'exercises'),
+                  '${state.totalExercisesDone}', 'exercises'.tr()),
               const SizedBox(width: 16),
               _statChip(Icons.local_fire_department_rounded,
-                  '${state.streakDays}', 'day streak'),
+                  '${state.streakDays}', 'dayStreak'.tr()),
             ],
           ),
         ],
@@ -234,9 +237,9 @@ class HomeTab extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Start Learning',
-                      style: TextStyle(
+                    Text(
+                      'startLearning'.tr(),
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -296,8 +299,8 @@ class HomeTab extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Continue Learning',
+                  Text(
+                    'continueLearning'.tr(),
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -336,24 +339,24 @@ class HomeTab extends StatelessWidget {
   String _labelForMode(AppMode mode) {
     switch (mode) {
       case AppMode.ielts:
-        return 'IELTS Exam Prep';
+        return 'ieltsExamPrep'.tr();
       case AppMode.beginner:
-        return 'Vocabulary Practice';
+        return 'vocabularyPractice'.tr();
       case AppMode.categories:
-        return 'Skill Exercises';
+        return 'skillExercises'.tr();
       case AppMode.practice:
-        return 'Practice Session';
+        return 'practiceSession'.tr();
     }
   }
 
   Widget _buildCategoryGrid(AppStateModel state) {
     final categories = [
-      ('Writing', Icons.edit_rounded, kTopics[0], 0.3),
-      ('Grammar', Icons.text_fields_rounded, kTopics[4], 0.5),
-      ('Vocabulary', Icons.spellcheck_rounded, kTopics[3], 0.4),
-      ('Reading', Icons.auto_stories_rounded, kTopics[1], 0.2),
-      ('Speaking', Icons.record_voice_over_rounded, kTopics[5], 0.1),
-      ('Listening', Icons.headphones_rounded, kTopics[2], 0.0),
+      ('writing'.tr(), Icons.edit_rounded, kTopics[0], 0.3),
+      ('grammar'.tr(), Icons.text_fields_rounded, kTopics[4], 0.5),
+      ('vocabulary'.tr(), Icons.spellcheck_rounded, kTopics[3], 0.4),
+      ('reading'.tr(), Icons.auto_stories_rounded, kTopics[1], 0.2),
+      ('speaking'.tr(), Icons.record_voice_over_rounded, kTopics[5], 0.1),
+      ('listening'.tr(), Icons.headphones_rounded, kTopics[2], 0.0),
     ];
 
     return GridView.builder(
@@ -385,7 +388,7 @@ class HomeTab extends StatelessWidget {
           child: _StatCard(
             icon: Icons.menu_book_rounded,
             value: '${state.beginnerVocabulary.length}',
-            label: 'Words',
+            label: 'words'.tr(),
             color: kColorPrimary,
           ),
         ),
@@ -394,7 +397,7 @@ class HomeTab extends StatelessWidget {
           child: _StatCard(
             icon: Icons.assignment_rounded,
             value: '${state.totalExercisesDone}',
-            label: 'Exercises',
+            label: 'exercises'.tr(),
             color: const Color(0xFFFF8E53),
           ),
         ),
@@ -403,7 +406,7 @@ class HomeTab extends StatelessWidget {
           child: _StatCard(
             icon: Icons.local_fire_department_rounded,
             value: '${state.streakDays}',
-            label: 'Streak',
+            label: 'streak'.tr(),
             color: const Color(0xFF2ECC71),
           ),
         ),

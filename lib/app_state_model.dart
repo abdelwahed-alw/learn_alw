@@ -4,7 +4,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
@@ -36,7 +35,6 @@ class AppStateModel extends ChangeNotifier {
   String _selectedTopic = kTopics.first;
   String _proficiencyLevel = 'B1';
   bool _onboardingDone = false;
-  Locale _locale = const Locale('en');
 
   // ── Session state ────────────────────────────────────────────────────────
   String _currentQuestion = '';
@@ -85,8 +83,6 @@ class AppStateModel extends ChangeNotifier {
   String _beginnerError = '';
 
   // ─── Getters ───────────────────────────────────────────────────────────────
-  Locale get locale => _locale;
-  String get apiKey => _apiKey;
   String get nativeLanguage => _nativeLanguage;
   String get targetLanguage => _targetLanguage;
   String get selectedTopic => _selectedTopic;
@@ -118,6 +114,7 @@ class AppStateModel extends ChangeNotifier {
   bool get isGeneratingQuestion => _loadingPhase == LoadingPhase.generatingQ;
   bool get isSubmitting => _loadingPhase == LoadingPhase.submitting;
   bool get isTranslating => _loadingPhase == LoadingPhase.translating;
+  String get apiKey => _apiKey;
   bool get hasApiKey => _apiKey.trim().isNotEmpty;
   bool get hasQuestion => _currentQuestion.isNotEmpty;
 
@@ -158,8 +155,6 @@ class AppStateModel extends ChangeNotifier {
     _selectedTopic = _prefs.getString(kPrefTopic) ?? kTopics.first;
     _proficiencyLevel = _prefs.getString(kPrefLevel) ?? 'B1';
     _onboardingDone = _prefs.getBool(kPrefOnboarding) ?? false;
-    final savedLocale = _prefs.getString(kPrefLocale);
-    if (savedLocale != null) _locale = Locale(savedLocale);
     _loadBeginnerVocabularyFromPrefs();
     loadProgress();
     notifyListeners();
@@ -249,9 +244,7 @@ class AppStateModel extends ChangeNotifier {
   Future<void> setNativeLanguage(String code) async {
     if (_nativeLanguage == code) return;
     _nativeLanguage = code;
-    _locale = Locale(code);
     await _prefs.setString(kPrefNativeLang, code);
-    await _prefs.setString(kPrefLocale, code);
     notifyListeners();
   }
 

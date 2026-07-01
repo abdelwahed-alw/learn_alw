@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -46,7 +47,7 @@ class ProgressTab extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Progress',
+          'progressTab'.tr(),
           style: const TextStyle(
             color: kColorText,
             fontSize: 22,
@@ -55,7 +56,7 @@ class ProgressTab extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          'Track your learning journey',
+          'trackYourLearning'.tr(),
           style: TextStyle(
             color: kColorTextMuted.withValues(alpha: 0.7),
             fontSize: 13,
@@ -71,7 +72,7 @@ class ProgressTab extends StatelessWidget {
         Expanded(
           child: _OverviewCard(
             icon: Icons.assignment_rounded,
-            label: 'Total Exercises',
+            label: 'totalExercises'.tr(),
             value: '${state.totalExercisesDone}',
             color: kColorPrimary,
           ),
@@ -80,7 +81,7 @@ class ProgressTab extends StatelessWidget {
         Expanded(
           child: _OverviewCard(
             icon: Icons.menu_book_rounded,
-            label: 'Words Learned',
+            label: 'wordsLearned'.tr(),
             value: '${state.beginnerVocabulary.length}',
             color: const Color(0xFFFF8E53),
           ),
@@ -89,7 +90,7 @@ class ProgressTab extends StatelessWidget {
         Expanded(
           child: _OverviewCard(
             icon: Icons.local_fire_department_rounded,
-            label: 'Day Streak',
+            label: 'dayStreak'.tr(),
             value: '${state.streakDays}',
             color: const Color(0xFF2ECC71),
           ),
@@ -116,7 +117,7 @@ class ProgressTab extends StatelessWidget {
                 color: kColorTextMuted.withValues(alpha: 0.4), size: 40),
             const SizedBox(height: 8),
             Text(
-              'No exercises completed yet.\nStart practicing to see your progress!',
+              'noExercisesYet'.tr(),
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: kColorTextMuted.withValues(alpha: 0.6),
@@ -140,16 +141,16 @@ class ProgressTab extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Center(
+                child: Center(
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.rocket_launch_rounded,
+                      const Icon(Icons.rocket_launch_rounded,
                           color: Colors.white, size: 16),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       Text(
-                        'Start an Exercise',
-                        style: TextStyle(
+                        'startAnExercise'.tr(),
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -168,7 +169,7 @@ class ProgressTab extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Topic Breakdown',
+          'topicBreakdown'.tr(),
           style: const TextStyle(
             color: kColorText,
             fontSize: 16,
@@ -250,7 +251,7 @@ class ProgressTab extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Vocabulary (${vocab.length})',
+          '${'vocabulary'.tr()} (${vocab.length})',
           style: const TextStyle(
             color: kColorText,
             fontSize: 16,
@@ -322,8 +323,8 @@ class ProgressTab extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: Center(
-              child: Text(
-                '+ ${vocab.length - 20} more words',
+              child:               Text(
+                '+ ${vocab.length - 20} ${'moreWords'.tr()}',
                 style: TextStyle(
                   color: kColorTextMuted.withValues(alpha: 0.6),
                   fontSize: 11,

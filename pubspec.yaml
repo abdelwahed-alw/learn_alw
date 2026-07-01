@@ -40,6 +40,9 @@ dependencies:
   # Speech-to-Text for Speaking exercises
   speech_to_text: ^7.0.0
 
+  # JSON-based i18n
+  easy_localization: ^3.0.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -56,3 +59,4 @@ flutter:
 
   assets:
     - assets/icon/icon.png
+    - assets/translations/

@@ -1,5 +1,5 @@
 // lib/proficiency_test_screen.dart
-// Dynamic 5-question MCQ proficiency assessment powered by Gemini.
+// Dynamic 10-question MCQ proficiency assessment powered by Gemini.
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,7 +21,7 @@ class ProficiencyTestScreen extends StatefulWidget {
 class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
   final GeminiApiService _api = GeminiApiService();
 
-  static const int _totalQuestions = 5;
+  static const int _totalQuestions = 10;
 
   final List<Map<String, dynamic>> _qaHistory = [];
   McqQuestion? _currentMcq;
@@ -417,13 +417,16 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
-                _currentMcq!.question,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontSize: 17,
-                      height: 1.5,
-                      fontWeight: FontWeight.w500,
-                    ),
+              Directionality(
+                textDirection: TextDirection.ltr,
+                child: Text(
+                  _currentMcq!.question,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontSize: 17,
+                        height: 1.5,
+                        fontWeight: FontWeight.w500,
+                      ),
+                ),
               ),
             ],
           ),

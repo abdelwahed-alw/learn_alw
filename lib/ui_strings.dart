@@ -2,6 +2,7 @@
 // Simple localization system keyed by language code.
 // Falls back to English if a key or language is missing.
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 const Map<String, Map<String, String>> _strings = {
@@ -26,7 +27,7 @@ const Map<String, Map<String, String>> _strings = {
     'helpStep3': 'Click "Create API Key" and copy it',
     'playTutorial': 'Play Tutorial',
     'takeTest': 'Take the Placement Test',
-    'testDesc': '5 adaptive MCQ questions · ~2 min',
+    'testDesc': '10 adaptive MCQ questions · ~4 min',
     'testDescLong':
         'AI-generated multiple choice questions that adapt to your answers. Your exact CEFR level will be determined automatically.',
     'orChooseManually': 'OR CHOOSE MANUALLY',
@@ -156,7 +157,7 @@ const Map<String, Map<String, String>> _strings = {
     'helpStep3': 'اضغط "إنشاء مفتاح API" وانسخه',
     'playTutorial': 'شاهد الشرح',
     'takeTest': 'خذ اختبار تحديد المستوى',
-    'testDesc': '5 أسئلة تكيفية · ~2 دقيقة',
+    'testDesc': '10 أسئلة تكيفية · ~4 دقائق',
     'testDescLong':
         'أسئلة اختيار من متعدد مولّدة بالذكاء الاصطناعي تتكيف مع إجاباتك. سيتم تحديد مستواك CEFR تلقائيًا.',
     'orChooseManually': 'أو اختر يدويًا',
@@ -282,7 +283,7 @@ const Map<String, Map<String, String>> _strings = {
     'helpStep3': 'Cliquez "Créer une clé API" et copiez-la',
     'playTutorial': 'Voir le tutoriel',
     'takeTest': 'Passer le test de placement',
-    'testDesc': '5 questions adaptatives · ~2 min',
+    'testDesc': '10 questions adaptatives · ~4 min',
     'testDescLong':
         'Questions à choix multiples générées par IA qui s\'adaptent à vos réponses. Votre niveau CECR sera déterminé automatiquement.',
     'orChooseManually': 'OU CHOISIR MANUELLEMENT',
@@ -355,7 +356,7 @@ const Map<String, Map<String, String>> _strings = {
     'helpStep3': 'Haz clic en "Crear clave API" y cópiala',
     'playTutorial': 'Ver tutorial',
     'takeTest': 'Hacer el test de nivel',
-    'testDesc': '5 preguntas adaptativas · ~2 min',
+    'testDesc': '10 preguntas adaptativas · ~4 min',
     'testDescLong':
         'Preguntas de opción múltiple generadas por IA que se adaptan a tus respuestas. Tu nivel MCER se determinará automáticamente.',
     'orChooseManually': 'O ELEGIR MANUALMENTE',
@@ -428,7 +429,7 @@ const Map<String, Map<String, String>> _strings = {
     'helpStep3': '"API Anahtarı Oluştur"a tıklayın ve kopyalayın',
     'playTutorial': 'Öğreticiyi izle',
     'takeTest': 'Seviye testini yapın',
-    'testDesc': '5 uyarlanabilir soru · ~2 dk',
+    'testDesc': '10 uyarlanabilir soru · ~4 dk',
     'testDescLong':
         'Cevaplarınıza göre uyarlanan yapay zeka üretimi çoktan seçmeli sorular. CEFR seviyeniz otomatik olarak belirlenecektir.',
     'orChooseManually': 'VEYA MANUEL SEÇİN',
@@ -501,7 +502,7 @@ const Map<String, Map<String, String>> _strings = {
     'helpStep3': 'Klicken Sie "API-Schlüssel erstellen" und kopieren',
     'playTutorial': 'Tutorial ansehen',
     'takeTest': 'Einstufungstest machen',
-    'testDesc': '5 adaptive Fragen · ~2 Min',
+    'testDesc': '10 adaptive Fragen · ~4 Min',
     'testDescLong':
         'KI-generierte Multiple-Choice-Fragen, die sich an Ihre Antworten anpassen. Ihr GER-Niveau wird automatisch bestimmt.',
     'orChooseManually': 'ODER MANUELL WÄHLEN',
@@ -575,7 +576,7 @@ const Map<String, Map<String, String>> _strings = {
     'helpStep3': 'Clicca "Create API Key" e copiala',
     'playTutorial': 'Guarda il tutorial',
     'takeTest': 'Fai il test di livello',
-    'testDesc': '5 domande a scelta multipla · ~2 min',
+    'testDesc': '10 domande a scelta multipla · ~4 min',
     'testDescLong':
         'Domande a scelta multipla generate dall\'IA che si adattano alle tue risposte. Il tuo livello CEFR esatto verrà determinato automaticamente.',
     'orChooseManually': 'OPPURE SCEGLI MANUALMENTE',
@@ -648,7 +649,7 @@ const Map<String, Map<String, String>> _strings = {
     'helpStep3': 'Clique em "Criar chave API" e copie-a',
     'playTutorial': 'Assistir ao tutorial',
     'takeTest': 'Fazer Teste de Nivelamento',
-    'testDesc': '5 questões de múltipla escolha · ~2 min',
+    'testDesc': '10 questões de múltipla escolha · ~4 min',
     'testDescLong':
         'Questões geradas por IA que se adaptam às suas respostas. Seu nível CEFR exato será determinado automaticamente.',
     'orChooseManually': 'OU ESCOLHA MANUALMENTE',
@@ -718,7 +719,7 @@ const Map<String, Map<String, String>> _strings = {
     'helpStep3': '点击“创建 API 密钥”并复制',
     'playTutorial': '播放教程',
     'takeTest': '参加分级测试',
-    'testDesc': '5道自适应选择题 · 约2分钟',
+    'testDesc': '10道自适应选择题 · 约4分钟',
     'testDescLong': '适应您的回答的 AI 生成选择题。您的确切 CEFR 水平将被自动确定。',
     'orChooseManually': '或手动选择',
     'selectYourLevel': '选择您的水平',
@@ -787,7 +788,7 @@ const Map<String, Map<String, String>> _strings = {
     'helpStep3': '「Create API Key」をクリックしてコピー',
     'playTutorial': 'チュートリアルを再生',
     'takeTest': 'レベルテストを受ける',
-    'testDesc': '5つの適応型選択問題 · 約2分',
+    'testDesc': '10の適応型選択問題 · 約4分',
     'testDescLong': '回答に合わせて適応するAI生成の選択問題。正確なCEFRレベルが自動的に判定されます。',
     'orChooseManually': 'または手動で選択',
     'selectYourLevel': 'レベルを選択',
@@ -871,9 +872,8 @@ String t(String key, String langCode) {
   return _strings[langCode]?[key] ?? _strings['en']?[key] ?? key;
 }
 
-/// Convenience: gets a localized UI string using [context]'s locale.
-String tr(BuildContext context, String key) =>
-    t(key, Localizations.localeOf(context).languageCode);
+/// Convenience: gets a localized UI string using [context]'s locale via easy_localization.
+String tr(BuildContext context, String key) => key.tr();
 
 // ─── Localized Topic Names ──────────────────────────────────────────────────
 const Map<String, Map<String, String>> _topicNames = {

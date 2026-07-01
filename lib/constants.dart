@@ -17,7 +17,6 @@ const String kPrefTopicProgress = 'topic_progress';
 const String kPrefLastActive = 'last_active_date';
 const String kPrefStreak = 'streak';
 const String kPrefLastMode = 'last_mode';
-const String kPrefLocale = 'app_locale';
 
 // ─── YouTube tutorial ─────────────────────────────────────────────────────────
 const String kYoutubeTutorialUrl =

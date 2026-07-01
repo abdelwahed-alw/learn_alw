@@ -41,10 +41,10 @@ class _AppShellState extends State<AppShell> {
 
   Widget _buildBottomNav() {
     final items = [
-      (Icons.home_rounded, tr(context, 'home')),
-      (Icons.menu_book_rounded, tr(context, 'exercises')),
-      (Icons.bar_chart_rounded, tr(context, 'progress')),
-      (Icons.person_rounded, tr(context, 'profile')),
+      (Icons.home_rounded, tr(context, 'homeTab')),
+      (Icons.menu_book_rounded, tr(context, 'exercisesTab')),
+      (Icons.bar_chart_rounded, tr(context, 'progressTab')),
+      (Icons.person_rounded, tr(context, 'profileTab')),
     ];
 
     return Container(

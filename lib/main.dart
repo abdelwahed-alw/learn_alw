@@ -2,8 +2,8 @@
 // App entry point for Salearn.
 // Routes to OnboardingScreen on first run, otherwise HomeScreen.
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,14 +14,24 @@ import 'onboarding_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
 
   runApp(
-    ChangeNotifierProvider<AppStateModel>(
-      create: (_) {
-        return AppStateModel(prefs)..loadFromPrefs();
-      },
-      child: const LearnAlwApp(),
+    EasyLocalization(
+      supportedLocales: const [
+        Locale('en'), Locale('ar'), Locale('fr'), Locale('es'),
+        Locale('tr'), Locale('de'), Locale('it'), Locale('pt'),
+        Locale('zh'), Locale('ja'),
+      ],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('en'),
+      child: ChangeNotifierProvider<AppStateModel>(
+        create: (_) {
+          return AppStateModel(prefs)..loadFromPrefs();
+        },
+        child: const LearnAlwApp(),
+      ),
     ),
   );
 }
@@ -37,13 +47,9 @@ class LearnAlwApp extends StatelessWidget {
       builder: (context, model, _) {
         return MaterialApp(
           title: 'Salearn',
-          locale: model.locale,
-          supportedLocales: const [Locale('en'), Locale('ar')],
-          localizationsDelegates: const [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
+          localizationsDelegates: context.localizationDelegates,
+          supportedLocales: context.supportedLocales,
+          locale: context.locale,
           debugShowCheckedModeBanner: false,
           themeMode: ThemeMode.dark,
           theme: _buildLightTheme(),
