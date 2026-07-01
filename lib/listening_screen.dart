@@ -22,6 +22,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
   bool _playing = false;
   bool _playingSlow = false;
   bool _submitted = false;
+  bool _isInputEmpty = true;
   String? _targetSentence;
   int _matchPercent = 0;
 
@@ -78,6 +79,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
       _loading = true;
       _targetSentence = null;
       _submitted = false;
+      _isInputEmpty = true;
       _matchPercent = 0;
       _answerController.clear();
     });
@@ -249,7 +251,10 @@ class _ListeningScreenState extends State<ListeningScreen> {
                   const Spacer(flex: 1),
                   TextField(
                     controller: _answerController,
+                    textDirection: TextDirection.ltr,
+                    textAlign: TextAlign.left,
                     enabled: !_submitted,
+                    onChanged: (v) => setState(() => _isInputEmpty = v.trim().isEmpty),
                     decoration: InputDecoration(
                       hintText: 'Type what you heard...',
                       filled: true,
@@ -262,25 +267,19 @@ class _ListeningScreenState extends State<ListeningScreen> {
                   const SizedBox(height: 16),
                   if (!_submitted)
                     GestureDetector(
-                      onTap: _answerController.text.trim().isEmpty
-                          ? null
-                          : _submitAnswer,
+                      onTap: _isInputEmpty ? null : _submitAnswer,
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
                         height: 52,
                         decoration: BoxDecoration(
-                          gradient: _answerController.text.trim().isEmpty
-                              ? null
-                              : kPrimaryGradient,
-                          color: _answerController.text.trim().isEmpty
-                              ? kColorSurface
-                              : null,
+                          gradient: _isInputEmpty ? null : kPrimaryGradient,
+                          color: _isInputEmpty ? kColorSurface : null,
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Center(
                           child: Text('Check Answer',
                               style: TextStyle(
-                                color: _answerController.text.trim().isEmpty
+                                color: _isInputEmpty
                                     ? kColorTextMuted
                                     : Colors.white,
                                 fontSize: 16,

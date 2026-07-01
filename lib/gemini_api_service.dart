@@ -969,12 +969,18 @@ class GeminiApiService {
     required String targetLanguage,
     required String nativeLanguage,
     required String userLevel,
+    String characterName = '',
+    String storyTheme = '',
+    String seed = '',
   }) async {
     return _withRetry(() async {
       final prompt = buildReadingPrompt(
         targetLanguage: targetLanguage,
         nativeLanguage: nativeLanguage,
         userLevel: userLevel,
+        characterName: characterName,
+        storyTheme: storyTheme,
+        seed: seed,
       );
       final model = _buildModel(apiKey.trim());
       final response =
@@ -1062,11 +1068,15 @@ class GeminiApiService {
     required String apiKey,
     required String targetLanguage,
     required String nativeLanguage,
+    String grammarTopic = '',
+    String seed = '',
   }) async {
     return _withRetry(() async {
       final prompt = buildGrammarPrompt(
         targetLanguage: targetLanguage,
         nativeLanguage: nativeLanguage,
+        grammarTopic: grammarTopic,
+        seed: seed,
       );
       final model = _buildModel(apiKey.trim());
       final response =

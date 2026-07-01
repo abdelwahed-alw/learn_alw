@@ -121,6 +121,37 @@ const List<String> kTopics = [
 /// Picks a random topic from [kTopics].
 String randomTopic() => kTopics[Random().nextInt(kTopics.length)];
 
+const List<String> grammarTopics = [
+  'Present Perfect',
+  'Past Continuous',
+  'Conditionals (Type 1, 2, 3)',
+  'Prepositions of Place/Time',
+  'Passive Voice',
+  'Reported Speech',
+  'Articles (a, an, the)',
+  'Modal Verbs (can, must, should, might)',
+  'Gerunds vs Infinitives',
+  'Comparative and Superlative Adjectives',
+  'Relative Clauses (who, which, that, where)',
+  'Present Continuous for Future',
+  'Past Perfect',
+  'Future Tenses (will, going to, present continuous)',
+  'Countable and Uncountable Nouns',
+  'Zero and First Conditional',
+  'Second and Third Conditional',
+  'Phrasal Verbs (common)',
+  'Question Tags',
+  'Used to / Would for past habits',
+  'Present Simple vs Present Continuous',
+  'Past Simple vs Past Continuous',
+  'Present Perfect vs Past Simple',
+  'So / Such / Too / Enough',
+  'Wish / If only structures',
+  'Defining vs Non-defining Relative Clauses',
+  'Causative Have/Get',
+  'Inversion after negative adverbials',
+];
+
 /// Appends a timestamp + random seed to break prompt caching.
 String seedSuffix() {
   final ts = DateTime.now().millisecondsSinceEpoch;
@@ -721,18 +752,24 @@ Rules:
 String buildGrammarPrompt({
   required String targetLanguage,
   required String nativeLanguage,
+  String grammarTopic = '',
+  String seed = '',
 }) {
   return '''You are a grammar tutor for $targetLanguage learners who speak $nativeLanguage.
 
 ## Topic
 ${randomTopic()}
 
+## Grammar Rule Focus
+CRITICAL INSTRUCTION: The exercise MUST strictly test this specific grammar rule: $grammarTopic.
+Do NOT generate basic 'verb to be' questions unless this specific rule is requested.
+
 ## Task
 Generate a grammar exercise in $targetLanguage. Choose ONE of the following types randomly:
 
-Type A — Error Correction: Write a short sentence in $targetLanguage that contains ONE grammatical error. The student must identify and fix it.
+Type A — Error Correction: Write a short sentence in $targetLanguage that contains ONE grammatical error related to the grammar rule above. The student must identify and fix it.
 
-Type B — Fill in the Blank: Write a sentence in $targetLanguage with ONE word replaced by a blank "___". Provide 4 options where only one is grammatically correct.
+Type B — Fill in the Blank: Write a sentence in $targetLanguage with ONE word replaced by a blank "___" that tests the grammar rule above. Provide 4 options where only one is grammatically correct.
 
 Return ONLY valid JSON:
 {
@@ -744,10 +781,11 @@ Return ONLY valid JSON:
 }
 
 Rules:
-- The error should test a common grammar point (tenses, prepositions, articles, word order, agreement)
+- The error MUST be related to the specified grammar rule: $grammarTopic
 - If type is "error_correction", options can be null or empty
 - If type is "fill_blank", provide exactly 4 options with one correct
 - The explanation should teach the rule, not just state the answer
+- Random Seed: [$seed]
 ${seedSuffix()}
 - Return ONLY valid JSON. No text before or after.''';
 }
@@ -821,10 +859,43 @@ ${seedSuffix()}
 
 // ─── Reading Prompt ────────────────────────────────────────────────────────────
 
+const List<String> readingNames = [
+  'Alex', 'Sofia', 'Omar', 'Mei', 'Liam',
+  'Fatima', 'Kenji', 'Zoe', 'Carlos', 'Aisha',
+  'Elena', 'Hiro', 'Olivia', 'Ravi', 'Nora',
+  'Yuki', 'Marcus', 'Zara', 'Tomas', 'Leila',
+];
+
+const List<String> readingThemes = [
+  'A sci-fi adventure in space',
+  'A funny misunderstanding at a restaurant',
+  'A historical mystery discovery',
+  'Reviewing a strange new gadget',
+  'Surviving a minor natural disaster',
+  'An unusual hobby that becomes a career',
+  'A mysterious letter from a stranger',
+  'Getting lost in an unfamiliar city',
+  'A surprising act of kindness from a stranger',
+  'Discovering an old family photograph with a secret',
+  'A day volunteering at an animal shelter',
+  'Learning a new skill from an unexpected teacher',
+  'A race against time to catch the last train',
+  'Finding a hidden message in an old library book',
+  'An unexpected encounter with a wild animal',
+  'Building something creative from recycled materials',
+  'A cooking disaster that turns into a delicious success',
+  'Solving a small neighborhood mystery',
+  'A chance meeting that leads to a new friendship',
+  'Participating in a local festival for the first time',
+];
+
 String buildReadingPrompt({
   required String targetLanguage,
   required String nativeLanguage,
   required String userLevel,
+  String characterName = 'Alex',
+  String storyTheme = 'A short interesting story',
+  String seed = '',
 }) {
   final isBeginner = userLevel == 'A1' || userLevel == 'A2';
   final qLang = isBeginner ? nativeLanguage : targetLanguage;
@@ -837,8 +908,13 @@ $userLevel
 ## Topic
 ${randomTopic()}
 
+## Character & Theme (CRITICAL)
+- The main character's name MUST be "$characterName". Do NOT use any other name.
+- The theme of the story MUST be: "$storyTheme".
+- Make the story engaging and unique — avoid mundane scenarios like waiting at a station or shopping at a market.
+
 ## Generation Rules (strict)
-- Generate a short reading passage in $targetLanguage (3-5 sentences) that is COMPLETELY different from any passage you have generated before.
+- Generate a short reading passage in $targetLanguage (3-5 sentences) about $characterName experiencing $storyTheme.
 - Use a unique scenario, vocabulary set, and sentence structure every time.
 - Do NOT repeat topics, settings, or character names from previous generations.
 
@@ -859,6 +935,7 @@ Rules:
 - The passage should be self-contained and interesting
 - The question must be answerable from the passage text
 - The options array must contain exactly 4 strings, shuffled, with the correct answer at a random index
+- Random Seed: [$seed]
 ${seedSuffix()}
 - Return ONLY valid JSON. No text before or after.''';
 }

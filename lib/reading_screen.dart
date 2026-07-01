@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
@@ -43,17 +45,26 @@ class _ReadingScreenState extends State<ReadingScreen> {
       _showTranslation = false;
     });
     try {
+      final rng = Random();
+      final name = readingNames[rng.nextInt(readingNames.length)];
+      final theme = readingThemes[rng.nextInt(readingThemes.length)];
+      final seed = DateTime.now().millisecondsSinceEpoch.toString();
       final ex = await _api.generateReadingExercise(
         apiKey: state.apiKey,
         targetLanguage: languageLabelFromCode(state.targetLanguage),
         nativeLanguage: languageLabelFromCode(state.nativeLanguage),
         userLevel: state.proficiencyLevel,
+        characterName: name,
+        storyTheme: theme,
+        seed: seed,
       );
-      if (mounted)
+      if (mounted) {
+        ex.options.shuffle();
         setState(() {
           _exercise = ex;
           _loading = false;
         });
+      }
     } on GeminiServiceException catch (e) {
       if (mounted) _showError(e.message);
       setState(() => _loading = false);
@@ -217,13 +228,16 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                           fontSize: 15,
                                           height: 1.7),
                                     )
-                                  : Text(
-                                      _exercise!.passage,
-                                      key: const ValueKey('original'),
-                                      style: const TextStyle(
-                                          color: kColorText,
-                                          fontSize: 15,
-                                          height: 1.7),
+                                  : Directionality(
+                                      textDirection: TextDirection.ltr,
+                                      child: Text(
+                                        _exercise!.passage,
+                                        key: const ValueKey('original'),
+                                        style: const TextStyle(
+                                            color: kColorText,
+                                            fontSize: 15,
+                                            height: 1.7),
+                                      ),
                                     ),
                             ),
                           ],

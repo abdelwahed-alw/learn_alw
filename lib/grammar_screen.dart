@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -41,10 +43,16 @@ class _GrammarScreenState extends State<GrammarScreen> {
       _answerController.clear();
     });
     try {
+      final rng = Random();
+      final selectedTopic =
+          grammarTopics[rng.nextInt(grammarTopics.length)];
+      final seed = DateTime.now().millisecondsSinceEpoch.toString();
       final question = await _api.generateGrammarQuestion(
         apiKey: state.apiKey,
         targetLanguage: languageLabelFromCode(state.targetLanguage),
         nativeLanguage: languageLabelFromCode(state.nativeLanguage),
+        grammarTopic: selectedTopic,
+        seed: seed,
       );
       if (mounted) {
         setState(() {
@@ -174,13 +182,16 @@ class _GrammarScreenState extends State<GrammarScreen> {
                               ],
                             ),
                             const SizedBox(height: 16),
-                            Text(
-                              _question!.sentence,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w700,
-                                height: 1.4,
+                            Directionality(
+                              textDirection: TextDirection.ltr,
+                              child: Text(
+                                _question!.sentence,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                  height: 1.4,
+                                ),
                               ),
                             ),
                           ],
@@ -257,11 +268,14 @@ class _GrammarScreenState extends State<GrammarScreen> {
                                       ),
                                       const SizedBox(width: 12),
                                       Expanded(
-                                        child: Text(
-                                          option,
-                                          style: TextStyle(
-                                            color: kColorText,
-                                            fontSize: 15,
+                                        child: Directionality(
+                                          textDirection: TextDirection.ltr,
+                                          child: Text(
+                                            option,
+                                            style: TextStyle(
+                                              color: kColorText,
+                                              fontSize: 15,
+                                            ),
                                           ),
                                         ),
                                       ),
