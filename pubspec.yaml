@@ -43,6 +43,16 @@ dependencies:
   # JSON-based i18n
   easy_localization: ^3.0.7
 
+  # Audio playback from file
+  audioplayers: ^6.6.0
+
+  # Audio recording to temp file
+  record: ^5.2.1
+
+  # Temporary directory path (transitive dep made explicit)
+  path_provider: ^2.1.5
+  font_awesome_flutter: ^11.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -255,6 +256,8 @@ class _ProfileTabState extends State<ProfileTab> {
                       const SizedBox(height: 24),
                       _buildAppInfo(),
                       const SizedBox(height: 32),
+                      _buildFooter(),
+                      const SizedBox(height: 24),
                     ],
                   ),
                 ),
@@ -648,6 +651,64 @@ class _ProfileTabState extends State<ProfileTab> {
             ],
           ),
         ],
+      ),
+    );
+  }
+  Widget _buildFooter() {
+    return Column(
+      children: [
+        const SizedBox(height: 8),
+        Text(
+          'Powered by Abdelwahed Abdellaoui',
+          style: TextStyle(
+            color: kColorTextMuted.withValues(alpha: 0.5),
+            fontSize: 12,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _socialIcon(FontAwesomeIcons.facebook, 'Facebook', 'https://www.facebook.com/profile.php?id=61573168753232'),
+            const SizedBox(width: 8),
+            _socialIcon(FontAwesomeIcons.instagram, 'Instagram',
+                'https://www.instagram.com/abdelwahed_alw?igsh=NTB5ZW02Nzc2MnZi'),
+            const SizedBox(width: 8),
+            _socialIcon(FontAwesomeIcons.linkedin, 'LinkedIn',
+                'https://www.linkedin.com/in/abdellwahed-abdellaoui-923308188'),
+            const SizedBox(width: 8),
+            _socialIcon(FontAwesomeIcons.github, 'GitHub', 'https://github.com/abdelwahed-alw'),
+            const SizedBox(width: 8),
+            _socialIcon(FontAwesomeIcons.globe, 'Website', 'https://'),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Future<void> _launchSocialUrl(String urlString) async {
+    final uri = Uri.parse(urlString);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      debugPrint('Could not launch $urlString');
+    }
+  }
+
+  Widget _socialIcon(FaIconData icon, String label, String url) {
+    return GestureDetector(
+      onTap: () => _launchSocialUrl(url),
+      child: Tooltip(
+        message: label,
+        child: Container(
+          width: 40,
+          height: 40,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: kColorSurface,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+          ),
+          child: Center(child: FaIcon(icon, size: 18, color: kColorTextMuted)),
+        ),
       ),
     );
   }

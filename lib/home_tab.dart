@@ -1,4 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -80,13 +80,16 @@ class HomeTab extends StatelessWidget {
                 children: [
                   Text(emoji, style: const TextStyle(fontSize: 24)),
                   const SizedBox(width: 8),
-                  Text(
-                    'salearn'.tr(),
-                    style: TextStyle(
-                      color: kColorText.withValues(alpha: 0.5),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 1,
+                  Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text(
+                      'salearn'.tr(),
+                      style: TextStyle(
+                        color: kColorText.withValues(alpha: 0.5),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 1,
+                      ),
                     ),
                   ),
                 ],

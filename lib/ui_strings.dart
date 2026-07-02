@@ -208,7 +208,7 @@ const Map<String, Map<String, String>> _strings = {
     'configureApiKeyFirst': 'يرجى إعداد مفتاح API أولاً.',
     'aiLanguageTutor': 'مدرّس لغات بالذكاء الاصطناعي',
     'couldNotOpenLink': 'تعذّر فتح الرابط.',
-    'appName': 'سا ليرن',
+    'appName': 'SaLearn',
     'homeTab': 'الرئيسية',
     'exercisesTab': 'التمارين',
     'progressTab': 'التقدم',

@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'constants.dart';
 
@@ -1019,6 +1020,31 @@ class GeminiApiService {
           await model.generateContent([Content.text(prompt)]).timeout(_timeout);
       final rawText = response.text?.trim() ?? '';
       return _parseSpeakingSentence(rawText);
+    });
+  }
+
+  Future<String> transcribeAudio({
+    required String apiKey,
+    required Uint8List audioBytes,
+    required String targetLanguage,
+  }) async {
+    return _withRetry(() async {
+      final model = _buildModel(apiKey.trim());
+      final response = await model
+          .generateContent([
+        Content.multi([
+          TextPart(
+              'You are a precise Speech-to-Text engine. '
+              'Listen to this audio file and transcribe exactly what is said in $targetLanguage. '
+              'Do NOT answer as a chatbot. Do NOT add notes or pleasantries. '
+              'Return ONLY the plain transcription text. '
+              'If the audio is completely silent or unrecognizable, return an empty string.'),
+          DataPart('audio/wav', audioBytes),
+        ]),
+      ]).timeout(_timeout);
+      final rawText = response.text?.trim() ?? '';
+      if (rawText.isEmpty) return '';
+      return rawText;
     });
   }
 
