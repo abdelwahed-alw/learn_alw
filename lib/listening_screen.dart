@@ -125,6 +125,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
       _submitted = true;
       _matchPercent = pct;
     });
+    context.read<AppStateModel>().incrementCategoryProgress('listening');
   }
 
   void _showError(String msg) {

@@ -965,6 +965,28 @@ class GeminiApiService {
     });
   }
 
+  Future<VocabularyQuestion> generateVocabularyQuestionForLevel({
+    required String apiKey,
+    required String userLevel,
+    required String categoryName,
+  }) async {
+    return _withRetry(() async {
+      final prompt =
+          'Generate a multiple-choice vocabulary question for an Arabic speaker '
+          'learning English at the $userLevel level, focusing on the topic of '
+          '$categoryName. Return ONLY a raw JSON object with this exact '
+          'structure: '
+          '{"word": "The English word", "correct_translation": "The exact Arabic meaning", '
+          '"wrong_options": ["wrong Arabic meaning 1", "wrong Arabic meaning 2", '
+          '"wrong Arabic meaning 3"]}.';
+      final model = _buildModel(apiKey.trim());
+      final response =
+          await model.generateContent([Content.text(prompt)]).timeout(_timeout);
+      final rawText = response.text?.trim() ?? '';
+      return _parseLevelVocabularyQuestion(rawText);
+    });
+  }
+
   Future<ReadingExercise> generateReadingExercise({
     required String apiKey,
     required String targetLanguage,
@@ -1271,6 +1293,48 @@ class GeminiApiService {
       return VocabularyQuestion(
         word: word,
         correctOption: correctOption,
+        options: options,
+      );
+    } catch (e) {
+      if (e is GeminiServiceException) rethrow;
+      throw const GeminiServiceException(
+        GeminiErrorType.parseError,
+        'Could not parse vocabulary question. Please try again.',
+      );
+    }
+  }
+
+  VocabularyQuestion _parseLevelVocabularyQuestion(String raw) {
+    try {
+      final cleaned = raw.contains('```')
+          ? raw
+              .replaceFirst(RegExp(r'```\w*'), '')
+              .replaceFirst(RegExp(r'```\s*$'), '')
+              .trim()
+          : raw;
+      final Map<String, dynamic> json =
+          jsonDecode(cleaned) as Map<String, dynamic>;
+
+      final word = (json['word'] as String? ?? '').trim();
+      final correctTranslation =
+          (json['correct_translation'] as String? ?? '').trim();
+      final rawWrong = json['wrong_options'] as List<dynamic>? ?? [];
+      final wrongOptions =
+          rawWrong.map((e) => (e as String? ?? '').trim()).toList();
+
+      final options = [correctTranslation, ...wrongOptions];
+      options.shuffle();
+
+      if (word.isEmpty || correctTranslation.isEmpty || options.length < 2) {
+        throw const GeminiServiceException(
+          GeminiErrorType.parseError,
+          'Invalid vocabulary question format. Please try again.',
+        );
+      }
+
+      return VocabularyQuestion(
+        word: word,
+        correctOption: correctTranslation,
         options: options,
       );
     } catch (e) {

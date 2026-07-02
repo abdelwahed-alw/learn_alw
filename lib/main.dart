@@ -9,8 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app_state_model.dart';
 import 'constants.dart';
-import 'app_shell.dart';
-import 'onboarding_screen.dart';
+import 'splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,9 +53,7 @@ class LearnAlwApp extends StatelessWidget {
           themeMode: ThemeMode.dark,
           theme: _buildLightTheme(),
           darkTheme: _buildDarkTheme(),
-          home: model.isOnboardingDone
-              ? const AppShell()
-              : const OnboardingScreen(),
+          home: const SplashScreen(),
         );
       },
     );

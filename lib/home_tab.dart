@@ -34,35 +34,28 @@ class HomeTab extends StatelessWidget {
 
         return SafeArea(
           bottom: false,
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildHeader(state, greeting, emoji),
-                      const SizedBox(height: 24),
-                      _buildGlobalProgress(state),
-                      const SizedBox(height: 24),
-                      _buildSectionTitle('continueLearning'.tr()),
-                      const SizedBox(height: 14),
-                      _buildRecentCard(state),
-                      const SizedBox(height: 24),
-                      _buildSectionTitle('exerciseCategories'.tr()),
-                      const SizedBox(height: 14),
-                      _buildCategoryGrid(state),
-                      const SizedBox(height: 24),
-                      _buildSectionTitle('quickStats'.tr()),
-                      const SizedBox(height: 14),
-                      _buildStatsRow(state),
-                      const SizedBox(height: 32),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 28, 20, 32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(state, greeting, emoji),
+                const SizedBox(height: 24),
+                _buildGlobalProgress(state),
+                const SizedBox(height: 24),
+                _buildSectionTitle('continueLearning'.tr()),
+                const SizedBox(height: 14),
+                _buildRecentCard(state),
+                const SizedBox(height: 24),
+                _buildSectionTitle('exerciseCategories'.tr()),
+                const SizedBox(height: 14),
+                _buildCategoryGrid(state),
+                const SizedBox(height: 24),
+                _buildSectionTitle('quickStats'.tr()),
+                const SizedBox(height: 14),
+                _buildStatsRow(state),
+              ],
+            ),
           ),
         );
       },
@@ -353,13 +346,13 @@ class HomeTab extends StatelessWidget {
   }
 
   Widget _buildCategoryGrid(AppStateModel state) {
-    final categories = [
-      ('writing'.tr(), Icons.edit_rounded, kTopics[0], 0.3),
-      ('grammar'.tr(), Icons.text_fields_rounded, kTopics[4], 0.5),
-      ('vocabulary'.tr(), Icons.spellcheck_rounded, kTopics[3], 0.4),
-      ('reading'.tr(), Icons.auto_stories_rounded, kTopics[1], 0.2),
-      ('speaking'.tr(), Icons.record_voice_over_rounded, kTopics[5], 0.1),
-      ('listening'.tr(), Icons.headphones_rounded, kTopics[2], 0.0),
+    final categories = <(String, IconData, double)>[
+      ('writing'.tr(), Icons.edit_rounded, state.writingProgress),
+      ('grammar'.tr(), Icons.text_fields_rounded, state.grammarProgress),
+      ('vocabulary'.tr(), Icons.spellcheck_rounded, state.vocabularyProgress),
+      ('reading'.tr(), Icons.auto_stories_rounded, state.readingProgress),
+      ('speaking'.tr(), Icons.record_voice_over_rounded, state.speakingProgress),
+      ('listening'.tr(), Icons.headphones_rounded, state.listeningProgress),
     ];
 
     return GridView.builder(
@@ -374,11 +367,10 @@ class HomeTab extends StatelessWidget {
       itemCount: categories.length,
       itemBuilder: (context, index) {
         final cat = categories[index];
-        final progress = (state.topicProgress[cat.$3] ?? 0) / 10.0;
         return _CategoryCard(
           icon: cat.$2,
           label: cat.$1,
-          progress: progress.clamp(0.0, 1.0),
+          progress: cat.$3,
         );
       },
     );

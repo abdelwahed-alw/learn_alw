@@ -24,10 +24,10 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
   @override
   void initState() {
     super.initState();
-    _generateQuestion();
+    _fetchNextVocabularyQuestion();
   }
 
-  Future<void> _generateQuestion() async {
+  Future<void> _fetchNextVocabularyQuestion() async {
     final state = context.read<AppStateModel>();
     if (!state.hasApiKey) {
       _showError('Please configure your API key first.');
@@ -40,10 +40,10 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
       _isCorrect = null;
     });
     try {
-      final q = await _api.generateVocabularyQuestion(
+      final q = await _api.generateVocabularyQuestionForLevel(
         apiKey: state.apiKey,
-        targetLanguage: languageLabelFromCode(state.targetLanguage),
-        nativeLanguage: languageLabelFromCode(state.nativeLanguage),
+        userLevel: state.proficiencyLevel,
+        categoryName: state.selectedTopic,
       );
       if (mounted)
         setState(() {
@@ -67,6 +67,10 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
     setState(() {
       _selectedOption = option;
       _isCorrect = option == _question!.correctOption;
+    });
+    context.read<AppStateModel>().incrementCategoryProgress('vocabulary');
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) _fetchNextVocabularyQuestion();
     });
   }
 
@@ -253,8 +257,6 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        _NextButton(onTap: _generateQuestion),
                       ],
                     ],
                   ),
@@ -263,33 +265,4 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
   }
 }
 
-class _NextButton extends StatelessWidget {
-  final VoidCallback onTap;
-  const _NextButton({required this.onTap});
 
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 52,
-        decoration: BoxDecoration(
-          gradient: kPrimaryGradient,
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: [
-            BoxShadow(
-                color: kColorPrimary.withValues(alpha: 0.3),
-                blurRadius: 12,
-                offset: const Offset(0, 4))
-          ],
-        ),
-        child: const Center(
-            child: Text('Next Word',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700))),
-      ),
-    );
-  }
-}

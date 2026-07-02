@@ -83,6 +83,7 @@ class _WritingScreenState extends State<WritingScreen> {
           _feedback = feedback;
           _submitting = false;
         });
+        context.read<AppStateModel>().incrementCategoryProgress('writing');
       }
     } on GeminiServiceException catch (e) {
       if (mounted) _showError(e.message);

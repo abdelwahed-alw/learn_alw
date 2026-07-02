@@ -12,7 +12,8 @@ import 'main_screen_body.dart';
 import 'ui_strings.dart';
 
 class ExercisesTab extends StatefulWidget {
-  const ExercisesTab({super.key});
+  final VoidCallback? onNavigateProfile;
+  const ExercisesTab({super.key, this.onNavigateProfile});
 
   @override
   State<ExercisesTab> createState() => _ExercisesTabState();
@@ -37,11 +38,11 @@ class _ExercisesTabState extends State<ExercisesTab> {
                           : state.appMode == AppMode.categories
                               ? 3
                               : 0,
-                  children: const [
-                    MainScreenBody(),
-                    IeltsScreen(),
-                    BeginnerScreen(),
-                    CategoriesTab(),
+                  children: [
+                    MainScreenBody(onNavigateProfile: widget.onNavigateProfile),
+                    const IeltsScreen(),
+                    const BeginnerScreen(),
+                    const CategoriesTab(),
                   ],
                 ),
               ),

@@ -25,10 +25,12 @@ class _AppShellState extends State<AppShell> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          HomeTab(
-            onNavigateExercises: () => setState(() => _currentIndex = 1),
-          ),
-          const ExercisesTab(),
+            HomeTab(
+              onNavigateExercises: () => setState(() => _currentIndex = 1),
+            ),
+            ExercisesTab(
+              onNavigateProfile: () => setState(() => _currentIndex = 3),
+            ),
           ProgressTab(
             onNavigateExercises: () => setState(() => _currentIndex = 1),
           ),

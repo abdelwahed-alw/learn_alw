@@ -49,6 +49,7 @@ class AppStateModel extends ChangeNotifier {
   // ── Progress tracking ────────────────────────────────────────────────────
   int _totalExercisesDone = 0;
   Map<String, int> _topicProgress = {};
+  Map<String, int> _categoryProgress = {};
   DateTime? _lastActiveDate;
   int _streakCount = 0;
 
@@ -108,6 +109,16 @@ class AppStateModel extends ChangeNotifier {
       : (_topicProgress.values.fold<int>(0, (a, b) => a + b) /
               (_topicProgress.length * 10))
           .clamp(0.0, 1.0);
+
+  double _categoryPct(String cat) =>
+      ((_categoryProgress[cat] ?? 0) / 10.0).clamp(0.0, 1.0);
+
+  double get writingProgress => _categoryPct('writing');
+  double get grammarProgress => _categoryPct('grammar');
+  double get vocabularyProgress => _categoryPct('vocabulary');
+  double get readingProgress => _categoryPct('reading');
+  double get speakingProgress => _categoryPct('speaking');
+  double get listeningProgress => _categoryPct('listening');
 
   bool get isIdle => _loadingPhase == LoadingPhase.none;
   bool get isTestingKey => _loadingPhase == LoadingPhase.testingKey;
@@ -285,6 +296,17 @@ class AppStateModel extends ChangeNotifier {
       _lastActiveDate = DateTime.fromMillisecondsSinceEpoch(lastActive);
     }
     _streakCount = _prefs.getInt(kPrefStreak) ?? 0;
+    final catRaw = _prefs.getString(kPrefCategoryProgress);
+    if (catRaw != null && catRaw.isNotEmpty) {
+      try {
+        final Map<String, dynamic> decoded =
+            jsonDecode(catRaw) as Map<String, dynamic>;
+        _categoryProgress =
+            decoded.map((k, v) => MapEntry(k, (v as num).toInt()));
+      } catch (_) {
+        _categoryProgress = {};
+      }
+    }
     final savedMode = _prefs.getInt(kPrefLastMode);
     if (savedMode != null &&
         savedMode >= 0 &&
@@ -300,6 +322,13 @@ class AppStateModel extends ChangeNotifier {
     await _prefs.setInt(kPrefLastActive, DateTime.now().millisecondsSinceEpoch);
     await _prefs.setInt(kPrefStreak, _streakCount);
     await _prefs.setInt(kPrefLastMode, _lastAccessedMode.index);
+    await _prefs.setString(kPrefCategoryProgress, jsonEncode(_categoryProgress));
+  }
+
+  void incrementCategoryProgress(String category) {
+    _categoryProgress[category] = (_categoryProgress[category] ?? 0) + 1;
+    _saveProgress();
+    notifyListeners();
   }
 
   void incrementExerciseProgress(String topic) {

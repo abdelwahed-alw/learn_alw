@@ -158,6 +158,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
           }
           _transcribing = false;
         });
+        context.read<AppStateModel>().incrementCategoryProgress('speaking');
       }
     } catch (e) {
       if (mounted) {

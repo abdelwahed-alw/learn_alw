@@ -96,6 +96,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
       _selectedOption = option;
       _isCorrect = option == _exercise!.correctAnswer;
     });
+    context.read<AppStateModel>().incrementCategoryProgress('reading');
   }
 
   void _showError(String msg) {

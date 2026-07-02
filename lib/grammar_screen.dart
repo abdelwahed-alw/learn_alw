@@ -87,6 +87,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
           _feedback = feedback;
           _submitting = false;
         });
+        context.read<AppStateModel>().incrementCategoryProgress('grammar');
       }
     } on GeminiServiceException catch (e) {
       if (mounted) _showError(e.message);

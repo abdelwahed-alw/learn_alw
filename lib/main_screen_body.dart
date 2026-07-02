@@ -11,7 +11,8 @@ import 'constants.dart';
 import 'ui_strings.dart';
 
 class MainScreenBody extends StatefulWidget {
-  const MainScreenBody({super.key});
+  final VoidCallback? onNavigateProfile;
+  const MainScreenBody({super.key, this.onNavigateProfile});
 
   @override
   State<MainScreenBody> createState() => _MainScreenBodyState();
@@ -632,7 +633,14 @@ class _MainScreenBodyState extends State<MainScreenBody> {
               ),
               const Spacer(),
               GestureDetector(
-                onTap: () => Scaffold.of(context).openDrawer(),
+                onTap: () {
+                  final cb = widget.onNavigateProfile;
+                  if (cb != null) {
+                    cb();
+                  } else {
+                    Scaffold.of(context).openDrawer();
+                  }
+                },
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 10, vertical: 4),
