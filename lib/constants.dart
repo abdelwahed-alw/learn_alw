@@ -19,6 +19,10 @@ const String kPrefStreak = 'streak';
 const String kPrefLastMode = 'last_mode';
 const String kPrefCategoryProgress = 'progress_categories';
 
+// ─── App version (injected via --dart-define=APP_VERSION=... at build time) ─────
+const String kAppVersion =
+    'v${String.fromEnvironment('APP_VERSION', defaultValue: '1.2.0')}';
+
 // ─── YouTube tutorial ─────────────────────────────────────────────────────────
 const String kYoutubeTutorialUrl =
     'https://www.youtube.com/watch?v=PLACEHOLDER_TUTORIAL_ID';

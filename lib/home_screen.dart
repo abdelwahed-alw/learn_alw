@@ -14,6 +14,7 @@ import 'constants.dart';
 import 'drawer_widget.dart';
 import 'ielts_screen.dart';
 import 'main_screen_body.dart';
+import 'ui_strings.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -134,9 +135,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildModeSelector(AppStateModel model) {
     final modes = [
-      (mode: AppMode.practice, icon: Icons.chat_rounded, label: 'Practice'),
-      (mode: AppMode.ielts, icon: Icons.assignment_rounded, label: 'IELTS'),
-      (mode: AppMode.beginner, icon: Icons.auto_stories_rounded, label: 'Beginner'),
+      (mode: AppMode.practice, icon: Icons.chat_rounded, label: tr(context, 'practice')),
+      (mode: AppMode.ielts, icon: Icons.assignment_rounded, label: tr(context, 'ielts')),
+      (mode: AppMode.beginner, icon: Icons.auto_stories_rounded, label: tr(context, 'beginner')),
     ];
     return Container(
       padding: const EdgeInsets.all(3),

@@ -873,7 +873,8 @@ String t(String key, String langCode) {
 }
 
 /// Convenience: gets a localized UI string using [context]'s locale via easy_localization.
-String tr(BuildContext context, String key) => key.tr();
+String tr(BuildContext context, String key, {List<String>? args}) =>
+    key.tr(args: args);
 
 // ─── Localized Topic Names ──────────────────────────────────────────────────
 const Map<String, Map<String, String>> _topicNames = {

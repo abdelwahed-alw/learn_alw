@@ -5,6 +5,12 @@ import 'package:provider/provider.dart';
 
 import 'app_state_model.dart';
 import 'constants.dart';
+import 'writing_screen.dart';
+import 'grammar_screen.dart';
+import 'vocabulary_screen.dart';
+import 'reading_screen.dart';
+import 'listening_screen.dart';
+import 'speaking_screen.dart';
 
 class HomeTab extends StatelessWidget {
   final VoidCallback? onNavigateExercises;
@@ -346,6 +352,14 @@ class HomeTab extends StatelessWidget {
   }
 
   Widget _buildCategoryGrid(AppStateModel state) {
+    final screens = <WidgetBuilder>[
+      (_) => const WritingScreen(),
+      (_) => const GrammarScreen(),
+      (_) => const VocabularyScreen(),
+      (_) => const ReadingScreen(),
+      (_) => const SpeakingScreen(),
+      (_) => const ListeningScreen(),
+    ];
     final categories = <(String, IconData, double)>[
       ('writing'.tr(), Icons.edit_rounded, state.writingProgress),
       ('grammar'.tr(), Icons.text_fields_rounded, state.grammarProgress),
@@ -371,6 +385,10 @@ class HomeTab extends StatelessWidget {
           icon: cat.$2,
           label: cat.$1,
           progress: cat.$3,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: screens[index]),
+          ),
         );
       },
     );
@@ -416,23 +434,27 @@ class _CategoryCard extends StatelessWidget {
   final IconData icon;
   final String label;
   final double progress;
+  final VoidCallback? onTap;
 
   const _CategoryCard({
     required this.icon,
     required this.label,
     required this.progress,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: kColorSurface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
-      ),
-      child: Column(
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: kColorSurface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+        ),
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -479,6 +501,7 @@ class _CategoryCard extends StatelessWidget {
             ),
           ),
         ],
+        ),
       ),
     );
   }

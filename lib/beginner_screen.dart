@@ -209,7 +209,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Words Discovered',
+                  tr(context, 'wordsDiscovered'),
                   style: TextStyle(
                     color: kColorText.withValues(alpha: 0.8),
                     fontWeight: FontWeight.w600,
@@ -306,17 +306,14 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
               ),
               const SizedBox(height: 24),
               Text(
-                'Start Your Journey',
+                tr(context, 'startYourJourney'),
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
               ),
               const SizedBox(height: 12),
               Text(
-                'You\'ll learn your first word through a simple sentence. '
-                'Tap any word you don\'t know to discover its meaning.\n\n'
-                'Future sentences will reuse what you\'ve learned, '
-                'introducing only 1-2 new words at a time.',
+                tr(context, 'learnFirstWordDesc'),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: kColorTextMuted.withValues(alpha: 0.8),
@@ -340,16 +337,16 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                       ),
                     ],
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.rocket_launch_rounded,
+                        const Icon(Icons.rocket_launch_rounded,
                             color: Colors.white, size: 18),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Text(
-                          'Learn My First Word',
-                          style: TextStyle(
+                          tr(context, 'learnMyFirstWord'),
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -705,7 +702,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
           const Icon(Icons.menu_book_rounded, color: kColorTextMuted, size: 16),
           const SizedBox(width: 8),
           Text(
-            'My Vocabulary (${vocab.length})',
+            '${tr(context, 'myVocabulary')} (${vocab.length})',
             style: TextStyle(
               color: kColorTextMuted.withValues(alpha: 0.8),
               fontWeight: FontWeight.w700,

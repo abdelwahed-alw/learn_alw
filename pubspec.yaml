@@ -2,7 +2,7 @@ name: salearn
 description: "Salearn – AI-powered language learning app with Gemini BYOK."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.2.0+1
 
 environment:
   sdk: ^3.5.0
@@ -55,9 +55,6 @@ dependencies:
 
   # Full app restart to clear stale state on language change
   flutter_phoenix: ^1.1.1
-
-  # App version info from platform
-  package_info_plus: ^8.0.0
 
 dev_dependencies:
   flutter_test:

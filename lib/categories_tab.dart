@@ -10,6 +10,7 @@ import 'vocabulary_screen.dart';
 import 'reading_screen.dart';
 import 'listening_screen.dart';
 import 'speaking_screen.dart';
+import 'ui_strings.dart';
 
 class CategoriesTab extends StatelessWidget {
   const CategoriesTab({super.key});
@@ -77,7 +78,7 @@ class CategoriesTab extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Skill Categories',
+                tr(context, 'skillCategories'),
                 style: TextStyle(
                   color: kColorText.withValues(alpha: 0.7),
                   fontSize: 13,
@@ -167,7 +168,7 @@ class _CategoryCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                'Practice',
+                tr(context, 'practice'),
                 style: TextStyle(
                   color: color.withValues(alpha: 0.8),
                   fontSize: 10,
