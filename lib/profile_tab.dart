@@ -1,12 +1,15 @@
-import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'app_state_model.dart';
 import 'constants.dart';
+import 'gemini_api_service.dart';
 import 'ui_strings.dart';
 
 class ProfileTab extends StatefulWidget {
@@ -18,13 +21,21 @@ class ProfileTab extends StatefulWidget {
 
 class _ProfileTabState extends State<ProfileTab> {
   final TextEditingController _apiKeyController = TextEditingController();
+  final GeminiApiService _api = GeminiApiService();
   bool _isKeyVisible = false;
+  String _appVersion = '';
 
   @override
   void initState() {
     super.initState();
     final state = context.read<AppStateModel>();
     _apiKeyController.text = state.apiKey;
+    _loadAppVersion();
+  }
+
+  Future<void> _loadAppVersion() async {
+    final info = await PackageInfo.fromPlatform();
+    if (mounted) setState(() => _appVersion = 'v${info.version}');
   }
 
   @override
@@ -255,6 +266,8 @@ class _ProfileTabState extends State<ProfileTab> {
                       _buildLevelSection(state, lang),
                       const SizedBox(height: 24),
                       _buildAppInfo(),
+                      const SizedBox(height: 16),
+                      _buildQuickTranslation(state, lang),
                       const SizedBox(height: 32),
                       _buildFooter(),
                       const SizedBox(height: 24),
@@ -488,10 +501,11 @@ class _ProfileTabState extends State<ProfileTab> {
                 icon: Icons.record_voice_over_rounded,
                 value: state.nativeLanguage,
                 items: kSupportedLanguages,
-                onChanged: (val) {
+                onChanged: (val) async {
                   if (val != null) {
-                    state.setNativeLanguage(val);
+                    await state.setNativeLanguage(val);
                     context.setLocale(Locale(val));
+                    Phoenix.rebirth(context);
                   }
                 },
               ),
@@ -503,8 +517,11 @@ class _ProfileTabState extends State<ProfileTab> {
                 icon: Icons.school_rounded,
                 value: state.targetLanguage,
                 items: kSupportedLanguages,
-                onChanged: (val) {
-                  if (val != null) state.setTargetLanguage(val);
+                onChanged: (val) async {
+                  if (val != null) {
+                    await state.setTargetLanguage(val);
+                    Phoenix.rebirth(context);
+                  }
                 },
               ),
             ],
@@ -642,7 +659,7 @@ class _ProfileTabState extends State<ProfileTab> {
                 ),
               ),
               Text(
-                'v1.0.0',
+                _appVersion.isNotEmpty ? _appVersion : '…',
                 style: TextStyle(
                   color: kColorTextMuted.withValues(alpha: 0.6),
                   fontSize: 11,
@@ -654,6 +671,291 @@ class _ProfileTabState extends State<ProfileTab> {
       ),
     );
   }
+
+  Widget _buildQuickTranslation(AppStateModel state, String lang) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('Quick Translation'),
+        GestureDetector(
+          onTap: () => _showQuickTranslationSheet(state),
+          child: Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: kColorSurface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: kColorBorder.withValues(alpha: 0.6)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    gradient: kPrimaryGradient,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.translate_rounded,
+                      color: Colors.white, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'ترجمة سريعة',
+                        style: const TextStyle(
+                          color: kColorText,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Text(
+                        'Quick Translation',
+                        style: TextStyle(
+                          color: kColorTextMuted.withValues(alpha: 0.7),
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: kColorPrimary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    'فتح',
+                    style: TextStyle(
+                      color: kColorPrimary,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showQuickTranslationSheet(AppStateModel state) {
+    final inputController = TextEditingController();
+    String result = '';
+    bool loading = false;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            return Container(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.8,
+              ),
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              decoration: const BoxDecoration(
+                color: kColorSurface,
+                borderRadius:
+                    BorderRadius.vertical(top: Radius.circular(24)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(top: 12),
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: kColorBorder,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.fromLTRB(24, 20, 24, 16),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.translate_rounded,
+                            color: kColorPrimary, size: 20),
+                        const SizedBox(width: 8),
+                        Text(
+                          'ترجمة سريعة',
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(
+                                color: kColorText,
+                                fontWeight: FontWeight.w700,
+                              ),
+                        ),
+                        const Spacer(),
+                        GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: const Icon(Icons.close_rounded,
+                              color: kColorTextMuted, size: 22),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 24),
+                    child: TextField(
+                      controller: inputController,
+                      maxLines: 3,
+                      style: const TextStyle(
+                          color: kColorText, fontSize: 14),
+                      decoration: InputDecoration(
+                        hintText:
+                            'اكتب النص هنا…',
+                        hintStyle: TextStyle(
+                          color:
+                              kColorTextMuted.withValues(alpha: 0.7),
+                          fontSize: 13,
+                        ),
+                        fillColor: kColorBackground,
+                        contentPadding:
+                            const EdgeInsets.all(14),
+                        border: OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 24),
+                    child: GestureDetector(
+                      onTap: loading
+                          ? null
+                          : () async {
+                              final text =
+                                  inputController.text.trim();
+                              if (text.isEmpty) return;
+                              setSheetState(() {
+                                loading = true;
+                                result = '';
+                              });
+                              try {
+                                final translation =
+                                    await _api.quickTranslate(
+                                  apiKey: state.apiKey,
+                                  inputText: text,
+                                  nativeLanguage:
+                                      languageLabelFromCode(
+                                          state.nativeLanguage),
+                                  targetLanguage:
+                                      languageLabelFromCode(
+                                          state.targetLanguage),
+                                );
+                                if (ctx.mounted) {
+                                  setSheetState(() {
+                                    result = translation;
+                                    loading = false;
+                                  });
+                                }
+                              } catch (e) {
+                                if (ctx.mounted) {
+                                  setSheetState(() {
+                                    result =
+                                        'Translation failed. ${e.toString()}';
+                                    loading = false;
+                                  });
+                                }
+                              }
+                            },
+                      child: Container(
+                        width: double.infinity,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          gradient: kPrimaryGradient,
+                          borderRadius:
+                              BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: kColorPrimary
+                                  .withValues(alpha: 0.3),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: loading
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text(
+                                  'Translate',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  if (result.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                          24, 0, 24, 24),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: kColorBackground,
+                          borderRadius:
+                              BorderRadius.circular(12),
+                          border: Border.all(
+                            color: kColorBorder
+                                .withValues(alpha: 0.5),
+                          ),
+                        ),
+                        child: Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: SelectableText(
+                            result,
+                            style: const TextStyle(
+                              color: kColorText,
+                              fontSize: 14,
+                              height: 1.5,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildFooter() {
     return Column(
       children: [

@@ -4,6 +4,7 @@
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -44,7 +45,8 @@ class LearnAlwApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppStateModel>(
       builder: (context, model, _) {
-        return MaterialApp(
+        return Phoenix(
+          child: MaterialApp(
           title: 'Salearn',
           localizationsDelegates: context.localizationDelegates,
           supportedLocales: context.supportedLocales,
@@ -54,7 +56,8 @@ class LearnAlwApp extends StatelessWidget {
           theme: _buildLightTheme(),
           darkTheme: _buildDarkTheme(),
           home: const SplashScreen(),
-        );
+        ),
+      );
       },
     );
   }

@@ -109,6 +109,9 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
           encoder: AudioEncoder.wav,
           sampleRate: 16000,
           numChannels: 1,
+          autoGain: true,
+          echoCancel: true,
+          noiseSuppress: true,
         ),
         path: filePath,
       );
@@ -177,6 +180,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
     await _tts.stop();
     await _audioPlayer.stop();
     try {
+      await _audioPlayer.setVolume(1.0);
       await _audioPlayer.play(DeviceFileSource(_recordedFilePath!));
     } catch (e) {
       if (mounted) {
@@ -194,7 +198,9 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
     });
     await _audioPlayer.stop();
     await _tts.stop();
-    await _tts.setLanguage('en-US');
+    final lang = context.read<AppStateModel>().targetLanguage;
+    await _tts.setLanguage(ttsLocaleFor(lang));
+    await _tts.setVolume(0.6);
     await _tts.awaitSpeakCompletion(true);
     await _tts.speak(_targetSentence!);
     if (mounted) setState(() => _isPlayingTts = false);

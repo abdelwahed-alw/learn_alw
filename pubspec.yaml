@@ -53,6 +53,12 @@ dependencies:
   path_provider: ^2.1.5
   font_awesome_flutter: ^11.0.0
 
+  # Full app restart to clear stale state on language change
+  flutter_phoenix: ^1.1.1
+
+  # App version info from platform
+  package_info_plus: ^8.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

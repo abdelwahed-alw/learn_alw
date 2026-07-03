@@ -53,22 +53,6 @@ class _ListeningScreenState extends State<ListeningScreen> {
     super.dispose();
   }
 
-  String _ttsLocaleFor(String code) {
-    const map = {
-      'ar': 'ar-SA',
-      'en': 'en-US',
-      'fr': 'fr-FR',
-      'es': 'es-ES',
-      'de': 'de-DE',
-      'tr': 'tr-TR',
-      'it': 'it-IT',
-      'pt': 'pt-PT',
-      'zh': 'zh-CN',
-      'ja': 'ja-JP',
-    };
-    return map[code] ?? 'en-US';
-  }
-
   Future<void> _generateSentence() async {
     final state = context.read<AppStateModel>();
     if (!state.hasApiKey) {
@@ -93,7 +77,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
           _targetSentence = dict.sentence;
           _loading = false;
         });
-        await _tts.setLanguage(_ttsLocaleFor(state.targetLanguage));
+        await _tts.setLanguage(ttsLocaleFor(state.targetLanguage));
       }
     } on GeminiServiceException catch (e) {
       if (mounted) _showError(e.message);

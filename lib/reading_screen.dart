@@ -85,7 +85,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
       return;
     }
     setState(() => _isSpeaking = true);
-    await _tts.setLanguage('en-US');
+    final lang = context.read<AppStateModel>().targetLanguage;
+    await _tts.setLanguage(ttsLocaleFor(lang));
     await _tts.speak(_exercise!.passage);
     if (mounted) setState(() => _isSpeaking = false);
   }

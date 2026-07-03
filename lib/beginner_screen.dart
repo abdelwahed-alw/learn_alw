@@ -488,14 +488,18 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                             color: textColor.withValues(alpha: 0.6),
                           ),
                         )
-                      : Text(
-                          word,
-                          style: TextStyle(
-                            color: textColor,
-                            fontSize: 20,
-                            fontWeight:
-                                isTarget ? FontWeight.w800 : FontWeight.w600,
-                            height: 1.3,
+                      : Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: Text(
+                            word,
+                            style: TextStyle(
+                              color: textColor,
+                              fontSize: 20,
+                              fontWeight: isTarget
+                                  ? FontWeight.w800
+                                  : FontWeight.w600,
+                              height: 1.3,
+                            ),
                           ),
                         ),
                 ),
@@ -803,11 +807,15 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
   }
 
   Future<void> _speakVocabWord(String word) async {
-    await _tts.setLanguage('en-US');
+    final lang = context.read<AppStateModel>().targetLanguage;
+    await _tts.setLanguage(ttsLocaleFor(lang));
     await _tts.speak(word);
   }
 
   Future<void> _generateNewSentence(AppStateModel state) async {
+    setState(() {
+      _loadingWords.clear();
+    });
     final error = await state.generateBeginnerSentence();
     if (error != null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(

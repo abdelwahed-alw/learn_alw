@@ -142,10 +142,12 @@ class VocabularyQuestion {
   final String word;
   final String correctOption;
   final List<String> options;
+  final String exampleSentence;
   const VocabularyQuestion({
     required this.word,
     required this.correctOption,
     required this.options,
+    this.exampleSentence = '',
   });
 }
 
@@ -416,6 +418,33 @@ class GeminiApiService {
         );
       }
       return text;
+    });
+  }
+
+  Future<String> quickTranslate({
+    required String apiKey,
+    required String inputText,
+    required String nativeLanguage,
+    required String targetLanguage,
+  }) async {
+    return _withRetry(() async {
+      final prompt =
+          'You are an expert translator. Translate the following text between '
+          '$nativeLanguage and $targetLanguage. Detect the input language '
+          'automatically and translate it to the other language. Only return '
+          'the translated text without any extra conversation or quotes. '
+          "Text to translate: '$inputText'";
+      final model = _buildModel(apiKey.trim());
+      final response =
+          await model.generateContent([Content.text(prompt)]).timeout(_timeout);
+      final result = response.text?.trim();
+      if (result == null || result.isEmpty) {
+        throw const GeminiServiceException(
+          GeminiErrorType.unknown,
+          'Translation returned empty.',
+        );
+      }
+      return result;
     });
   }
 
@@ -969,16 +998,23 @@ class GeminiApiService {
     required String apiKey,
     required String userLevel,
     required String categoryName,
+    required String nativeLanguage,
+    required String targetLanguage,
+    List<String> askedWords = const [],
   }) async {
     return _withRetry(() async {
+      final historyBlock = askedWords.isEmpty
+          ? ''
+          : ' Do NOT use any of these already-asked words: ${askedWords.join(', ')}. Ensure the new word is completely different.';
       final prompt =
-          'Generate a multiple-choice vocabulary question for an Arabic speaker '
-          'learning English at the $userLevel level, focusing on the topic of '
-          '$categoryName. Return ONLY a raw JSON object with this exact '
-          'structure: '
-          '{"word": "The English word", "correct_translation": "The exact Arabic meaning", '
-          '"wrong_options": ["wrong Arabic meaning 1", "wrong Arabic meaning 2", '
-          '"wrong Arabic meaning 3"]}.';
+          'Act as a strict CEFR language examiner. Generate a multiple-choice vocabulary question for a speaker of '
+          '$nativeLanguage learning $targetLanguage at the $userLevel level, focusing on the topic of '
+          '$categoryName. EXTREMELY IMPORTANT: You MUST only select words from the official $userLevel CEFR frequency list (e.g., top 500 words for A1).'
+          '$historyBlock Return ONLY a raw JSON object with this exact structure: '
+          '{"word": "The $targetLanguage word", "correct_translation": "The exact $nativeLanguage meaning", '
+          '"wrong_options": ["wrong $nativeLanguage meaning 1", "wrong $nativeLanguage meaning 2", '
+          '"wrong $nativeLanguage meaning 3"], '
+          '"example_sentence": "A short, simple sentence in $targetLanguage using the word."}.';
       final model = _buildModel(apiKey.trim());
       final response =
           await model.generateContent([Content.text(prompt)]).timeout(_timeout);
@@ -1321,6 +1357,7 @@ class GeminiApiService {
       final rawWrong = json['wrong_options'] as List<dynamic>? ?? [];
       final wrongOptions =
           rawWrong.map((e) => (e as String? ?? '').trim()).toList();
+      final example = (json['example_sentence'] as String? ?? '').trim();
 
       final options = [correctTranslation, ...wrongOptions];
       options.shuffle();
@@ -1336,6 +1373,7 @@ class GeminiApiService {
         word: word,
         correctOption: correctTranslation,
         options: options,
+        exampleSentence: example,
       );
     } catch (e) {
       if (e is GeminiServiceException) rethrow;

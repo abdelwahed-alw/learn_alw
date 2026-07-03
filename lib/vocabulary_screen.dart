@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app_state_model.dart';
 import 'constants.dart';
 import 'gemini_api_service.dart';
+
+const String _kPrefAskedWords = 'vocab_asked_words';
 
 class VocabularyScreen extends StatefulWidget {
   const VocabularyScreen({super.key});
@@ -20,11 +23,22 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
   VocabularyQuestion? _question;
   String? _selectedOption;
   bool? _isCorrect;
+  final List<String> _askedWords = [];
+  bool _isTtsLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _fetchNextVocabularyQuestion();
+    _loadAskedWords();
+  }
+
+  Future<void> _loadAskedWords() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getStringList(_kPrefAskedWords);
+    if (saved != null) {
+      _askedWords.addAll(saved);
+    }
+    if (mounted) _fetchNextVocabularyQuestion();
   }
 
   Future<void> _fetchNextVocabularyQuestion() async {
@@ -44,10 +58,16 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
         apiKey: state.apiKey,
         userLevel: state.proficiencyLevel,
         categoryName: state.selectedTopic,
+        nativeLanguage: languageLabelFromCode(state.nativeLanguage),
+        targetLanguage: languageLabelFromCode(state.targetLanguage),
+        askedWords: _askedWords,
       );
       if (mounted)
         setState(() {
           _question = q;
+          _askedWords.add(q.word);
+          _checkLevelLoop(state.proficiencyLevel);
+          _saveAskedWords();
           _loading = false;
         });
     } on GeminiServiceException catch (e) {
@@ -74,10 +94,29 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
     });
   }
 
+  void _checkLevelLoop(String level) {
+    const pools = {'A1': 500, 'A2': 1000, 'B1': 2000, 'B2': 3000, 'C1': 4000};
+    final maxWords = pools[level.toUpperCase()] ?? 2000;
+    if (_askedWords.length >= maxWords) {
+      _askedWords.clear();
+    }
+  }
+
+  Future<void> _saveAskedWords() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_kPrefAskedWords, _askedWords);
+  }
+
   Future<void> _speakWord() async {
     if (_question == null) return;
-    await _tts.setLanguage('en-US');
-    await _tts.speak(_question!.word);
+    setState(() => _isTtsLoading = true);
+    try {
+      final lang = context.read<AppStateModel>().targetLanguage;
+      await _tts.setLanguage(ttsLocaleFor(lang));
+      await _tts.speak(_question!.word);
+    } finally {
+      if (mounted) setState(() => _isTtsLoading = false);
+    }
   }
 
   void _showError(String msg) {
@@ -87,6 +126,11 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
           backgroundColor: kColorError,
           behavior: SnackBarBehavior.floating),
     );
+  }
+
+  int _maxWordsForLevel(String level) {
+    const pools = {'A1': 500, 'A2': 1000, 'B1': 2000, 'B2': 3000, 'C1': 4000};
+    return pools[level.toUpperCase()] ?? 2000;
   }
 
   @override
@@ -111,6 +155,12 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                 ? const SizedBox()
                 : Column(
                     children: [
+                      _VocabularyProgressBar(
+                        askedCount: _askedWords.length,
+                        maxWords: _maxWordsForLevel(
+                            context.read<AppStateModel>().proficiencyLevel),
+                      ),
+                      const SizedBox(height: 20),
                       Container(
                         padding: const EdgeInsets.all(28),
                         decoration: BoxDecoration(
@@ -145,7 +195,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                                         letterSpacing: 0.5)),
                                 const SizedBox(width: 12),
                                 GestureDetector(
-                                  onTap: _speakWord,
+                                  onTap: _isTtsLoading ? null : _speakWord,
                                   child: Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
@@ -153,11 +203,18 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                                           Colors.white.withValues(alpha: 0.2),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
-                                    child: const Icon(
-                                      Icons.volume_up_rounded,
-                                      color: Colors.white,
-                                      size: 22,
-                                    ),
+                                    child: _isTtsLoading
+                                        ? const SizedBox(
+                                            width: 16,
+                                            height: 16,
+                                            child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                color: Colors.white))
+                                        : const Icon(
+                                            Icons.volume_up_rounded,
+                                            color: Colors.white,
+                                            size: 22,
+                                          ),
                                   ),
                                 ),
                               ],
@@ -216,6 +273,43 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                           ),
                         );
                       }),
+                      if (_question!.exampleSentence.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 12),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: kColorSurface,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                  color: kColorBorder.withValues(alpha: 0.4)),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(Icons.format_quote_rounded,
+                                    size: 16,
+                                    color: kColorPrimary.withValues(alpha: 0.7)),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Directionality(
+                                    textDirection: TextDirection.ltr,
+                                    child: Text(
+                                      _question!.exampleSentence,
+                                      style: TextStyle(
+                                        color: kColorTextMuted,
+                                        fontSize: 13,
+                                        fontStyle: FontStyle.italic,
+                                        height: 1.4,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       if (_isCorrect != null) ...[
                         const SizedBox(height: 8),
                         Container(
@@ -265,4 +359,52 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
   }
 }
 
+class _VocabularyProgressBar extends StatelessWidget {
+  final int askedCount;
+  final int maxWords;
+  const _VocabularyProgressBar({
+    required this.askedCount,
+    required this.maxWords,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = maxWords > 0 ? askedCount / maxWords : 0.0;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text('تقدم المفردات',
+                style: TextStyle(
+                  color: kColorTextMuted.withValues(alpha: 0.8),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                )),
+            const Spacer(),
+            Text(
+              '$askedCount / $maxWords',
+              style: TextStyle(
+                color: kColorPrimary,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: progress.clamp(0.0, 1.0),
+            backgroundColor: Colors.white.withValues(alpha: 0.1),
+            valueColor:
+                const AlwaysStoppedAnimation<Color>(kColorPrimary),
+            minHeight: 8,
+          ),
+        ),
+      ],
+    );
+  }
+}
 

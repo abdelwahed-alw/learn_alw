@@ -44,6 +44,22 @@ String languageLabelFromCode(String code) {
   )['label']!;
 }
 
+String ttsLocaleFor(String code) {
+  const map = {
+    'ar': 'ar-SA',
+    'en': 'en-US',
+    'fr': 'fr-FR',
+    'es': 'es-ES',
+    'de': 'de-DE',
+    'tr': 'tr-TR',
+    'it': 'it-IT',
+    'pt': 'pt-PT',
+    'zh': 'zh-CN',
+    'ja': 'ja-JP',
+  };
+  return map[code] ?? 'en-US';
+}
+
 // ─── CEFR Proficiency Levels ──────────────────────────────────────────────────
 const List<Map<String, String>> kCefrLevels = [
   {
@@ -644,12 +660,12 @@ ${randomTopic()}
 $knownList
 
 ## Task
-Generate ONE very simple sentence in $targetLanguage that:
+Generate a complete sentence ONLY in $targetLanguage that:
 1. Uses the target word "$targetWord"
 2. Uses ONLY words from the known vocabulary list (if any exist) PLUS the target word
 3. If no known vocabulary exists yet, use ONLY the target word plus the most basic common words (I, you, is, the, a, an, have, like, etc.)
 4. The sentence must be extremely simple — maximum 7 words
-5. Each word in the sentence must be a real word in $targetLanguage
+5. Every single word in the sentence MUST be a real word in $targetLanguage. Do NOT mix languages.
 ${seedSuffix()}
 
 Return ONLY valid JSON:
