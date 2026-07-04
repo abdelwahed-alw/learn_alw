@@ -33,6 +33,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
   bool _isPlayingMyVoice = false;
   bool _isPlayingTts = false;
   String? _recordedFilePath;
+  final List<String> _usedSentences = [];
 
   @override
   void initState() {
@@ -71,10 +72,13 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
         apiKey: state.apiKey,
         targetLanguage: languageLabelFromCode(state.targetLanguage),
         nativeLanguage: languageLabelFromCode(state.nativeLanguage),
+        usedSentences: _usedSentences,
       );
       if (mounted)
         setState(() {
           _targetSentence = speak.sentence;
+          _usedSentences.add(speak.sentence);
+          if (_usedSentences.length > 15) _usedSentences.clear();
           _loading = false;
         });
     } on GeminiServiceException catch (e) {

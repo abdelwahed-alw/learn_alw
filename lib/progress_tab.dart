@@ -29,6 +29,8 @@ class ProgressTab extends StatelessWidget {
                       const SizedBox(height: 24),
                       _buildTopicBreakdown(state),
                       const SizedBox(height: 24),
+                      _buildSkillBreakdown(state),
+                      const SizedBox(height: 24),
                       _buildVocabularySection(state),
                       const SizedBox(height: 32),
                     ],
@@ -238,6 +240,102 @@ class ProgressTab extends StatelessWidget {
               );
             }).toList(),
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSkillBreakdown(AppStateModel state) {
+    final skills = <(String, IconData, double)>[
+      ('writing'.tr(), Icons.edit_rounded, state.writingProgress),
+      ('grammar'.tr(), Icons.text_fields_rounded, state.grammarProgress),
+      ('vocabulary'.tr(), Icons.spellcheck_rounded, state.vocabularyProgress),
+      ('reading'.tr(), Icons.auto_stories_rounded, state.readingProgress),
+      ('speaking'.tr(), Icons.record_voice_over_rounded, state.speakingProgress),
+      ('listening'.tr(), Icons.headphones_rounded, state.listeningProgress),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'skillsBreakdown'.tr(),
+          style: const TextStyle(
+            color: kColorText,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 12),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 1.5,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+          ),
+          itemCount: skills.length,
+          itemBuilder: (_, index) {
+            final s = skills[index];
+            return Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: kColorSurface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: kColorPrimary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(s.$2, color: kColorPrimary, size: 18),
+                      ),
+                      const Spacer(),
+                      Text(
+                        '${(s.$3 * 100).round()}%',
+                        style: TextStyle(
+                          color: kColorTextMuted.withValues(alpha: 0.6),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    s.$1,
+                    style: const TextStyle(
+                      color: kColorText,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(3),
+                    child: LinearProgressIndicator(
+                      value: s.$3,
+                      backgroundColor: kColorBorder,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        s.$3 >= 0.8 ? const Color(0xFF2ECC71) : kColorPrimary,
+                      ),
+                      minHeight: 5,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ],
     );

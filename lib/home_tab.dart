@@ -3,14 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import 'package:shimmer/shimmer.dart';
+
 import 'app_state_model.dart';
 import 'constants.dart';
-import 'writing_screen.dart';
-import 'grammar_screen.dart';
-import 'vocabulary_screen.dart';
-import 'reading_screen.dart';
-import 'listening_screen.dart';
-import 'speaking_screen.dart';
+import 'gemini_api_service.dart';
 
 class HomeTab extends StatelessWidget {
   final VoidCallback? onNavigateExercises;
@@ -52,14 +49,12 @@ class HomeTab extends StatelessWidget {
                 _buildSectionTitle('continueLearning'.tr()),
                 const SizedBox(height: 14),
                 _buildRecentCard(state),
-                const SizedBox(height: 24),
-                _buildSectionTitle('exerciseCategories'.tr()),
-                const SizedBox(height: 14),
-                _buildCategoryGrid(state),
-                const SizedBox(height: 24),
+                const SizedBox(height: 28),
+                const _DailyQuoteWidget(),
+                const SizedBox(height: 28),
                 _buildSectionTitle('quickStats'.tr()),
                 const SizedBox(height: 14),
-                _buildStatsRow(state),
+                _buildQuickStats(state),
               ],
             ),
           ),
@@ -351,54 +346,11 @@ class HomeTab extends StatelessWidget {
     }
   }
 
-  Widget _buildCategoryGrid(AppStateModel state) {
-    final screens = <WidgetBuilder>[
-      (_) => const WritingScreen(),
-      (_) => const GrammarScreen(),
-      (_) => const VocabularyScreen(),
-      (_) => const ReadingScreen(),
-      (_) => const SpeakingScreen(),
-      (_) => const ListeningScreen(),
-    ];
-    final categories = <(String, IconData, double)>[
-      ('writing'.tr(), Icons.edit_rounded, state.writingProgress),
-      ('grammar'.tr(), Icons.text_fields_rounded, state.grammarProgress),
-      ('vocabulary'.tr(), Icons.spellcheck_rounded, state.vocabularyProgress),
-      ('reading'.tr(), Icons.auto_stories_rounded, state.readingProgress),
-      ('speaking'.tr(), Icons.record_voice_over_rounded, state.speakingProgress),
-      ('listening'.tr(), Icons.headphones_rounded, state.listeningProgress),
-    ];
-
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 1.5,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-      ),
-      itemCount: categories.length,
-      itemBuilder: (context, index) {
-        final cat = categories[index];
-        return _CategoryCard(
-          icon: cat.$2,
-          label: cat.$1,
-          progress: cat.$3,
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: screens[index]),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildStatsRow(AppStateModel state) {
+  Widget _buildQuickStats(AppStateModel state) {
     return Row(
       children: [
         Expanded(
-          child: _StatCard(
+          child: _QuickStatCard(
             icon: Icons.menu_book_rounded,
             value: '${state.beginnerVocabulary.length}',
             label: 'words'.tr(),
@@ -407,7 +359,7 @@ class HomeTab extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: _StatCard(
+          child: _QuickStatCard(
             icon: Icons.assignment_rounded,
             value: '${state.totalExercisesDone}',
             label: 'exercises'.tr(),
@@ -416,7 +368,7 @@ class HomeTab extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: _StatCard(
+          child: _QuickStatCard(
             icon: Icons.local_fire_department_rounded,
             value: '${state.streakDays}',
             label: 'streak'.tr(),
@@ -428,94 +380,15 @@ class HomeTab extends StatelessWidget {
   }
 }
 
-// ─── Category Card ──────────────────────────────────────────────────────────────
+// ─── Quick Stat Card ───────────────────────────────────────────────────────────
 
-class _CategoryCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final double progress;
-  final VoidCallback? onTap;
-
-  const _CategoryCard({
-    required this.icon,
-    required this.label,
-    required this.progress,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: kColorSurface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
-        ),
-        child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: kColorPrimary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon, color: kColorPrimary, size: 18),
-              ),
-              const Spacer(),
-              Text(
-                '${(progress * 100).round()}%',
-                style: TextStyle(
-                  color: kColorTextMuted.withValues(alpha: 0.6),
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: const TextStyle(
-              color: kColorText,
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 6),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(3),
-            child: LinearProgressIndicator(
-              value: progress,
-              backgroundColor: kColorBorder,
-              valueColor: AlwaysStoppedAnimation<Color>(
-                progress >= 0.8 ? const Color(0xFF2ECC71) : kColorPrimary,
-              ),
-              minHeight: 5,
-            ),
-          ),
-        ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─── Stat Card ──────────────────────────────────────────────────────────────────
-
-class _StatCard extends StatelessWidget {
+class _QuickStatCard extends StatelessWidget {
   final IconData icon;
   final String value;
   final String label;
   final Color color;
 
-  const _StatCard({
+  const _QuickStatCard({
     required this.icon,
     required this.value,
     required this.label,
@@ -550,6 +423,122 @@ class _StatCard extends StatelessWidget {
               color: kColorTextMuted.withValues(alpha: 0.7),
               fontSize: 11,
               fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Daily Quote Widget ─────────────────────────────────────────────────────────
+
+class _DailyQuoteWidget extends StatefulWidget {
+  const _DailyQuoteWidget();
+
+  @override
+  State<_DailyQuoteWidget> createState() => _DailyQuoteWidgetState();
+}
+
+class _DailyQuoteWidgetState extends State<_DailyQuoteWidget> {
+  final GeminiApiService _api = GeminiApiService();
+  DailyQuote? _quote;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchQuote();
+  }
+
+  Future<void> _fetchQuote() async {
+    final state = context.read<AppStateModel>();
+    if (!state.hasApiKey) {
+      if (mounted) setState(() => _loading = false);
+      return;
+    }
+    final String uniqueSeed = DateTime.now().millisecondsSinceEpoch.toString();
+    try {
+      final quote = await _api.generateDailyQuote(
+        apiKey: state.apiKey,
+        targetLanguage: languageLabelFromCode(state.targetLanguage),
+        nativeLanguage: languageLabelFromCode(state.nativeLanguage),
+        uniqueSeed: uniqueSeed,
+      );
+      if (mounted) setState(() { _quote = quote; _loading = false; });
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: kColorSurface,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Shimmer.fromColors(
+          baseColor: Colors.grey[800]!,
+          highlightColor: Colors.grey[700]!,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(width: double.infinity, height: 16, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+              const SizedBox(height: 8),
+              Container(width: 280, height: 16, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+              const SizedBox(height: 8),
+              Container(width: 240, height: 16, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+              const SizedBox(height: 24),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Container(width: 160, height: 14, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    if (_quote == null) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: kColorSurface,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: Text(
+              '"${_quote!.quote}"',
+              textAlign: TextAlign.start,
+              style: const TextStyle(
+                fontFamily: 'serif',
+                fontStyle: FontStyle.italic,
+                color: kColorPrimary,
+                fontSize: 26,
+                fontWeight: FontWeight.w600,
+                height: 1.4,
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Text(
+              _quote!.translation,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                color: kColorAccent,
+                fontSize: 16,
+                fontWeight: FontWeight.normal,
+                height: 1.4,
+              ),
             ),
           ),
         ],

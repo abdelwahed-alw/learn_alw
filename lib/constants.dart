@@ -994,7 +994,11 @@ ${seedSuffix()}
 String buildSpeakingPrompt({
   required String targetLanguage,
   required String nativeLanguage,
+  List<String> usedSentences = const [],
 }) {
+  final blacklistBlock = usedSentences.isEmpty
+      ? ''
+      : '\nEXTREMELY IMPORTANT: You MUST NOT use any of these sentences: ${usedSentences.join(' | ')}. Generate something completely new and diverse.\n';
   return '''You are a pronunciation practice generator for $targetLanguage learners who speak $nativeLanguage.
 
 ## Topic
@@ -1004,8 +1008,7 @@ ${randomTopic()}
 - Generate exactly ONE short sentence (5-12 words) in $targetLanguage for the student to read aloud.
 - The sentence must be COMPLETELY different from any sentence you have ever generated before.
 - Use a unique combination of words, structure, and scenario every time.
-- Avoid repeating words from recent generations — prefer fresh vocabulary each call.
-
+- Avoid repeating words from recent generations — prefer fresh vocabulary each call.$blacklistBlock
 ## Output format
 Return ONLY valid JSON:
 {

@@ -336,8 +336,14 @@ class AppStateModel extends ChangeNotifier {
     _topicProgress[topic] = (_topicProgress[topic] ?? 0) + 1;
 
     final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
     if (_lastActiveDate != null) {
-      final diff = now.difference(_lastActiveDate!).inDays;
+      final lastDay = DateTime(
+        _lastActiveDate!.year,
+        _lastActiveDate!.month,
+        _lastActiveDate!.day,
+      );
+      final diff = today.difference(lastDay).inDays;
       if (diff == 0) {
         // same day — streak unchanged
       } else if (diff == 1) {
@@ -357,7 +363,14 @@ class AppStateModel extends ChangeNotifier {
 
   int _calculateStreak() {
     if (_lastActiveDate == null) return 0;
-    final diff = DateTime.now().difference(_lastActiveDate!).inDays;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final lastDay = DateTime(
+      _lastActiveDate!.year,
+      _lastActiveDate!.month,
+      _lastActiveDate!.day,
+    );
+    final diff = today.difference(lastDay).inDays;
     if (diff <= 1) return _streakCount;
     return 0;
   }

@@ -176,6 +176,12 @@ class SpeakingSentence {
   const SpeakingSentence({required this.sentence});
 }
 
+class DailyQuote {
+  final String quote;
+  final String translation;
+  const DailyQuote({required this.quote, required this.translation});
+}
+
 // ─── Category Exercise Response Models ─────────────────────────────────────────
 
 class WritingExercise {
@@ -1067,17 +1073,37 @@ class GeminiApiService {
     required String apiKey,
     required String targetLanguage,
     required String nativeLanguage,
+    List<String> usedSentences = const [],
   }) async {
     return _withRetry(() async {
       final prompt = buildSpeakingPrompt(
         targetLanguage: targetLanguage,
         nativeLanguage: nativeLanguage,
+        usedSentences: usedSentences,
       );
       final model = _buildModel(apiKey.trim());
       final response =
           await model.generateContent([Content.text(prompt)]).timeout(_timeout);
       final rawText = response.text?.trim() ?? '';
       return _parseSpeakingSentence(rawText);
+    });
+  }
+
+  Future<DailyQuote> generateDailyQuote({
+    required String apiKey,
+    required String targetLanguage,
+    required String nativeLanguage,
+    String uniqueSeed = '',
+  }) async {
+    return _withRetry(() async {
+      final prompt = '''You are a creative language tutor. Generate a unique, inspiring quote or proverb for someone learning $targetLanguage. EXTREMELY IMPORTANT RULES: 1. Do NOT use common clichés like 'A journey of a thousand miles' or 'A smooth sea'. 2. Use this unique seed to randomize your choice from thousands of possibilities: $uniqueSeed. 3. Return ONLY a JSON object: {"quote": "The phrase in $targetLanguage", "translation": "The exact translation in $nativeLanguage"}.
+${seedSuffix()}
+- Return ONLY valid JSON. No text before or after.''';
+      final model = _buildModel(apiKey.trim());
+      final response =
+          await model.generateContent([Content.text(prompt)]).timeout(_timeout);
+      final rawText = response.text?.trim() ?? '';
+      return _parseDailyQuote(rawText);
     });
   }
 
@@ -1430,6 +1456,28 @@ class GeminiApiService {
       throw const GeminiServiceException(
         GeminiErrorType.parseError,
         'Could not parse dictation sentence. Please try again.',
+      );
+    }
+  }
+
+  DailyQuote _parseDailyQuote(String raw) {
+    try {
+      final cleaned = raw.contains('```')
+          ? raw
+              .replaceFirst(RegExp(r'```\w*'), '')
+              .replaceFirst(RegExp(r'```\s*$'), '')
+              .trim()
+          : raw;
+      final map = jsonDecode(cleaned) as Map<String, dynamic>;
+      return DailyQuote(
+        quote: map['quote'] as String? ?? '',
+        translation: map['translation'] as String? ?? '',
+      );
+    } catch (e) {
+      if (e is GeminiServiceException) rethrow;
+      throw const GeminiServiceException(
+        GeminiErrorType.parseError,
+        'Could not parse daily quote. Please try again.',
       );
     }
   }
