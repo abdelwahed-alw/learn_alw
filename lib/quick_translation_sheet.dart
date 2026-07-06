@@ -14,10 +14,12 @@ void showQuickTranslationSheet(BuildContext context) {
   String result = '';
   bool loading = false;
 
+  final cs = Theme.of(context).colorScheme;
+
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    backgroundColor: kColorBackground,
+    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),
@@ -60,7 +62,7 @@ void showQuickTranslationSheet(BuildContext context) {
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: kColorText,
+                                color: cs.onSurface,
                               ),
                             ),
                             const SizedBox(width: 8),
@@ -74,16 +76,16 @@ void showQuickTranslationSheet(BuildContext context) {
                     TextField(
                       controller: inputController,
                       maxLines: 3,
-                      style: const TextStyle(
-                          color: kColorText, fontSize: 14),
+                      style: TextStyle(
+                          color: cs.onSurface, fontSize: 14),
                       decoration: InputDecoration(
                         hintText: 'typeTextHere'.tr(),
                         hintStyle: TextStyle(
-                          color: kColorTextMuted
-                              .withValues(alpha: 0.7),
+                          color: cs.onSurface
+                              .withValues(alpha: 0.6),
                           fontSize: 13,
                         ),
-                        fillColor: kColorSurface,
+                        fillColor: Theme.of(context).cardColor,
                         contentPadding: const EdgeInsets.all(14),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -175,14 +177,14 @@ void showQuickTranslationSheet(BuildContext context) {
                         width: double.infinity,
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: kColorSurface,
+                          color: Theme.of(context).cardColor,
                           borderRadius:
                               BorderRadius.circular(12),
                         ),
                         child: Text(
                           result,
-                          style: const TextStyle(
-                            color: kColorText,
+                          style: TextStyle(
+                            color: cs.onSurface,
                             fontSize: 14,
                           ),
                         ),

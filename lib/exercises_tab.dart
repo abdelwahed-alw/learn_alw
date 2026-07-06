@@ -54,12 +54,13 @@ class _ExercisesTabState extends State<ExercisesTab> {
   }
 
   Widget _buildHeader(AppStateModel state) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
       decoration: BoxDecoration(
-        color: kColorBackground,
+        color: Theme.of(context).scaffoldBackgroundColor,
         border: Border(
-          bottom: BorderSide(color: kColorBorder.withValues(alpha: 0.3)),
+          bottom: BorderSide(color: cs.outline.withValues(alpha: 0.3)),
         ),
       ),
       child: Column(
@@ -69,8 +70,8 @@ class _ExercisesTabState extends State<ExercisesTab> {
             children: [
               Text(
                 'exercisesTab'.tr(),
-                style: const TextStyle(
-                  color: kColorText,
+                style: TextStyle(
+                  color: cs.onSurface,
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
                 ),
@@ -116,6 +117,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
   }
 
   Widget _buildModeSelector(AppStateModel state) {
+    final cs = Theme.of(context).colorScheme;
     final modes = [
       (AppMode.practice, tr(context, 'practice'), Icons.chat_rounded),
       (AppMode.ielts, 'ielts'.tr(), Icons.assignment_rounded),
@@ -125,9 +127,9 @@ class _ExercisesTabState extends State<ExercisesTab> {
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: kColorSurface,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+        border: Border.all(color: cs.outline.withValues(alpha: 0.5)),
       ),
       child: Row(
         children: modes.map((m) {
@@ -181,6 +183,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
   static const _excludedTopics = {'Vocabulary Drill', 'Grammar Practice'};
 
   Widget _buildTopicSelector(AppStateModel state) {
+    final cs = Theme.of(context).colorScheme;
     if (state.appMode != AppMode.practice) return const SizedBox.shrink();
     final topics = kTopics.where((t) => !_excludedTopics.contains(t)).toList();
     return SizedBox(
@@ -203,12 +206,12 @@ class _ExercisesTabState extends State<ExercisesTab> {
               decoration: BoxDecoration(
                 color: isActive
                     ? kColorPrimary.withValues(alpha: 0.12)
-                    : kColorSurface,
+                    : Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: isActive
                       ? kColorPrimary.withValues(alpha: 0.4)
-                      : kColorBorder.withValues(alpha: 0.5),
+                      : cs.outline.withValues(alpha: 0.5),
                 ),
               ),
               child: Row(
@@ -217,7 +220,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
                   Icon(
                     kTopicIcons[topic] ?? Icons.chat_rounded,
                     size: 14,
-                    color: isActive ? kColorPrimary : kColorTextMuted,
+                    color: isActive ? kColorPrimary : cs.onSurface.withValues(alpha: 0.5),
                   ),
                   const SizedBox(width: 6),
                   Text(
@@ -225,7 +228,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                      color: isActive ? kColorPrimary : kColorAccent,
+                      color: isActive ? kColorPrimary : cs.onSurface.withValues(alpha: 0.7),
                     ),
                   ),
                 ],

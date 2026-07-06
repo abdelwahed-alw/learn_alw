@@ -10,6 +10,7 @@ import 'exercises_tab.dart';
 import 'progress_tab.dart';
 import 'profile_tab.dart';
 import 'quick_translation_sheet.dart';
+import 'theme_colors.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
@@ -25,7 +26,6 @@ class _AppShellState extends State<AppShell> {
   Widget build(BuildContext context) {
     final state = context.watch<AppStateModel>();
     return Scaffold(
-      backgroundColor: kColorBackground,
       floatingActionButton: state.showTranslationFab
           ? FloatingActionButton(
               onPressed: () => showQuickTranslationSheet(context),
@@ -62,9 +62,9 @@ class _AppShellState extends State<AppShell> {
 
     return Container(
       decoration: BoxDecoration(
-        color: kColorSurface,
+        color: context.cardBg,
         border: Border(
-          top: BorderSide(color: kColorBorder.withValues(alpha: 0.5)),
+          top: BorderSide(color: context.borderColor),
         ),
         boxShadow: [
           BoxShadow(

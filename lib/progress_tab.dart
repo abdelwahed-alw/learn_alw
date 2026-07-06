@@ -23,15 +23,15 @@ class ProgressTab extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildHeader(state),
+                      _buildHeader(context, state),
                       const SizedBox(height: 24),
                       _buildOverviewCards(state),
                       const SizedBox(height: 24),
-                      _buildTopicBreakdown(state),
+                      _buildTopicBreakdown(context, state),
                       const SizedBox(height: 24),
-                      _buildSkillBreakdown(state),
+                      _buildSkillBreakdown(context, state),
                       const SizedBox(height: 24),
-                      _buildVocabularySection(state),
+                      _buildVocabularySection(context, state),
                       const SizedBox(height: 32),
                     ],
                   ),
@@ -44,14 +44,15 @@ class ProgressTab extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(AppStateModel state) {
+  Widget _buildHeader(BuildContext context, AppStateModel state) {
+    final cs = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'progressTab'.tr(),
-          style: const TextStyle(
-            color: kColorText,
+          style: TextStyle(
+            color: cs.onSurface,
             fontSize: 22,
             fontWeight: FontWeight.w800,
           ),
@@ -60,7 +61,7 @@ class ProgressTab extends StatelessWidget {
         Text(
           'trackYourLearning'.tr(),
           style: TextStyle(
-            color: kColorTextMuted.withValues(alpha: 0.7),
+            color: cs.onSurface.withValues(alpha: 0.6),
             fontSize: 13,
           ),
         ),
@@ -101,28 +102,29 @@ class ProgressTab extends StatelessWidget {
     );
   }
 
-  Widget _buildTopicBreakdown(AppStateModel state) {
+  Widget _buildTopicBreakdown(BuildContext context, AppStateModel state) {
+    final cs = Theme.of(context).colorScheme;
     final topics = state.topicProgress.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
     if (topics.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: kColorSurface,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+          border: Border.all(color: cs.outline.withValues(alpha: 0.5)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.bar_chart_rounded,
-                color: kColorTextMuted.withValues(alpha: 0.4), size: 40),
+                color: cs.onSurface.withValues(alpha: 0.4), size: 40),
             const SizedBox(height: 8),
             Text(
               'noExercisesYet'.tr(),
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: kColorTextMuted.withValues(alpha: 0.6),
+                color: cs.onSurface.withValues(alpha: 0.6),
                 fontSize: 13,
               ),
             ),
@@ -172,8 +174,8 @@ class ProgressTab extends StatelessWidget {
       children: [
         Text(
           'topicBreakdown'.tr(),
-          style: const TextStyle(
-            color: kColorText,
+          style: TextStyle(
+            color: cs.onSurface,
             fontSize: 16,
             fontWeight: FontWeight.w700,
           ),
@@ -182,10 +184,10 @@ class ProgressTab extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: kColorSurface,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(16),
             border:
-                Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+                Border.all(color: cs.outline.withValues(alpha: 0.5)),
           ),
           child: Column(
             children: topics.take(8).map((entry) {
@@ -202,7 +204,7 @@ class ProgressTab extends StatelessWidget {
                             ? '${entry.key.substring(0, 14)}…'
                             : entry.key,
                         style: TextStyle(
-                          color: kColorText.withValues(alpha: 0.8),
+                          color: cs.onSurface.withValues(alpha: 0.8),
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                         ),
@@ -214,7 +216,7 @@ class ProgressTab extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4),
                         child: LinearProgressIndicator(
                           value: ratio,
-                          backgroundColor: kColorBorder,
+                          backgroundColor: cs.outline.withValues(alpha: 0.3),
                           valueColor: AlwaysStoppedAnimation<Color>(
                             kColorPrimary,
                           ),
@@ -229,7 +231,7 @@ class ProgressTab extends StatelessWidget {
                         '${entry.value}',
                         textAlign: TextAlign.right,
                         style: TextStyle(
-                          color: kColorTextMuted.withValues(alpha: 0.8),
+                          color: cs.onSurface.withValues(alpha: 0.6),
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                         ),
@@ -245,7 +247,8 @@ class ProgressTab extends StatelessWidget {
     );
   }
 
-  Widget _buildSkillBreakdown(AppStateModel state) {
+  Widget _buildSkillBreakdown(BuildContext context, AppStateModel state) {
+    final cs = Theme.of(context).colorScheme;
     final skills = <(String, IconData, double)>[
       ('writing'.tr(), Icons.edit_rounded, state.writingProgress),
       ('grammar'.tr(), Icons.text_fields_rounded, state.grammarProgress),
@@ -260,8 +263,8 @@ class ProgressTab extends StatelessWidget {
       children: [
         Text(
           'skillsBreakdown'.tr(),
-          style: const TextStyle(
-            color: kColorText,
+          style: TextStyle(
+            color: cs.onSurface,
             fontSize: 16,
             fontWeight: FontWeight.w700,
           ),
@@ -282,9 +285,9 @@ class ProgressTab extends StatelessWidget {
             return Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: kColorSurface,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+                border: Border.all(color: cs.outline.withValues(alpha: 0.5)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -304,7 +307,7 @@ class ProgressTab extends StatelessWidget {
                       Text(
                         '${(s.$3 * 100).round()}%',
                         style: TextStyle(
-                          color: kColorTextMuted.withValues(alpha: 0.6),
+                          color: cs.onSurface.withValues(alpha: 0.6),
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
                         ),
@@ -314,8 +317,8 @@ class ProgressTab extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     s.$1,
-                    style: const TextStyle(
-                      color: kColorText,
+                    style: TextStyle(
+                      color: cs.onSurface,
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                     ),
@@ -325,7 +328,7 @@ class ProgressTab extends StatelessWidget {
                     borderRadius: BorderRadius.circular(3),
                     child: LinearProgressIndicator(
                       value: s.$3,
-                      backgroundColor: kColorBorder,
+                      backgroundColor: cs.outline.withValues(alpha: 0.3),
                       valueColor: AlwaysStoppedAnimation<Color>(
                         s.$3 >= 0.8 ? const Color(0xFF2ECC71) : kColorPrimary,
                       ),
@@ -341,7 +344,8 @@ class ProgressTab extends StatelessWidget {
     );
   }
 
-  Widget _buildVocabularySection(AppStateModel state) {
+  Widget _buildVocabularySection(BuildContext context, AppStateModel state) {
+    final cs = Theme.of(context).colorScheme;
     final vocab = state.beginnerVocabulary;
     if (vocab.isEmpty) return const SizedBox.shrink();
 
@@ -350,8 +354,8 @@ class ProgressTab extends StatelessWidget {
       children: [
         Text(
           '${'vocabulary'.tr()} (${vocab.length})',
-          style: const TextStyle(
-            color: kColorText,
+          style: TextStyle(
+            color: cs.onSurface,
             fontSize: 16,
             fontWeight: FontWeight.w700,
           ),
@@ -359,10 +363,10 @@ class ProgressTab extends StatelessWidget {
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
-            color: kColorSurface,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(16),
             border:
-                Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+                Border.all(color: cs.outline.withValues(alpha: 0.5)),
           ),
           child: ListView.separated(
             shrinkWrap: true,
@@ -370,7 +374,7 @@ class ProgressTab extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             itemCount: vocab.length.clamp(0, 20),
             separatorBuilder: (_, __) => Divider(
-                color: kColorBorder.withValues(alpha: 0.3)),
+                color: cs.outline.withValues(alpha: 0.3)),
             itemBuilder: (context, index) {
               final entry = vocab[index];
               return Padding(
@@ -394,8 +398,8 @@ class ProgressTab extends StatelessWidget {
                     const SizedBox(width: 12),
                     Text(
                       entry['word'] ?? '',
-                      style: const TextStyle(
-                        color: kColorText,
+                      style: TextStyle(
+                        color: cs.onSurface,
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
                       ),
@@ -406,7 +410,7 @@ class ProgressTab extends StatelessWidget {
                         entry['meaning'] ?? '',
                         style: TextStyle(
                           color:
-                              kColorTextMuted.withValues(alpha: 0.7),
+                              cs.onSurface.withValues(alpha: 0.6),
                           fontSize: 12,
                         ),
                       ),
@@ -421,10 +425,10 @@ class ProgressTab extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: Center(
-              child:               Text(
+              child:              Text(
                 '+ ${vocab.length - 20} ${'moreWords'.tr()}',
                 style: TextStyle(
-                  color: kColorTextMuted.withValues(alpha: 0.6),
+                  color: cs.onSurface.withValues(alpha: 0.6),
                   fontSize: 11,
                 ),
               ),
@@ -452,12 +456,13 @@ class _OverviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: kColorSurface,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+        border: Border.all(color: cs.outline.withValues(alpha: 0.5)),
       ),
       child: Column(
         children: [
@@ -482,7 +487,7 @@ class _OverviewCard extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              color: kColorTextMuted.withValues(alpha: 0.7),
+              color: cs.onSurface.withValues(alpha: 0.5),
               fontSize: 11,
               fontWeight: FontWeight.w500,
             ),

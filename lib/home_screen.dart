@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: kColorBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.4,
       drawerScrimColor: Colors.black54,
       drawer: _AnimatedDrawer(

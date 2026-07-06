@@ -42,17 +42,17 @@ class HomeTab extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildHeader(state, greeting, emoji),
+                _buildHeader(context, state, greeting, emoji),
                 const SizedBox(height: 24),
-                _buildGlobalProgress(state),
+                _buildGlobalProgress(context, state),
                 const SizedBox(height: 24),
-                _buildSectionTitle('continueLearning'.tr()),
+                _buildSectionTitle(context, 'continueLearning'.tr()),
                 const SizedBox(height: 14),
                 _buildRecentCard(state),
                 const SizedBox(height: 28),
-                const _DailyQuoteWidget(),
+                _DailyQuoteWidget(),
                 const SizedBox(height: 28),
-                _buildSectionTitle('quickStats'.tr()),
+                _buildSectionTitle(context, 'quickStats'.tr()),
                 const SizedBox(height: 14),
                 _buildQuickStats(state),
               ],
@@ -63,7 +63,8 @@ class HomeTab extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(AppStateModel state, String greeting, String emoji) {
+  Widget _buildHeader(BuildContext context, AppStateModel state, String greeting, String emoji) {
+    final cs = Theme.of(context).colorScheme;
     return Row(
       children: [
         Expanded(
@@ -79,7 +80,7 @@ class HomeTab extends StatelessWidget {
                     child: Text(
                       'salearn'.tr(),
                       style: TextStyle(
-                        color: kColorText.withValues(alpha: 0.5),
+                        color: cs.onSurface.withValues(alpha: 0.5),
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 1,
@@ -91,8 +92,8 @@ class HomeTab extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 greeting,
-                style: const TextStyle(
-                  color: kColorText,
+                style: TextStyle(
+                  color: cs.onSurface,
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
                 ),
@@ -106,14 +107,15 @@ class HomeTab extends StatelessWidget {
     );
   }
 
-  Widget _buildGlobalProgress(AppStateModel state) {
+  Widget _buildGlobalProgress(BuildContext context, AppStateModel state) {
+    final cs = Theme.of(context).colorScheme;
     final pct = (state.overallProgressPercent * 100).round();
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: kCardGradient,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+        border: Border.all(color: cs.outline.withValues(alpha: 0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,7 +127,7 @@ class HomeTab extends StatelessWidget {
               Text(
                 'overallProgress'.tr(),
                 style: TextStyle(
-                  color: kColorText.withValues(alpha: 0.7),
+                  color: cs.onSurface.withValues(alpha: 0.7),
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
@@ -146,7 +148,7 @@ class HomeTab extends StatelessWidget {
             borderRadius: BorderRadius.circular(6),
             child: LinearProgressIndicator(
               value: state.overallProgressPercent,
-              backgroundColor: kColorBorder,
+              backgroundColor: cs.outline.withValues(alpha: 0.3),
               valueColor: AlwaysStoppedAnimation<Color>(kColorPrimary),
               minHeight: 8,
             ),
@@ -154,10 +156,10 @@ class HomeTab extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-              _statChip(Icons.check_circle_rounded,
+              _statChip(context, Icons.check_circle_rounded,
                   '${state.totalExercisesDone}', 'exercises'.tr()),
               const SizedBox(width: 16),
-              _statChip(Icons.local_fire_department_rounded,
+              _statChip(context, Icons.local_fire_department_rounded,
                   '${state.streakDays}', 'dayStreak'.tr()),
             ],
           ),
@@ -166,16 +168,17 @@ class HomeTab extends StatelessWidget {
     );
   }
 
-  Widget _statChip(IconData icon, String value, String label) {
+  Widget _statChip(BuildContext context, IconData icon, String value, String label) {
+    final cs = Theme.of(context).colorScheme;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 14, color: kColorTextMuted),
+        Icon(icon, size: 14, color: cs.onSurface.withValues(alpha: 0.5)),
         const SizedBox(width: 4),
         Text(
           value,
-          style: const TextStyle(
-            color: kColorText,
+          style: TextStyle(
+            color: cs.onSurface,
             fontWeight: FontWeight.w700,
             fontSize: 13,
           ),
@@ -184,7 +187,7 @@ class HomeTab extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: kColorTextMuted.withValues(alpha: 0.7),
+            color: cs.onSurface.withValues(alpha: 0.5),
             fontSize: 11,
           ),
         ),
@@ -192,11 +195,11 @@ class HomeTab extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(BuildContext context, String title) {
     return Text(
       title,
-      style: const TextStyle(
-        color: kColorText,
+      style: TextStyle(
+        color: Theme.of(context).colorScheme.onSurface,
         fontSize: 18,
         fontWeight: FontWeight.w700,
       ),
@@ -397,12 +400,13 @@ class _QuickStatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
       decoration: BoxDecoration(
-        color: kColorSurface,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+        border: Border.all(color: cs.outline.withValues(alpha: 0.5)),
       ),
       child: Column(
         children: [
@@ -420,7 +424,7 @@ class _QuickStatCard extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              color: kColorTextMuted.withValues(alpha: 0.7),
+              color: cs.onSurface.withValues(alpha: 0.5),
               fontSize: 11,
               fontWeight: FontWeight.w500,
             ),
@@ -476,11 +480,12 @@ class _DailyQuoteWidgetState extends State<_DailyQuoteWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     if (_loading) {
       return Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: kColorSurface,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Shimmer.fromColors(
@@ -509,7 +514,7 @@ class _DailyQuoteWidgetState extends State<_DailyQuoteWidget> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: kColorSurface,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -523,10 +528,10 @@ class _DailyQuoteWidgetState extends State<_DailyQuoteWidget> {
               child: Text(
                 '"${_quote!.quote}"',
                 textAlign: TextAlign.start,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'serif',
                   fontStyle: FontStyle.italic,
-                  color: kColorPrimary,
+                  color: cs.onSurface,
                   fontSize: 26,
                   fontWeight: FontWeight.w600,
                   height: 1.4,
@@ -541,7 +546,7 @@ class _DailyQuoteWidgetState extends State<_DailyQuoteWidget> {
               _quote!.translation,
               textAlign: TextAlign.right,
               style: TextStyle(
-                color: kColorAccent,
+                color: cs.onSurface.withValues(alpha: 0.7),
                 fontSize: 16,
                 fontWeight: FontWeight.normal,
                 height: 1.4,

@@ -137,7 +137,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     final lang = context.watch<AppStateModel>().nativeLanguage;
 
     return Scaffold(
-      backgroundColor: kColorBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: FadeTransition(
         opacity: _fadeIn,
         child: Stack(

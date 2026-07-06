@@ -151,7 +151,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
   Widget build(BuildContext context) {
     final lang = context.watch<AppStateModel>().nativeLanguage;
     return Scaffold(
-      backgroundColor: kColorBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           // Background glow
