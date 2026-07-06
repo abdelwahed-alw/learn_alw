@@ -52,7 +52,7 @@ class LearnAlwApp extends StatelessWidget {
           supportedLocales: context.supportedLocales,
           locale: context.locale,
           debugShowCheckedModeBanner: false,
-          themeMode: ThemeMode.dark,
+          themeMode: model.isDarkMode ? ThemeMode.dark : ThemeMode.light,
           theme: _buildLightTheme(),
           darkTheme: _buildDarkTheme(),
           home: const SplashScreen(),
@@ -137,10 +137,70 @@ class LearnAlwApp extends StatelessWidget {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: kColorPrimary,
-        brightness: Brightness.light,
+      scaffoldBackgroundColor: kColorBackgroundLight,
+      colorScheme: const ColorScheme.light(
+        primary: kColorPrimary,
+        secondary: kColorAccent,
+        surface: kColorSurfaceLight,
+        error: kColorError,
+        onPrimary: Colors.white,
+        onSecondary: Colors.black,
+        onSurface: kColorTextLight,
+        onError: Colors.white,
       ),
+      textTheme: buildLightTextTheme(),
+      appBarTheme: AppBarTheme(
+        backgroundColor: kColorSurfaceLight,
+        foregroundColor: kColorTextLight,
+        elevation: 0,
+        centerTitle: false,
+        titleTextStyle:
+            buildLightTextTheme().titleLarge?.copyWith(fontSize: 22),
+      ),
+      drawerTheme: DrawerThemeData(
+        backgroundColor: kColorSurfaceLight,
+        width: 320,
+        elevation: 16,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: kColorCardLight,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: kColorPrimary, width: 2),
+        ),
+        hintStyle: const TextStyle(color: kColorTextMutedLight),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: kColorPrimary,
+          foregroundColor: Colors.white,
+          elevation: 8,
+          shadowColor: kColorPrimary.withValues(alpha: 0.5),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        backgroundColor: kColorSurfaceLight,
+        contentTextStyle: buildLightTextTheme().bodyMedium,
+        elevation: 12,
+      ),
+      dividerTheme: const DividerThemeData(color: kColorBorderLight, thickness: 1),
     );
   }
 }

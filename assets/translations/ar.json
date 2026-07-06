@@ -151,5 +151,12 @@
   "Health & Fitness": "الصحة واللياقة",
   "Music & Arts": "الموسيقى والفنون",
   "Fashion & Shopping": "الأزياء والتسوق",
-  "Education & Learning": "التعليم والتعلم"
+  "Education & Learning": "التعليم والتعلم",
+  "open": "فتح",
+  "typeTextHere": "اكتب النص هنا…",
+  "chooseAppearance": "اختر المظهر المفضل",
+  "lightMode": "وضع فاتح",
+  "darkMode": "وضع داكن",
+  "appSettings": "إعدادات التطبيق",
+  "showTranslationFab": "إظهار زر الترجمة العائم"
 }

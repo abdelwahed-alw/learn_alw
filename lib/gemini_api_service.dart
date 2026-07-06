@@ -1094,9 +1094,10 @@ class GeminiApiService {
     required String targetLanguage,
     required String nativeLanguage,
     String uniqueSeed = '',
+    String theme = 'wisdom',
   }) async {
     return _withRetry(() async {
-      final prompt = '''You are a creative language tutor. Generate a unique, inspiring quote or proverb for someone learning $targetLanguage. EXTREMELY IMPORTANT RULES: 1. Do NOT use common clichés like 'A journey of a thousand miles' or 'A smooth sea'. 2. Use this unique seed to randomize your choice from thousands of possibilities: $uniqueSeed. 3. Return ONLY a JSON object: {"quote": "The phrase in $targetLanguage", "translation": "The exact translation in $nativeLanguage"}.
+      final prompt = '''Act as a cultural expert. Generate one famous, inspiring quote or proverb specifically about '$theme' in $targetLanguage. EXTREMELY IMPORTANT: Do NOT generate quotes about Steve Jobs, 'great work', 'thousand miles', or 'smooth sea'. Return ONLY a JSON object: {"quote": "The phrase in $targetLanguage", "translation": "The exact translation in $nativeLanguage"}.
 ${seedSuffix()}
 - Return ONLY valid JSON. No text before or after.''';
       final model = _buildModel(apiKey.trim());

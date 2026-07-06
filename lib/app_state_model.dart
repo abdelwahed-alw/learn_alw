@@ -35,6 +35,9 @@ class AppStateModel extends ChangeNotifier {
   String _selectedTopic = kTopics.first;
   String _proficiencyLevel = 'B1';
   bool _onboardingDone = false;
+  bool _isDarkMode = true;
+  bool _hasSelectedTheme = false;
+  bool _showTranslationFab = true;
 
   // ── Session state ────────────────────────────────────────────────────────
   String _currentQuestion = '';
@@ -127,6 +130,9 @@ class AppStateModel extends ChangeNotifier {
   bool get isTranslating => _loadingPhase == LoadingPhase.translating;
   String get apiKey => _apiKey;
   bool get hasApiKey => _apiKey.trim().isNotEmpty;
+  bool get isDarkMode => _isDarkMode;
+  bool get hasSelectedTheme => _hasSelectedTheme;
+  bool get showTranslationFab => _showTranslationFab;
   bool get hasQuestion => _currentQuestion.isNotEmpty;
 
   // ── Mode getters ────────────────────────────────────────────────────────────
@@ -166,6 +172,9 @@ class AppStateModel extends ChangeNotifier {
     _selectedTopic = _prefs.getString(kPrefTopic) ?? kTopics.first;
     _proficiencyLevel = _prefs.getString(kPrefLevel) ?? 'B1';
     _onboardingDone = _prefs.getBool(kPrefOnboarding) ?? false;
+    _isDarkMode = _prefs.getBool(kPrefIsDarkMode) ?? true;
+    _hasSelectedTheme = _prefs.getBool(kPrefHasSelectedTheme) ?? false;
+    _showTranslationFab = _prefs.getBool(kPrefIsFabVisible) ?? true;
     _loadBeginnerVocabularyFromPrefs();
     loadProgress();
     notifyListeners();
@@ -223,6 +232,28 @@ class AppStateModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ─── Theme ──────────────────────────────────────────────────────────────────
+  Future<void> setThemeMode(bool isDark) async {
+    _isDarkMode = isDark;
+    await _prefs.setBool(kPrefIsDarkMode, isDark);
+    notifyListeners();
+  }
+
+  Future<void> completeThemeSelection(bool isDark) async {
+    _isDarkMode = isDark;
+    _hasSelectedTheme = true;
+    await _prefs.setBool(kPrefIsDarkMode, isDark);
+    await _prefs.setBool(kPrefHasSelectedTheme, true);
+    notifyListeners();
+  }
+
+  // ─── FAB Visibility ─────────────────────────────────────────────────────────
+  Future<void> setFabVisibility(bool visible) async {
+    _showTranslationFab = visible;
+    await _prefs.setBool(kPrefIsFabVisible, visible);
+    notifyListeners();
+  }
+
   // ─── Proficiency Level ─────────────────────────────────────────────────────
   Future<void> setProficiencyLevel(String level) async {
     _proficiencyLevel = level;
@@ -263,6 +294,8 @@ class AppStateModel extends ChangeNotifier {
     if (_targetLanguage == code) return;
     _targetLanguage = code;
     await _prefs.setString(kPrefTargetLang, code);
+    _beginnerVocabulary.clear();
+    await _prefs.remove(kPrefBeginnerVocab);
     notifyListeners();
   }
 

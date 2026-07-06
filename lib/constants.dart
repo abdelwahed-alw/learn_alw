@@ -18,6 +18,9 @@ const String kPrefLastActive = 'last_active_date';
 const String kPrefStreak = 'streak';
 const String kPrefLastMode = 'last_mode';
 const String kPrefCategoryProgress = 'progress_categories';
+const String kPrefIsDarkMode = 'is_dark_mode';
+const String kPrefHasSelectedTheme = 'has_selected_theme';
+const String kPrefIsFabVisible = 'is_fab_visible';
 
 // ─── App version (injected via --dart-define=APP_VERSION=... at build time) ─────
 const String kAppVersion =
@@ -213,8 +216,16 @@ const Color kColorSecondary =
 const Color kColorError = Color(0xFFFF4757); // Error red
 
 // Typography
-const Color kColorText = Color(0xFFE8EFF7); // Primary text
-const Color kColorTextMuted = Color(0xFF5577AA); // Muted / placeholder
+const Color kColorText = Color(0xFFE8EFF7);       // Primary text (dark)
+const Color kColorTextMuted = Color(0xFF5577AA);  // Muted / placeholder
+
+// Light theme colors
+const Color kColorBackgroundLight = Color(0xFFF5F7FA);
+const Color kColorSurfaceLight = Color(0xFFFFFFFF);
+const Color kColorCardLight = Color(0xFFF0F2F5);
+const Color kColorBorderLight = Color(0xFFE0E4EA);
+const Color kColorTextLight = Color(0xFF1A1D21);
+const Color kColorTextMutedLight = Color(0xFF8E94A0);
 
 // ─── Gradients ────────────────────────────────────────────────────────────────
 
@@ -258,6 +269,20 @@ TextTheme buildPremiumTextTheme() {
         GoogleFonts.outfit(color: kColorText, fontSize: 14, height: 1.5),
     labelLarge: GoogleFonts.outfit(
         color: kColorText, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+  );
+}
+
+TextTheme buildLightTextTheme() {
+  return GoogleFonts.outfitTextTheme(ThemeData.light().textTheme).copyWith(
+    displayLarge: GoogleFonts.outfit(
+        color: kColorTextLight, fontWeight: FontWeight.bold, letterSpacing: -1),
+    titleLarge: GoogleFonts.outfit(
+        color: kColorTextLight, fontWeight: FontWeight.w700, letterSpacing: 0.5),
+    bodyLarge: GoogleFonts.outfit(color: kColorTextLight, fontSize: 16, height: 1.6),
+    bodyMedium:
+        GoogleFonts.outfit(color: kColorTextLight, fontSize: 14, height: 1.5),
+    labelLarge: GoogleFonts.outfit(
+        color: kColorTextLight, fontWeight: FontWeight.bold, letterSpacing: 0.5),
   );
 }
 

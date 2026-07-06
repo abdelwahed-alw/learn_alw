@@ -372,7 +372,7 @@ class HomeTab extends StatelessWidget {
             icon: Icons.local_fire_department_rounded,
             value: '${state.streakDays}',
             label: 'streak'.tr(),
-            color: const Color(0xFF2ECC71),
+            color: kColorPrimary,
           ),
         ),
       ],
@@ -458,12 +458,15 @@ class _DailyQuoteWidgetState extends State<_DailyQuoteWidget> {
       return;
     }
     final String uniqueSeed = DateTime.now().millisecondsSinceEpoch.toString();
+    final List<String> themes = ['patience', 'courage', 'time', 'friendship', 'hope', 'wisdom', 'kindness', 'dreams', 'overcoming failure', 'success', 'nature', 'hard work', 'forgiveness', 'gratitude', 'moving forward'];
+    final String randomTheme = themes[DateTime.now().millisecondsSinceEpoch % themes.length];
     try {
       final quote = await _api.generateDailyQuote(
         apiKey: state.apiKey,
         targetLanguage: languageLabelFromCode(state.targetLanguage),
         nativeLanguage: languageLabelFromCode(state.nativeLanguage),
         uniqueSeed: uniqueSeed,
+        theme: randomTheme,
       );
       if (mounted) setState(() { _quote = quote; _loading = false; });
     } catch (_) {
@@ -481,20 +484,20 @@ class _DailyQuoteWidgetState extends State<_DailyQuoteWidget> {
           borderRadius: BorderRadius.circular(16),
         ),
         child: Shimmer.fromColors(
-          baseColor: Colors.grey[800]!,
-          highlightColor: Colors.grey[700]!,
+          baseColor: Colors.white.withValues(alpha: 0.05),
+          highlightColor: Colors.white.withValues(alpha: 0.15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(width: double.infinity, height: 16, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
-              const SizedBox(height: 8),
-              Container(width: 280, height: 16, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
-              const SizedBox(height: 8),
-              Container(width: 240, height: 16, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+              Container(height: 18, width: double.infinity, decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(4)))),
+              const SizedBox(height: 10),
+              Container(height: 18, width: MediaQuery.of(context).size.width * 0.6, decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(4)))),
+              const SizedBox(height: 10),
+              Container(height: 18, width: MediaQuery.of(context).size.width * 0.4, decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(4)))),
               const SizedBox(height: 24),
               Align(
-                alignment: Alignment.bottomRight,
-                child: Container(width: 160, height: 14, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+                alignment: AlignmentDirectional.centerEnd,
+                child: Container(height: 14, width: MediaQuery.of(context).size.width * 0.3, decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(4)))),
               ),
             ],
           ),
@@ -512,18 +515,22 @@ class _DailyQuoteWidgetState extends State<_DailyQuoteWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Directionality(
-            textDirection: TextDirection.ltr,
-            child: Text(
-              '"${_quote!.quote}"',
-              textAlign: TextAlign.start,
-              style: const TextStyle(
-                fontFamily: 'serif',
-                fontStyle: FontStyle.italic,
-                color: kColorPrimary,
-                fontSize: 26,
-                fontWeight: FontWeight.w600,
-                height: 1.4,
+          ShaderMask(
+            blendMode: BlendMode.srcIn,
+            shaderCallback: (bounds) => kPrimaryGradient.createShader(bounds),
+            child: Directionality(
+              textDirection: TextDirection.ltr,
+              child: Text(
+                '"${_quote!.quote}"',
+                textAlign: TextAlign.start,
+                style: const TextStyle(
+                  fontFamily: 'serif',
+                  fontStyle: FontStyle.italic,
+                  color: kColorPrimary,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w600,
+                  height: 1.4,
+                ),
               ),
             ),
           ),

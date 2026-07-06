@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -29,6 +30,10 @@ class _SplashScreenState extends State<SplashScreen> {
   void _navigateNext() {
     if (!mounted) return;
     final model = context.read<AppStateModel>();
+    if (!model.hasSelectedTheme) {
+      _showThemeSelector();
+      return;
+    }
     final destination = model.isOnboardingDone
         ? const AppShell()
         : const OnboardingScreen();
@@ -41,6 +46,178 @@ class _SplashScreenState extends State<SplashScreen> {
           child: child,
         ),
       ),
+    );
+  }
+
+  void _showThemeSelector() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) {
+        bool isDark = true;
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: isDark ? kColorSurface : kColorSurfaceLight,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'chooseAppearance'.tr(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? kColorText : kColorTextLight,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => setDialogState(() => isDark = false),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.symmetric(vertical: 24),
+                            decoration: BoxDecoration(
+                              color: !isDark
+                                  ? kColorPrimary.withValues(alpha: 0.15)
+                                  : (isDark
+                                      ? kColorCard
+                                      : kColorCardLight),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: !isDark
+                                    ? kColorPrimary
+                                    : Colors.transparent,
+                                width: 2,
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.light_mode_rounded,
+                                  size: 36,
+                                  color: !isDark
+                                      ? kColorPrimary
+                                      : kColorTextMuted,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'lightMode'.tr(),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: !isDark
+                                        ? kColorPrimary
+                                        : kColorTextMuted,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => setDialogState(() => isDark = true),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.symmetric(vertical: 24),
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? kColorPrimary.withValues(alpha: 0.15)
+                                  : (isDark
+                                      ? kColorCard
+                                      : kColorCardLight),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: isDark
+                                    ? kColorPrimary
+                                    : Colors.transparent,
+                                width: 2,
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.dark_mode_rounded,
+                                  size: 36,
+                                  color: isDark
+                                      ? kColorPrimary
+                                      : kColorTextMuted,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'darkMode'.tr(),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: isDark
+                                        ? kColorPrimary
+                                        : kColorTextMuted,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  GestureDetector(
+                    onTap: () async {
+                      final model = context.read<AppStateModel>();
+                      await model.completeThemeSelection(isDark);
+                      if (!ctx.mounted) return;
+                      Navigator.of(ctx).pop();
+                      final destination = model.isOnboardingDone
+                          ? const AppShell()
+                          : const OnboardingScreen();
+                      Navigator.of(ctx).pushReplacement(
+                        PageRouteBuilder(
+                          pageBuilder: (_, __, ___) => destination,
+                          transitionDuration: const Duration(milliseconds: 500),
+                          transitionsBuilder: (_, anim, __, child) =>
+                              FadeTransition(
+                            opacity: CurvedAnimation(
+                                parent: anim, curve: kPremiumCurve),
+                            child: child,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        gradient: kPrimaryGradient,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'continue'.tr(),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 

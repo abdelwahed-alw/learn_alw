@@ -144,5 +144,12 @@
   "noExercisesYet": "No exercises completed yet.\nStart practicing to see your progress!",
   "exercises": "Exercises",
   "words": "Words",
-  "salearn": "Salearn"
+  "salearn": "Salearn",
+  "open": "Open",
+  "typeTextHere": "Type text here...",
+  "chooseAppearance": "Choose your preferred appearance",
+  "lightMode": "Light Mode",
+  "darkMode": "Dark Mode",
+  "appSettings": "App Settings",
+  "showTranslationFab": "Show Floating Translation Button"
 }

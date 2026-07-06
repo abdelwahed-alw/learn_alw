@@ -1,12 +1,15 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
+import 'app_state_model.dart';
 import 'constants.dart';
 import 'home_tab.dart';
 import 'exercises_tab.dart';
 import 'progress_tab.dart';
 import 'profile_tab.dart';
-import 'ui_strings.dart';
+import 'quick_translation_sheet.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
@@ -20,8 +23,16 @@ class _AppShellState extends State<AppShell> {
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<AppStateModel>();
     return Scaffold(
       backgroundColor: kColorBackground,
+      floatingActionButton: state.showTranslationFab
+          ? FloatingActionButton(
+              onPressed: () => showQuickTranslationSheet(context),
+              backgroundColor: kColorPrimary,
+              child: const Icon(Icons.translate_rounded, color: Colors.white),
+            )
+          : null,
       body: IndexedStack(
         index: _currentIndex,
         children: [
@@ -43,10 +54,10 @@ class _AppShellState extends State<AppShell> {
 
   Widget _buildBottomNav() {
     final items = [
-      (Icons.home_rounded, tr(context, 'homeTab')),
-      (Icons.menu_book_rounded, tr(context, 'exercisesTab')),
-      (Icons.bar_chart_rounded, tr(context, 'progressTab')),
-      (Icons.person_rounded, tr(context, 'profileTab')),
+      (Icons.home_rounded, 'homeTab'.tr()),
+      (Icons.menu_book_rounded, 'exercisesTab'.tr()),
+      (Icons.bar_chart_rounded, 'progressTab'.tr()),
+      (Icons.person_rounded, 'profileTab'.tr()),
     ];
 
     return Container(

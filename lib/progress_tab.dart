@@ -94,7 +94,7 @@ class ProgressTab extends StatelessWidget {
             icon: Icons.local_fire_department_rounded,
             label: 'dayStreak'.tr(),
             value: '${state.streakDays}',
-            color: const Color(0xFF2ECC71),
+            color: kColorPrimary,
           ),
         ),
       ],
