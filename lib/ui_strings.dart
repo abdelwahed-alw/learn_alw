@@ -136,6 +136,7 @@ const Map<String, Map<String, String>> _strings = {
     'practice': 'Practice',
     'ielts': 'IELTS',
     'categories': 'Categories',
+    'sameLanguageWarning': 'Native and target languages cannot be the same.',
   },
   // ─── Arabic ───────────────────────────────────────────────────────────────
   'ar': {

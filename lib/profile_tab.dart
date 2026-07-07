@@ -501,10 +501,19 @@ class _ProfileTabState extends State<ProfileTab> {
                 value: state.nativeLanguage,
                 items: kSupportedLanguages,
                 onChanged: (val) async {
-                  if (val != null) {
+                  if (val != null && val != state.targetLanguage) {
                     await state.setNativeLanguage(val);
                     context.setLocale(Locale(val));
                     Phoenix.rebirth(context);
+                  } else if (val != null) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(t('sameLanguageWarning', lang)),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
                   }
                 },
               ),
@@ -517,9 +526,18 @@ class _ProfileTabState extends State<ProfileTab> {
                 value: state.targetLanguage,
                 items: kSupportedLanguages,
                 onChanged: (val) async {
-                  if (val != null) {
+                  if (val != null && val != state.nativeLanguage) {
                     await state.setTargetLanguage(val);
                     Phoenix.rebirth(context);
+                  } else if (val != null) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(t('sameLanguageWarning', lang)),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
                   }
                 },
               ),

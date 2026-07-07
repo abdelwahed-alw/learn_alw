@@ -77,13 +77,28 @@ class HomeTab extends StatelessWidget {
                   const SizedBox(width: 8),
                   Directionality(
                     textDirection: TextDirection.ltr,
-                    child: Text(
-                      'salearn'.tr(),
-                      style: TextStyle(
-                        color: cs.onSurface.withValues(alpha: 0.5),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1,
+                    child: RichText(
+                      text: TextSpan(
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: 'Sa',
+                            style: TextStyle(
+                              color: Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black87
+                                  : Colors.white,
+                            ),
+                          ),
+                          TextSpan(
+                            text: 'Learn.',
+                            style: const TextStyle(
+                              color: kColorPrimary,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

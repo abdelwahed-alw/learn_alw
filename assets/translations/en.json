@@ -151,5 +151,6 @@
   "lightMode": "Light Mode",
   "darkMode": "Dark Mode",
   "appSettings": "App Settings",
-  "showTranslationFab": "Show Floating Translation Button"
+  "showTranslationFab": "Show Floating Translation Button",
+  "sameLanguageWarning": "Native and target languages cannot be the same."
 }
