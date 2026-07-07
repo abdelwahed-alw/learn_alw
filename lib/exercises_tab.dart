@@ -117,6 +117,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
   }
 
   Widget _buildModeSelector(AppStateModel state) {
+    final isLight = Theme.of(context).brightness == Brightness.light;
     final cs = Theme.of(context).colorScheme;
     final modes = [
       (AppMode.practice, tr(context, 'practice'), Icons.chat_rounded),
@@ -157,7 +158,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
                     size: 14,
                     color: isSelected
                         ? kColorPrimary
-                        : kColorAccent.withValues(alpha: 0.6),
+                        : (isLight ? Colors.black54 : kColorAccent.withValues(alpha: 0.6)),
                   ),
                   const SizedBox(width: 4),
                   Text(
@@ -168,7 +169,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
                           isSelected ? FontWeight.w700 : FontWeight.w500,
                       color: isSelected
                           ? kColorPrimary
-                          : kColorAccent.withValues(alpha: 0.6),
+                          : (isLight ? Colors.black54 : kColorAccent.withValues(alpha: 0.6)),
                     ),
                   ),
                 ],

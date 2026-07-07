@@ -144,6 +144,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
   }
 
   Widget _buildExerciseTabs(AppStateModel state) {
+    final isLight = Theme.of(context).brightness == Brightness.light;
     final cs = Theme.of(context).colorScheme;
     final types = IeltsExerciseType.values;
     return Container(
@@ -189,7 +190,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                       size: 18,
                       color: isSelected
                           ? kColorPrimary
-                          : kColorAccent.withValues(alpha: 0.6),
+                          : (isLight ? Colors.black54 : kColorAccent.withValues(alpha: 0.6)),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -202,7 +203,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                             : FontWeight.w500,
                         color: isSelected
                             ? kColorPrimary
-                            : kColorAccent.withValues(alpha: 0.6),
+                            : (isLight ? Colors.black54 : kColorAccent.withValues(alpha: 0.6)),
                       ),
                     ),
                   ],

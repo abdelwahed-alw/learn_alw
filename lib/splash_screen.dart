@@ -223,6 +223,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isLight = Theme.of(context).brightness == Brightness.light;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
@@ -251,7 +252,7 @@ class _SplashScreenState extends State<SplashScreen> {
                           children: [
                             TextSpan(
                               text: 'Sa',
-                              style: const TextStyle(color: Colors.white),
+                              style: TextStyle(color: isLight ? Colors.black87 : Colors.white),
                             ),
                             TextSpan(
                               text: 'Learn.',

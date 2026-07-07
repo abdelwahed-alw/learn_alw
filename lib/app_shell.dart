@@ -54,6 +54,7 @@ class _AppShellState extends State<AppShell> {
   }
 
   Widget _buildBottomNav() {
+    final isLight = Theme.of(context).brightness == Brightness.light;
     final items = [
       (Icons.home_rounded, 'homeTab'.tr()),
       (Icons.menu_book_rounded, 'exercisesTab'.tr()),
@@ -106,7 +107,7 @@ class _AppShellState extends State<AppShell> {
                         size: 20,
                         color: isActive
                             ? kColorPrimary
-                            : kColorAccent.withValues(alpha: 0.6),
+                            : (isLight ? Colors.black54 : kColorAccent.withValues(alpha: 0.6)),
                       ),
                       const SizedBox(width: 6),
                       Text(
@@ -117,7 +118,7 @@ class _AppShellState extends State<AppShell> {
                               isActive ? FontWeight.w700 : FontWeight.w500,
                           color: isActive
                               ? kColorPrimary
-                              : kColorAccent.withValues(alpha: 0.6),
+                              : (isLight ? Colors.black54 : kColorAccent.withValues(alpha: 0.6)),
                         ),
                       ),
                     ],
