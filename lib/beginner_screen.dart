@@ -101,7 +101,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                             child: Text(
                               '+ ${state.beginnerVocabulary.length - 20} more words',
                               style: TextStyle(
-                                color: kColorTextMuted.withValues(alpha: 0.6),
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                                 fontSize: 11,
                               ),
                             ),
@@ -122,6 +122,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
   }
 
   Widget _buildModeHeader(AppStateModel state) {
+    final cs = Theme.of(context).colorScheme;
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: BackdropFilter(
@@ -129,9 +130,12 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: kColorSurface.withValues(alpha: 0.5),
+            color: Theme.of(context).cardColor.withValues(alpha: 0.85),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+            border: Border.all(color: cs.outline.withValues(alpha: 0.5)),
+            boxShadow: Theme.of(context).brightness == Brightness.light
+                ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+                : [],
           ),
           child: Row(
             children: [
@@ -154,14 +158,14 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                   Text(
                     tr(context, 'beginner'),
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: kColorText,
+                          color: cs.onSurface,
                           fontWeight: FontWeight.bold,
                         ),
                   ),
                   Text(
                     tr(context, 'learnWordsThroughContext'),
                     style: TextStyle(
-                      color: kColorTextMuted.withValues(alpha: 0.8),
+                      color: cs.onSurface.withValues(alpha: 0.6),
                       fontSize: 12,
                     ),
                   ),
@@ -175,13 +179,17 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
   }
 
   Widget _buildVocabProgress(AppStateModel state) {
+    final cs = Theme.of(context).colorScheme;
     final count = state.beginnerVocabulary.length;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: kColorSurface.withValues(alpha: 0.6),
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+        border: Border.all(color: cs.outline.withValues(alpha: 0.5)),
+        boxShadow: Theme.of(context).brightness == Brightness.light
+            ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+            : [],
       ),
       child: Row(
         children: [
@@ -211,7 +219,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                 Text(
                   tr(context, 'wordsDiscovered'),
                   style: TextStyle(
-                    color: kColorText.withValues(alpha: 0.8),
+                    color: cs.onSurface.withValues(alpha: 0.8),
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                   ),
@@ -221,7 +229,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
                     value: (count / 50).clamp(0.0, 1.0),
-                    backgroundColor: kColorBorder,
+                    backgroundColor: cs.outline.withValues(alpha: 0.3),
                     valueColor: AlwaysStoppedAnimation<Color>(
                       count >= 50 ? const Color(0xFF2ECC71) : kColorPrimary,
                     ),
@@ -235,7 +243,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
           Text(
             '${count ~/ 5 * 5}+',
             style: TextStyle(
-              color: kColorTextMuted.withValues(alpha: 0.6),
+              color: cs.onSurface.withValues(alpha: 0.6),
               fontSize: 20,
               fontWeight: FontWeight.w200,
             ),
@@ -246,15 +254,16 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
   }
 
   Widget _buildShimmerLoading() {
+    final cs = Theme.of(context).colorScheme;
     return Shimmer.fromColors(
-      baseColor: kColorSurface,
-      highlightColor: kColorBorder,
+      baseColor: cs.outline.withValues(alpha: 0.2),
+      highlightColor: cs.outline.withValues(alpha: 0.5),
       child: Column(
         children: [
           Container(
             height: 140,
             decoration: BoxDecoration(
-              color: kColorSurface,
+              color: cs.outline.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
           ),
@@ -262,7 +271,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
           Container(
             height: 60,
             decoration: BoxDecoration(
-              color: kColorSurface,
+              color: cs.outline.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
           ),
@@ -278,16 +287,12 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
         Container(
           padding: const EdgeInsets.all(28),
           decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(24),
-            gradient: kCardGradient,
-            border: Border.all(color: kColorBorder),
-            boxShadow: [
-              BoxShadow(
-                color: kColorPrimary.withValues(alpha: 0.06),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
-              ),
-            ],
+            border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5)),
+            boxShadow: Theme.of(context).brightness == Brightness.light
+                ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+                : [],
           ),
           child: Column(
             children: [
@@ -316,7 +321,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                 tr(context, 'learnFirstWordDesc'),
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: kColorTextMuted.withValues(alpha: 0.8),
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                   height: 1.6,
                   fontSize: 14,
                 ),
@@ -373,16 +378,12 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
 
     return Container(
       decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(24),
-        gradient: kCardGradient,
-        border: Border.all(color: kColorBorder),
-        boxShadow: [
-          BoxShadow(
-            color: kColorPrimary.withValues(alpha: 0.06),
-            blurRadius: 24,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5)),
+        boxShadow: Theme.of(context).brightness == Brightness.light
+            ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+            : [],
       ),
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -537,7 +538,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
         Text(
           label,
           style: TextStyle(
-            color: kColorTextMuted.withValues(alpha: 0.6),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
             fontSize: 9,
           ),
         ),
@@ -546,17 +547,21 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
   }
 
   Widget _buildNewWordsSection(AppStateModel state) {
+    final cs = Theme.of(context).colorScheme;
     final newWords = state.beginnerCurrentNewWords;
     if (newWords.isEmpty) return const SizedBox.shrink();
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFFF8E53).withValues(alpha: 0.05),
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFFFF8E53).withValues(alpha: 0.2),
+          color: cs.outline.withValues(alpha: 0.5),
         ),
+        boxShadow: Theme.of(context).brightness == Brightness.light
+            ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+            : [],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -569,7 +574,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
               Text(
                 'New words in this sentence',
                 style: TextStyle(
-                  color: const Color(0xFFFF8E53).withValues(alpha: 0.9),
+                  color: cs.onSurface.withValues(alpha: 0.9),
                   fontWeight: FontWeight.w600,
                   fontSize: 12,
                 ),
@@ -607,7 +612,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                     child: Text(
                       nw.meaning,
                       style: TextStyle(
-                        color: kColorTextMuted.withValues(alpha: 0.8),
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                         fontSize: 12,
                       ),
                     ),
@@ -693,18 +698,19 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
   }
 
   Widget _buildVocabHeader(AppStateModel state) {
+    final cs = Theme.of(context).colorScheme;
     final vocab = state.beginnerVocabulary;
     if (vocab.isEmpty) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(left: 4, bottom: 12),
       child: Row(
         children: [
-          const Icon(Icons.menu_book_rounded, color: kColorTextMuted, size: 16),
+          Icon(Icons.menu_book_rounded, color: cs.onSurface.withValues(alpha: 0.6), size: 16),
           const SizedBox(width: 8),
           Text(
             '${tr(context, 'myVocabulary')} (${vocab.length})',
             style: TextStyle(
-              color: kColorTextMuted.withValues(alpha: 0.8),
+              color: cs.onSurface.withValues(alpha: 0.6),
               fontWeight: FontWeight.w700,
               fontSize: 12,
               letterSpacing: 0.5,
@@ -720,9 +726,10 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
     final word = entry['word'] ?? '';
     final isFirst = index == 0;
     final isLast = index == vocab.length - 1;
+    final cs = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
-        color: kColorSurface.withValues(alpha: 0.5),
+        color: Theme.of(context).cardColor,
         borderRadius: isFirst && isLast
             ? BorderRadius.circular(16)
             : isFirst
@@ -739,7 +746,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
         border: Border(
           bottom: isLast
               ? BorderSide.none
-              : BorderSide(color: kColorBorder.withValues(alpha: 0.3)),
+              : BorderSide(color: cs.outline.withValues(alpha: 0.3)),
         ),
       ),
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
@@ -761,8 +768,8 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
           const SizedBox(width: 12),
           Text(
             word,
-            style: const TextStyle(
-              color: kColorText,
+            style: TextStyle(
+              color: cs.onSurface,
               fontWeight: FontWeight.w600,
               fontSize: 15,
             ),
@@ -772,7 +779,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
             child: Text(
               entry['meaning'] ?? '',
               style: TextStyle(
-                color: kColorTextMuted.withValues(alpha: 0.7),
+                color: cs.onSurface.withValues(alpha: 0.6),
                 fontSize: 13,
               ),
             ),
@@ -905,13 +912,14 @@ class _WordMeaningSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.5,
       ),
-      decoration: const BoxDecoration(
-        color: kColorSurface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -921,7 +929,7 @@ class _WordMeaningSheet extends StatelessWidget {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: kColorBorder,
+              color: cs.outline.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -942,15 +950,15 @@ class _WordMeaningSheet extends StatelessWidget {
                 Text(
                   tr(context, 'newWord'),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: kColorText,
+                        color: cs.onSurface,
                         fontWeight: FontWeight.w700,
                       ),
                 ),
                 const Spacer(),
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
-                  child: const Icon(Icons.close_rounded,
-                      color: kColorTextMuted, size: 22),
+                  child: Icon(Icons.close_rounded,
+                      color: cs.onSurface.withValues(alpha: 0.6), size: 22),
                 ),
               ],
             ),
@@ -987,9 +995,9 @@ class _WordMeaningSheet extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: kColorSurface,
+                    color: Theme.of(context).scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: kColorBorder),
+                    border: Border.all(color: cs.outline.withValues(alpha: 0.5)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -997,7 +1005,7 @@ class _WordMeaningSheet extends StatelessWidget {
                       Text(
                         'Meaning',
                         style: TextStyle(
-                          color: kColorTextMuted.withValues(alpha: 0.7),
+                          color: cs.onSurface.withValues(alpha: 0.6),
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 1,
@@ -1008,8 +1016,8 @@ class _WordMeaningSheet extends StatelessWidget {
                         meaning.isNotEmpty
                             ? meaning
                             : 'Added to your vocabulary!',
-                        style: const TextStyle(
-                          color: kColorText,
+                        style: TextStyle(
+                          color: cs.onSurface,
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                           height: 1.4,
@@ -1024,10 +1032,10 @@ class _WordMeaningSheet extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: kColorAccent.withValues(alpha: 0.05),
+                      color: Theme.of(context).scaffoldBackgroundColor,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: kColorAccent.withValues(alpha: 0.2),
+                        color: cs.outline.withValues(alpha: 0.5),
                       ),
                     ),
                     child: Column(
@@ -1036,7 +1044,7 @@ class _WordMeaningSheet extends StatelessWidget {
                         Text(
                           'Example',
                           style: TextStyle(
-                            color: kColorTextMuted.withValues(alpha: 0.7),
+                            color: cs.onSurface.withValues(alpha: 0.6),
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                             letterSpacing: 1,
@@ -1046,7 +1054,7 @@ class _WordMeaningSheet extends StatelessWidget {
                         Text(
                           example!,
                           style: TextStyle(
-                            color: kColorAccent.withValues(alpha: 0.9),
+                            color: cs.onSurface.withValues(alpha: 0.9),
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                           ),

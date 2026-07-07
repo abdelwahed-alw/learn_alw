@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'app_state_model.dart';
-import 'constants.dart';
 import 'writing_screen.dart';
 import 'grammar_screen.dart';
 import 'vocabulary_screen.dart';
@@ -80,7 +79,7 @@ class CategoriesTab extends StatelessWidget {
               Text(
                 tr(context, 'skillCategories'),
                 style: TextStyle(
-                  color: kColorText.withValues(alpha: 0.7),
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
@@ -129,6 +128,7 @@ class _CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: () {
         HapticFeedback.mediumImpact();
@@ -136,9 +136,12 @@ class _CategoryCard extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: kColorSurface,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+          border: Border.all(color: cs.outline.withValues(alpha: 0.5)),
+          boxShadow: Theme.of(context).brightness == Brightness.light
+              ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+              : [],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -154,8 +157,8 @@ class _CategoryCard extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               label,
-              style: const TextStyle(
-                color: kColorText,
+              style: TextStyle(
+                color: cs.onSurface,
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
               ),

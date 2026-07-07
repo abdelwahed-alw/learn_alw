@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'app_state_model.dart';
 import 'constants.dart';
 import 'quick_translation_sheet.dart';
+import 'theme_colors.dart';
 import 'ui_strings.dart';
 
 class ProfileTab extends StatefulWidget {
@@ -76,6 +77,7 @@ class _ProfileTabState extends State<ProfileTab> {
   }
 
   void _showLevelPicker(AppStateModel state) {
+    final cs = Theme.of(context).colorScheme;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -96,7 +98,7 @@ class _ProfileTabState extends State<ProfileTab> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: kColorBorder,
+                color: cs.outline,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -110,15 +112,15 @@ class _ProfileTabState extends State<ProfileTab> {
                         .textTheme
                         .titleMedium
                         ?.copyWith(
-                          color: kColorText,
+                          color: cs.onSurface,
                           fontWeight: FontWeight.w700,
                         ),
                   ),
                   const Spacer(),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close_rounded,
-                        color: kColorTextMuted, size: 22),
+                    child: Icon(Icons.close_rounded,
+                        color: cs.onSurface.withValues(alpha: 0.6), size: 22),
                   ),
                 ],
               ),
@@ -143,14 +145,14 @@ class _ProfileTabState extends State<ProfileTab> {
                         decoration: BoxDecoration(
                           color: isSelected
                               ? kColorPrimary.withValues(alpha: 0.1)
-                              : kColorBackground,
+                              : Theme.of(context).cardColor,
                           borderRadius:
                               BorderRadius.circular(12),
                           border: Border.all(
                             color: isSelected
                                 ? kColorPrimary
                                     .withValues(alpha: 0.4)
-                                : kColorBorder
+                                : Theme.of(context).colorScheme.outline
                                     .withValues(alpha: 0.5),
                           ),
                         ),
@@ -172,7 +174,7 @@ class _ProfileTabState extends State<ProfileTab> {
                                         style: TextStyle(
                                           color: isSelected
                                               ? kColorPrimary
-                                              : kColorText,
+                                              : Theme.of(context).colorScheme.onSurface,
                                           fontSize: 14,
                                           fontWeight:
                                               FontWeight.w700,
@@ -185,7 +187,7 @@ class _ProfileTabState extends State<ProfileTab> {
                                         style: TextStyle(
                                           color: isSelected
                                               ? kColorPrimary
-                                              : kColorAccent,
+                                              : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                                           fontSize: 13,
                                           fontWeight:
                                               FontWeight.w500,
@@ -198,8 +200,8 @@ class _ProfileTabState extends State<ProfileTab> {
                                     tLevelDesc(lvl['code']!,
                                         state.nativeLanguage),
                                     style: TextStyle(
-                                      color: kColorTextMuted
-                                          .withValues(alpha: 0.7),
+                                      color: Theme.of(context).colorScheme.onSurface
+                                          .withValues(alpha: 0.6),
                                       fontSize: 11,
                                     ),
                                   ),
@@ -301,10 +303,10 @@ class _ProfileTabState extends State<ProfileTab> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Profile',
               style: TextStyle(
-                color: kColorText,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontSize: 22,
                 fontWeight: FontWeight.w800,
               ),
@@ -312,7 +314,7 @@ class _ProfileTabState extends State<ProfileTab> {
             Text(
               '${languageLabelFromCode(state.nativeLanguage)} → ${languageLabelFromCode(state.targetLanguage)}',
               style: TextStyle(
-                color: kColorTextMuted.withValues(alpha: 0.7),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                 fontSize: 12,
               ),
             ),
@@ -330,7 +332,7 @@ class _ProfileTabState extends State<ProfileTab> {
         style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w700,
-          color: kColorTextMuted.withValues(alpha: 0.8),
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
           letterSpacing: 1.5,
         ),
       ),
@@ -338,6 +340,7 @@ class _ProfileTabState extends State<ProfileTab> {
   }
 
   Widget _buildApiKeySection(AppStateModel state, String lang) {
+    final cs = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -345,29 +348,30 @@ class _ProfileTabState extends State<ProfileTab> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: kColorSurface,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: kColorBorder.withValues(alpha: 0.6)),
+            border: Border.all(color: cs.outline.withValues(alpha: 0.6)),
+            boxShadow: context.cardShadow,
           ),
           child: Column(
             children: [
               TextField(
                 controller: _apiKeyController,
                 obscureText: !_isKeyVisible,
-                style: const TextStyle(color: kColorText, fontSize: 13),
+                style: TextStyle(color: cs.onSurface, fontSize: 13),
                 decoration: InputDecoration(
                   hintText: t('pasteApiKey', lang),
                   hintStyle: TextStyle(
-                    color: kColorTextMuted.withValues(alpha: 0.7),
+                    color: cs.onSurface.withValues(alpha: 0.6),
                     fontSize: 13,
                   ),
-                  fillColor: kColorBackground,
+                  fillColor: Theme.of(context).scaffoldBackgroundColor,
                   contentPadding: const EdgeInsets.symmetric(
                       horizontal: 14, vertical: 12),
                   prefixIcon: Icon(
                     Icons.key_rounded,
                     size: 16,
-                    color: kColorTextMuted.withValues(alpha: 0.6),
+                    color: cs.onSurface.withValues(alpha: 0.6),
                   ),
                   suffixIcon: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -380,7 +384,7 @@ class _ProfileTabState extends State<ProfileTab> {
                               ? Icons.visibility_off_rounded
                               : Icons.visibility_rounded,
                           size: 16,
-                          color: kColorTextMuted,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -448,7 +452,7 @@ class _ProfileTabState extends State<ProfileTab> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: kColorBorder.withValues(alpha: 0.6),
+                      color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.6),
                     ),
                   ),
                   child: Row(
@@ -477,15 +481,17 @@ class _ProfileTabState extends State<ProfileTab> {
   }
 
   Widget _buildLanguageSection(AppStateModel state, String lang) {
+    final cs = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionHeader(t('languages', lang)),
         Container(
           decoration: BoxDecoration(
-            color: kColorSurface,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: kColorBorder.withValues(alpha: 0.6)),
+            border: Border.all(color: cs.outline.withValues(alpha: 0.6)),
+            boxShadow: context.cardShadow,
           ),
           child: Column(
             children: [
@@ -504,7 +510,7 @@ class _ProfileTabState extends State<ProfileTab> {
               ),
               Divider(
                   height: 1,
-                  color: kColorBorder.withValues(alpha: 0.5)),
+                  color: cs.outline.withValues(alpha: 0.5)),
               _LanguageRow(
                 label: t('iWantToLearn', lang),
                 icon: Icons.school_rounded,
@@ -525,6 +531,7 @@ class _ProfileTabState extends State<ProfileTab> {
   }
 
   Widget _buildLevelSection(AppStateModel state, String lang) {
+    final cs = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -534,10 +541,11 @@ class _ProfileTabState extends State<ProfileTab> {
           child: Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: kColorSurface,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(16),
               border:
-                  Border.all(color: kColorBorder.withValues(alpha: 0.6)),
+                  Border.all(color: cs.outline.withValues(alpha: 0.6)),
+              boxShadow: context.cardShadow,
             ),
             child: Row(
               children: [
@@ -562,8 +570,8 @@ class _ProfileTabState extends State<ProfileTab> {
                     children: [
                       Text(
                         state.proficiencyLevel,
-                        style: const TextStyle(
-                          color: kColorText,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
@@ -571,8 +579,7 @@ class _ProfileTabState extends State<ProfileTab> {
                       Text(
                         tLevel(state.proficiencyLevel, lang),
                         style: TextStyle(
-                          color:
-                              kColorTextMuted.withValues(alpha: 0.8),
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                           fontSize: 12,
                         ),
                       ),
@@ -604,12 +611,14 @@ class _ProfileTabState extends State<ProfileTab> {
   }
 
   Widget _buildAppInfo() {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: kColorSurface,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: kColorBorder.withValues(alpha: 0.6)),
+        border: Border.all(color: cs.outline.withValues(alpha: 0.6)),
+        boxShadow: context.cardShadow,
       ),
       child: Column(
         children: [
@@ -629,14 +638,14 @@ class _ProfileTabState extends State<ProfileTab> {
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Salearn',
                       style: TextStyle(
-                        color: kColorText,
+                        color: cs.onSurface,
                         fontWeight: FontWeight.w700,
                         fontSize: 14,
                       ),
@@ -644,7 +653,7 @@ class _ProfileTabState extends State<ProfileTab> {
                     Text(
                       'AI Language Tutor',
                       style: TextStyle(
-                        color: kColorTextMuted,
+                        color: cs.onSurface.withValues(alpha: 0.6),
                         fontSize: 11,
                       ),
                     ),
@@ -654,7 +663,7 @@ class _ProfileTabState extends State<ProfileTab> {
               Text(
                 kAppVersion,
                 style: TextStyle(
-                  color: kColorTextMuted.withValues(alpha: 0.6),
+                  color: cs.onSurface.withValues(alpha: 0.6),
                   fontSize: 11,
                 ),
               ),
@@ -668,15 +677,17 @@ class _ProfileTabState extends State<ProfileTab> {
   Widget _buildAppSettings() {
     return Consumer<AppStateModel>(
       builder: (context, state, _) {
+        final cs = Theme.of(context).colorScheme;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSectionHeader('appSettings'.tr()),
             Container(
               decoration: BoxDecoration(
-                color: kColorSurface,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+                border: Border.all(color: cs.outline.withValues(alpha: 0.5)),
+                boxShadow: context.cardShadow,
               ),
               child: Row(
                 children: [
@@ -686,8 +697,8 @@ class _ProfileTabState extends State<ProfileTab> {
                   Expanded(
                     child: Text(
                       'darkMode'.tr(),
-                      style: const TextStyle(
-                        color: kColorText,
+                      style: TextStyle(
+                        color: cs.onSurface,
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
@@ -705,9 +716,10 @@ class _ProfileTabState extends State<ProfileTab> {
             const SizedBox(height: 8),
             Container(
               decoration: BoxDecoration(
-                color: kColorSurface,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+                border: Border.all(color: cs.outline.withValues(alpha: 0.5)),
+                boxShadow: context.cardShadow,
               ),
               child: Row(
                 children: [
@@ -717,8 +729,8 @@ class _ProfileTabState extends State<ProfileTab> {
                   Expanded(
                     child: Text(
                       'showTranslationFab'.tr(),
-                      style: const TextStyle(
-                        color: kColorText,
+                      style: TextStyle(
+                        color: cs.onSurface,
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
@@ -740,6 +752,7 @@ class _ProfileTabState extends State<ProfileTab> {
   }
 
   Widget _buildQuickTranslation(AppStateModel state, String lang) {
+    final cs = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -749,9 +762,10 @@ class _ProfileTabState extends State<ProfileTab> {
           child: Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: kColorSurface,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: kColorBorder.withValues(alpha: 0.6)),
+              border: Border.all(color: cs.outline.withValues(alpha: 0.6)),
+              boxShadow: context.cardShadow,
             ),
             child: Row(
               children: [
@@ -772,8 +786,8 @@ class _ProfileTabState extends State<ProfileTab> {
                     children: [
                       Text(
                         'quickTranslation'.tr(),
-                        style: const TextStyle(
-                          color: kColorText,
+                        style: TextStyle(
+                          color: cs.onSurface,
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                         ),
@@ -781,7 +795,7 @@ class _ProfileTabState extends State<ProfileTab> {
                       Text(
                         'quickTranslation'.tr(),
                         style: TextStyle(
-                          color: kColorTextMuted.withValues(alpha: 0.7),
+                          color: cs.onSurface.withValues(alpha: 0.6),
                           fontSize: 11,
                         ),
                       ),
@@ -813,13 +827,14 @@ class _ProfileTabState extends State<ProfileTab> {
   }
 
   Widget _buildFooter() {
+    final cs = Theme.of(context).colorScheme;
     return Column(
       children: [
         const SizedBox(height: 8),
         Text(
           'Powered by Abdelwahed Abdellaoui',
           style: TextStyle(
-            color: kColorTextMuted.withValues(alpha: 0.5),
+            color: cs.onSurface.withValues(alpha: 0.5),
             fontSize: 12,
           ),
         ),
@@ -852,6 +867,7 @@ class _ProfileTabState extends State<ProfileTab> {
   }
 
   Widget _socialIcon(FaIconData icon, String label, String url) {
+    final cs = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: () => _launchSocialUrl(url),
       child: Tooltip(
@@ -861,11 +877,11 @@ class _ProfileTabState extends State<ProfileTab> {
           height: 40,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: kColorSurface,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+            border: Border.all(color: cs.outline.withValues(alpha: 0.5)),
           ),
-          child: Center(child: FaIcon(icon, size: 18, color: kColorTextMuted)),
+          child: Center(child: FaIcon(icon, size: 18, color: cs.onSurface.withValues(alpha: 0.6))),
         ),
       ),
     );
@@ -891,17 +907,18 @@ class _LanguageRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: kColorTextMuted),
+          Icon(icon, size: 16, color: cs.onSurface.withValues(alpha: 0.6)),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               label,
               style: TextStyle(
-                color: kColorTextMuted.withValues(alpha: 0.9),
+                color: cs.onSurface.withValues(alpha: 0.9),
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
               ),
@@ -911,10 +928,10 @@ class _LanguageRow extends StatelessWidget {
             padding:
                 const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
             decoration: BoxDecoration(
-              color: kColorBackground.withValues(alpha: 0.5),
+              color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: kColorBorder.withValues(alpha: 0.5),
+                color: cs.outline.withValues(alpha: 0.5),
               ),
             ),
             child: DropdownButton<String>(
@@ -923,10 +940,10 @@ class _LanguageRow extends StatelessWidget {
               isDense: true,
               icon: const Icon(Icons.keyboard_arrow_down_rounded,
                   color: kColorPrimary, size: 18),
-              dropdownColor: kColorSurface,
+              dropdownColor: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(12),
-              style: const TextStyle(
-                color: kColorAccent,
+              style: TextStyle(
+                color: cs.onSurface.withValues(alpha: 0.8),
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),

@@ -220,9 +220,9 @@ const Color kColorText = Color(0xFFE8EFF7);       // Primary text (dark)
 const Color kColorTextMuted = Color(0xFF5577AA);  // Muted / placeholder
 
 // Light theme colors
-const Color kColorBackgroundLight = Color(0xFFF5F7FA);
+const Color kColorBackgroundLight = Color(0xFFF3F4F6);
 const Color kColorSurfaceLight = Color(0xFFFFFFFF);
-const Color kColorCardLight = Color(0xFFF0F2F5);
+const Color kColorCardLight = Color(0xFFFFFFFF);
 const Color kColorBorderLight = Color(0xFFE0E4EA);
 const Color kColorTextLight = Color(0xFF1A1D21);
 const Color kColorTextMutedLight = Color(0xFF8E94A0);
@@ -275,14 +275,14 @@ TextTheme buildPremiumTextTheme() {
 TextTheme buildLightTextTheme() {
   return GoogleFonts.outfitTextTheme(ThemeData.light().textTheme).copyWith(
     displayLarge: GoogleFonts.outfit(
-        color: kColorTextLight, fontWeight: FontWeight.bold, letterSpacing: -1),
+        color: Colors.black87, fontWeight: FontWeight.bold, letterSpacing: -1),
     titleLarge: GoogleFonts.outfit(
-        color: kColorTextLight, fontWeight: FontWeight.w700, letterSpacing: 0.5),
-    bodyLarge: GoogleFonts.outfit(color: kColorTextLight, fontSize: 16, height: 1.6),
+        color: Colors.black87, fontWeight: FontWeight.w700, letterSpacing: 0.5),
+    bodyLarge: GoogleFonts.outfit(color: Colors.black87, fontSize: 16, height: 1.6),
     bodyMedium:
-        GoogleFonts.outfit(color: kColorTextLight, fontSize: 14, height: 1.5),
+        GoogleFonts.outfit(color: Colors.black87, fontSize: 14, height: 1.5),
     labelLarge: GoogleFonts.outfit(
-        color: kColorTextLight, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+        color: Colors.black87, fontWeight: FontWeight.bold, letterSpacing: 0.5),
   );
 }
 

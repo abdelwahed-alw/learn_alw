@@ -137,9 +137,12 @@ class _MainScreenBodyState extends State<MainScreenBody> {
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: kColorSurface.withValues(alpha: 0.5),
+            color: Theme.of(context).cardColor.withValues(alpha: 0.85),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+            border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5)),
+            boxShadow: Theme.of(context).brightness == Brightness.light
+                ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+                : [],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -236,18 +239,15 @@ class _MainScreenBodyState extends State<MainScreenBody> {
     if (state.currentQuestion.isEmpty) {
       return _buildWelcomeDashboard(state);
     }
+    final cs = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(24),
-        gradient: kCardGradient,
-        boxShadow: [
-          BoxShadow(
-            color: kColorPrimary.withValues(alpha: 0.1),
-            blurRadius: 30,
-            offset: const Offset(0, 10),
-          ),
-        ],
-        border: Border.all(color: kColorBorder),
+        border: Border.all(color: cs.outline.withValues(alpha: 0.5)),
+        boxShadow: Theme.of(context).brightness == Brightness.light
+            ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+            : [],
       ),
       padding: const EdgeInsets.all(28),
       child: Column(
@@ -269,7 +269,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                 child: Text(
                   t('translateOrAnswer', state.nativeLanguage),
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: kColorTextMuted,
+                        color: cs.onSurface.withValues(alpha: 0.6),
                         letterSpacing: 1.2,
                       ),
                 ),
@@ -348,16 +348,12 @@ class _MainScreenBodyState extends State<MainScreenBody> {
             curve: kPremiumCurve,
             padding: const EdgeInsets.all(28),
             decoration: BoxDecoration(
-              color: kColorAccent.withValues(alpha: 0.05),
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: kColorAccent.withValues(alpha: 0.3)),
-              boxShadow: [
-                BoxShadow(
-                  color: kColorAccent.withValues(alpha: 0.1),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
-                ),
-              ],
+              border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5)),
+              boxShadow: Theme.of(context).brightness == Brightness.light
+                  ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+                  : [],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -370,7 +366,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                       child: Text(
                         t('feedback', state.nativeLanguage),
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: kColorAccent,
+                              color: Theme.of(context).colorScheme.onSurface,
                               fontWeight: FontWeight.bold,
                             ),
                       ),
@@ -390,6 +386,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                     state.feedback,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           height: 1.6,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                   ),
                 ),
@@ -423,7 +420,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
           child: Text(
             t('examples', state.nativeLanguage),
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: kColorTextMuted,
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                   fontWeight: FontWeight.bold,
                 ),
           ),
@@ -479,13 +476,14 @@ class _MainScreenBodyState extends State<MainScreenBody> {
   }
 
   Widget _buildShimmerBox({required double height}) {
+    final cs = Theme.of(context).colorScheme;
     return Shimmer.fromColors(
-      baseColor: kColorSurface,
-      highlightColor: kColorBorder,
+      baseColor: cs.outline.withValues(alpha: 0.2),
+      highlightColor: cs.outline.withValues(alpha: 0.5),
       child: Container(
         height: height,
         decoration: BoxDecoration(
-          color: kColorSurface,
+          color: cs.outline.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(20),
         ),
       ),
@@ -521,16 +519,12 @@ class _MainScreenBodyState extends State<MainScreenBody> {
         Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            gradient: kCardGradient,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: kColorBorder),
-            boxShadow: [
-              BoxShadow(
-                color: kColorPrimary.withValues(alpha: 0.06),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
-              ),
-            ],
+            border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5)),
+            boxShadow: Theme.of(context).brightness == Brightness.light
+                ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+                : [],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -548,7 +542,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                           '$greeting!',
                           style:
                               Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    color: kColorText,
+                                    color: Theme.of(context).colorScheme.onSurface,
                                     fontWeight: FontWeight.w800,
                                     fontSize: 22,
                                   ),
@@ -557,7 +551,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                         Text(
                           "${t('letsPractice', state.nativeLanguage)} $targetLang",
                           style: TextStyle(
-                            color: kColorTextMuted.withValues(alpha: 0.8),
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                             fontSize: 13,
                           ),
                         ),
@@ -597,8 +591,8 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                     const SizedBox(width: 10),
                     Text(
                       '${state.proficiencyLevel} — ${tLevel(state.proficiencyLevel, state.nativeLanguage)}',
-                      style: const TextStyle(
-                        color: kColorText,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
@@ -614,9 +608,12 @@ class _MainScreenBodyState extends State<MainScreenBody> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: kColorSurface,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+            border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5)),
+            boxShadow: Theme.of(context).brightness == Brightness.light
+                ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+                : [],
           ),
           child: Row(
             children: [
@@ -625,8 +622,8 @@ class _MainScreenBodyState extends State<MainScreenBody> {
               const SizedBox(width: 10),
               Text(
                 '$nativeLang → $targetLang',
-                style: const TextStyle(
-                  color: kColorText,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
@@ -666,7 +663,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
         Text(
           t('whatToTalkAbout', state.nativeLanguage),
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: kColorText,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w700,
               ),
         ),
@@ -695,12 +692,12 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                 decoration: BoxDecoration(
                   color: isActive
                       ? kColorPrimary.withValues(alpha: 0.1)
-                      : kColorSurface,
+                      : Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
                     color: isActive
                         ? kColorPrimary.withValues(alpha: 0.4)
-                        : kColorBorder.withValues(alpha: 0.5),
+                        : Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
                     width: isActive ? 2 : 1,
                   ),
                   boxShadow: isActive
@@ -710,7 +707,9 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                             blurRadius: 8,
                           ),
                         ]
-                      : null,
+                      : Theme.of(context).brightness == Brightness.light
+                          ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+                          : [],
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -718,7 +717,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                     Icon(
                       icon,
                       size: 24,
-                      color: isActive ? kColorPrimary : kColorTextMuted,
+                      color: isActive ? kColorPrimary : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                     const SizedBox(height: 6),
                     Padding(
@@ -729,7 +728,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: isActive ? kColorPrimary : kColorAccent,
+                          color: isActive ? kColorPrimary : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                           fontSize: 10,
                           fontWeight:
                               isActive ? FontWeight.w700 : FontWeight.w500,
@@ -766,11 +765,11 @@ class _MainScreenBodyState extends State<MainScreenBody> {
             decoration: BoxDecoration(
               gradient:
                   _selectedDashboardTopic != null ? kPrimaryGradient : null,
-              color: _selectedDashboardTopic != null ? null : kColorSurface,
+              color: _selectedDashboardTopic != null ? null : Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(14),
               border: _selectedDashboardTopic != null
                   ? null
-                  : Border.all(color: kColorBorder),
+                  : Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5)),
               boxShadow: _selectedDashboardTopic != null
                   ? [
                       BoxShadow(
@@ -790,7 +789,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                     size: 18,
                     color: _selectedDashboardTopic != null
                         ? Colors.white
-                        : kColorTextMuted,
+                        : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                   const SizedBox(width: 10),
                   Text(
@@ -798,7 +797,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                     style: TextStyle(
                       color: _selectedDashboardTopic != null
                           ? Colors.white
-                          : kColorTextMuted,
+                          : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 0.5,
@@ -887,9 +886,9 @@ class _TranslationSheetState extends State<_TranslationSheet> {
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.6,
       ),
-      decoration: const BoxDecoration(
-        color: kColorSurface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -900,7 +899,7 @@ class _TranslationSheetState extends State<_TranslationSheet> {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: kColorBorder,
+              color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -922,15 +921,15 @@ class _TranslationSheetState extends State<_TranslationSheet> {
                 Text(
                   'Translation',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: kColorText,
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontWeight: FontWeight.w700,
                       ),
                 ),
                 const Spacer(),
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
-                  child: const Icon(Icons.close_rounded,
-                      color: kColorTextMuted, size: 22),
+                  child: Icon(Icons.close_rounded,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), size: 22),
                 ),
               ],
             ),
@@ -943,16 +942,16 @@ class _TranslationSheetState extends State<_TranslationSheet> {
               width: double.infinity,
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: kColorBackground,
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: kColorBorder.withValues(alpha: 0.5)),
+                border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5)),
               ),
               child: Text(
                 widget.text.length > 150
                     ? '${widget.text.substring(0, 150)}…'
                     : widget.text,
                 style: TextStyle(
-                  color: kColorTextMuted.withValues(alpha: 0.8),
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                   fontSize: 13,
                   height: 1.4,
                 ),
@@ -1012,7 +1011,7 @@ class _TranslationSheetState extends State<_TranslationSheet> {
                                 .bodyLarge
                                 ?.copyWith(
                                   height: 1.6,
-                                  color: kColorText,
+                                  color: Theme.of(context).colorScheme.onSurface,
                                 ),
                           ),
                         ),
@@ -1033,7 +1032,8 @@ class _LanguageBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isTarget ? kColorAccent : kColorTextMuted;
+    final cs = Theme.of(context).colorScheme;
+    final color = isTarget ? cs.onSurface : cs.onSurface.withValues(alpha: 0.6);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
@@ -1064,11 +1064,15 @@ class _ExampleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
-        color: kColorSurface,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: kColorBorder),
+        border: Border.all(color: cs.outline.withValues(alpha: 0.5)),
+        boxShadow: Theme.of(context).brightness == Brightness.light
+            ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+            : [],
       ),
       child: Material(
         color: Colors.transparent,
@@ -1107,7 +1111,7 @@ class _ExampleCard extends StatelessWidget {
                 const SizedBox(width: 16),
                 Expanded(
                   child: Text(text,
-                      style: const TextStyle(fontSize: 16, height: 1.5)),
+                      style: TextStyle(fontSize: 16, height: 1.5, color: Theme.of(context).colorScheme.onSurface)),
                 ),
                 const SizedBox(width: 8),
                 if (onTranslate != null)
@@ -1115,12 +1119,12 @@ class _ExampleCard extends StatelessWidget {
                     onTap: onTranslate,
                     child: Icon(Icons.translate_rounded,
                         size: 18,
-                        color: kColorAccent.withValues(alpha: 0.5)),
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
                   ),
                 const SizedBox(width: 6),
                 Icon(Icons.copy_rounded,
                     size: 20,
-                    color: kColorTextMuted.withValues(alpha: 0.5)),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
               ],
             ),
           ),
@@ -1199,7 +1203,7 @@ class _AnimatedSubmitButtonState extends State<_AnimatedSubmitButton>
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             gradient: isEnabled ? kPrimaryGradient : null,
-            color: isEnabled ? null : kColorSurface,
+            color: isEnabled ? null : Theme.of(context).cardColor,
             boxShadow: isEnabled
                 ? [
                     BoxShadow(
@@ -1237,7 +1241,7 @@ class _AnimatedSubmitButtonState extends State<_AnimatedSubmitButton>
                                 ? Icons.send_rounded
                                 : Icons.send_outlined,
                             size: 20,
-                            color: isEnabled ? Colors.white : kColorTextMuted,
+                            color: isEnabled ? Colors.white : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                           ),
                           const SizedBox(width: 10),
                           Text(
@@ -1245,7 +1249,7 @@ class _AnimatedSubmitButtonState extends State<_AnimatedSubmitButton>
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: isEnabled ? Colors.white : kColorTextMuted,
+                              color: isEnabled ? Colors.white : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                               letterSpacing: 1,
                             ),
                           ),
@@ -1355,8 +1359,8 @@ class _NextQuestionButtonState extends State<_NextQuestionButton>
               const SizedBox(height: 10),
               Text(
                 widget.previewText,
-                style: const TextStyle(
-                  color: kColorText,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                   height: 1.4,

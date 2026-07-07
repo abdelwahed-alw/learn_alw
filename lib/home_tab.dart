@@ -113,9 +113,12 @@ class HomeTab extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: kCardGradient,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: cs.outline.withValues(alpha: 0.5)),
+        boxShadow: Theme.of(context).brightness == Brightness.light
+            ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+            : [],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

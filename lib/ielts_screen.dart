@@ -83,6 +83,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
   }
 
   Widget _buildModeHeader(AppStateModel state) {
+    final cs = Theme.of(context).colorScheme;
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: BackdropFilter(
@@ -90,10 +91,13 @@ class _IeltsScreenState extends State<IeltsScreen> {
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: kColorSurface.withValues(alpha: 0.5),
+            color: Theme.of(context).cardColor.withValues(alpha: 0.85),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-                color: kColorBorder.withValues(alpha: 0.5)),
+                color: cs.outline.withValues(alpha: 0.5)),
+            boxShadow: Theme.of(context).brightness == Brightness.light
+                ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+                : [],
           ),
           child: Row(
             children: [
@@ -119,14 +123,14 @@ class _IeltsScreenState extends State<IeltsScreen> {
                         .textTheme
                         .titleLarge
                         ?.copyWith(
-                          color: kColorText,
+                          color: cs.onSurface,
                           fontWeight: FontWeight.bold,
                         ),
                   ),
                   Text(
                     '${t('topicLabel', state.nativeLanguage)}: ${tTopic(state.selectedTopic, state.nativeLanguage)}',
                     style: TextStyle(
-                      color: kColorTextMuted.withValues(alpha: 0.8),
+                      color: cs.onSurface.withValues(alpha: 0.6),
                       fontSize: 12,
                     ),
                   ),
@@ -140,13 +144,17 @@ class _IeltsScreenState extends State<IeltsScreen> {
   }
 
   Widget _buildExerciseTabs(AppStateModel state) {
+    final cs = Theme.of(context).colorScheme;
     final types = IeltsExerciseType.values;
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: kColorSurface,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: kColorBorder),
+        border: Border.all(color: cs.outline.withValues(alpha: 0.5)),
+        boxShadow: Theme.of(context).brightness == Brightness.light
+            ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+            : [],
       ),
       child: Row(
         children: types.map((type) {
@@ -250,15 +258,16 @@ class _IeltsScreenState extends State<IeltsScreen> {
   }
 
   Widget _buildShimmerLoading() {
+    final cs = Theme.of(context).colorScheme;
     return Shimmer.fromColors(
-      baseColor: kColorSurface,
-      highlightColor: kColorBorder,
+      baseColor: cs.outline.withValues(alpha: 0.2),
+      highlightColor: cs.outline.withValues(alpha: 0.5),
       child: Column(
         children: [
           Container(
             height: 120,
             decoration: BoxDecoration(
-              color: kColorSurface,
+              color: cs.outline.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
           ),
@@ -266,7 +275,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
           Container(
             height: 80,
             decoration: BoxDecoration(
-              color: kColorSurface,
+              color: cs.outline.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
           ),
@@ -274,7 +283,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
           Container(
             height: 50,
             decoration: BoxDecoration(
-              color: kColorSurface,
+              color: cs.outline.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
           ),
@@ -311,9 +320,12 @@ class _IeltsScreenState extends State<IeltsScreen> {
         Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(24),
-            gradient: kCardGradient,
-            border: Border.all(color: kColorBorder),
+            border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5)),
+            boxShadow: Theme.of(context).brightness == Brightness.light
+                ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+                : [],
           ),
           child: Column(
             children: [
@@ -341,7 +353,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                 desc,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: kColorTextMuted.withValues(alpha: 0.8),
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                   height: 1.5,
                   fontSize: 14,
                 ),
@@ -426,16 +438,12 @@ class _IeltsScreenState extends State<IeltsScreen> {
         Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(24),
-            gradient: kCardGradient,
-            border: Border.all(color: kColorBorder),
-            boxShadow: [
-              BoxShadow(
-                color: kColorPrimary.withValues(alpha: 0.06),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
+            border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5)),
+            boxShadow: Theme.of(context).brightness == Brightness.light
+                ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+                : [],
           ),
           child: Column(
             crossAxisAlignment:
@@ -464,7 +472,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                         .textTheme
                         .labelLarge
                         ?.copyWith(
-                          color: kColorTextMuted,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                           letterSpacing: 1.2,
                         ),
                   ),
@@ -520,7 +528,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
               .textTheme
               .titleMedium
               ?.copyWith(
-                color: kColorTextMuted,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                 fontWeight: FontWeight.bold,
               ),
         ),
@@ -529,6 +537,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
             .asMap()
             .entries
             .map((entry) {
+          final cs = Theme.of(context).colorScheme;
           final idx = entry.key;
           final option = entry.value;
           final isSelected =
@@ -543,7 +552,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                 ? const Color(0xFF2ECC71)
                 : (isSelected
                     ? kColorError
-                    : kColorBorder);
+                    : cs.outline.withValues(alpha: 0.5));
           }
           return Padding(
             padding:
@@ -571,7 +580,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                           ? kColorPrimary
                               .withValues(
                                   alpha: 0.1)
-                          : kColorSurface,
+                          : Theme.of(context).cardColor,
                   borderRadius:
                       BorderRadius.circular(16),
                   border: Border.all(
@@ -580,7 +589,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                             ? kColorPrimary
                                 .withValues(
                                     alpha: 0.4)
-                            : kColorBorder),
+                            : cs.outline.withValues(alpha: 0.5)),
                     width:
                         isSelected ? 2 : 1,
                   ),
@@ -597,7 +606,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                                     0xFF2ECC71)
                             : isSelected
                                 ? kColorPrimary
-                                : kColorBorder,
+                                : cs.outline.withValues(alpha: 0.5),
                         borderRadius:
                             BorderRadius.circular(
                                 8),
@@ -611,7 +620,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                                     (hasFeedback &&
                                         isCorrect)
                                 ? Colors.white
-                                : kColorTextMuted,
+                                : cs.onSurface.withValues(alpha: 0.6),
                             fontWeight:
                                 FontWeight.bold,
                             fontSize: 12,
@@ -629,7 +638,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                                   isCorrect
                               ? const Color(
                                   0xFF2ECC71)
-                              : kColorText,
+                              : cs.onSurface,
                           fontWeight:
                               FontWeight.w500,
                         ),
@@ -696,17 +705,12 @@ class _IeltsScreenState extends State<IeltsScreen> {
         Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(24),
-            gradient: kCardGradient,
-            border: Border.all(color: kColorBorder),
-            boxShadow: [
-              BoxShadow(
-                color:
-                    kColorPrimary.withValues(alpha: 0.06),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
+            border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5)),
+            boxShadow: Theme.of(context).brightness == Brightness.light
+                ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+                : [],
           ),
           child: Column(
             crossAxisAlignment:
@@ -735,7 +739,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                         .textTheme
                         .labelLarge
                         ?.copyWith(
-                          color: kColorTextMuted,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                           letterSpacing: 1.2,
                         ),
                   ),
@@ -826,17 +830,12 @@ class _IeltsScreenState extends State<IeltsScreen> {
         Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(24),
-            gradient: kCardGradient,
-            border: Border.all(color: kColorBorder),
-            boxShadow: [
-              BoxShadow(
-                color:
-                    kColorPrimary.withValues(alpha: 0.06),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
+            border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5)),
+            boxShadow: Theme.of(context).brightness == Brightness.light
+                ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+                : [],
           ),
           child: Column(
             crossAxisAlignment:
@@ -865,7 +864,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                         .textTheme
                         .labelLarge
                         ?.copyWith(
-                          color: kColorTextMuted,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                           letterSpacing: 1.2,
                         ),
                   ),
@@ -984,14 +983,18 @@ class _IeltsScreenState extends State<IeltsScreen> {
   }
 
   Widget _buildFeedbackCard(AppStateModel state) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: kColorAccent.withValues(alpha: 0.05),
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: kColorAccent.withValues(alpha: 0.2),
+          color: cs.outline.withValues(alpha: 0.5),
         ),
+        boxShadow: Theme.of(context).brightness == Brightness.light
+            ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+            : [],
       ),
       child: Column(
         crossAxisAlignment:
@@ -1017,7 +1020,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                     .textTheme
                     .titleMedium
                     ?.copyWith(
-                      color: kColorAccent,
+                      color: cs.onSurface,
                       fontWeight: FontWeight.bold,
                     ),
               ),
@@ -1027,7 +1030,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
           Text(
             state.ieltsFeedback,
             style: TextStyle(
-              color: kColorText.withValues(alpha: 0.9),
+              color: cs.onSurface.withValues(alpha: 0.9),
               height: 1.5,
             ),
           ),
@@ -1037,14 +1040,14 @@ class _IeltsScreenState extends State<IeltsScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: kColorSurface,
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius:
                     BorderRadius.circular(12),
               ),
               child: Text(
                 state.ieltsExplanation,
                 style: TextStyle(
-                  color: kColorTextMuted,
+                  color: cs.onSurface.withValues(alpha: 0.6),
                   fontSize: 13,
                   height: 1.4,
                 ),
@@ -1058,20 +1061,18 @@ class _IeltsScreenState extends State<IeltsScreen> {
 
   Widget _buildSentenceEvalFeedback(
       AppStateModel state) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: state.ieltsSentenceCorrect
-            ? const Color(0xFF2ECC71)
-                .withValues(alpha: 0.05)
-            : kColorAccent.withValues(alpha: 0.05),
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: state.ieltsSentenceCorrect
-              ? const Color(0xFF2ECC71)
-                  .withValues(alpha: 0.3)
-              : kColorAccent.withValues(alpha: 0.2),
+          color: cs.outline.withValues(alpha: 0.5),
         ),
+        boxShadow: Theme.of(context).brightness == Brightness.light
+            ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+            : [],
       ),
       child: Column(
         crossAxisAlignment:
@@ -1100,7 +1101,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                       color: state
                               .ieltsSentenceCorrect
                           ? const Color(0xFF2ECC71)
-                          : kColorAccent,
+                          : cs.onSurface,
                       fontWeight: FontWeight.bold,
                     ),
               ),
@@ -1110,7 +1111,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
           Text(
             state.ieltsFeedback,
             style: TextStyle(
-              color: kColorText.withValues(alpha: 0.9),
+              color: cs.onSurface.withValues(alpha: 0.9),
               height: 1.5,
             ),
           ),
@@ -1120,11 +1121,11 @@ class _IeltsScreenState extends State<IeltsScreen> {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: kColorSurface,
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius:
                     BorderRadius.circular(12),
                 border: Border.all(
-                    color: kColorBorder),
+                    color: cs.outline.withValues(alpha: 0.5)),
               ),
               child: Column(
                 crossAxisAlignment:
@@ -1133,7 +1134,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                   Text(
                     'Model Completion:',
                     style: TextStyle(
-                      color: kColorTextMuted,
+                      color: cs.onSurface.withValues(alpha: 0.6),
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1,
@@ -1144,7 +1145,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                     state
                         .ieltsSuggestedCompletion,
                     style: TextStyle(
-                      color: kColorPrimary,
+                      color: cs.onSurface,
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
                     ),
@@ -1211,13 +1212,14 @@ class _IeltsScreenState extends State<IeltsScreen> {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color:
-                kColorAccent.withValues(alpha: 0.05),
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: kColorAccent
-                  .withValues(alpha: 0.2),
+              color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
             ),
+            boxShadow: Theme.of(context).brightness == Brightness.light
+                ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+                : [],
           ),
           child: Column(
             crossAxisAlignment:
@@ -1237,7 +1239,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                         .textTheme
                         .titleMedium
                         ?.copyWith(
-                          color: kColorAccent,
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontWeight:
                               FontWeight.bold,
                         ),
@@ -1248,8 +1250,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
               Text(
                 state.ieltsFeedback,
                 style: TextStyle(
-                  color:
-                      kColorText.withValues(alpha: 0.9),
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.9),
                   height: 1.6,
                 ),
               ),
@@ -1262,11 +1263,14 @@ class _IeltsScreenState extends State<IeltsScreen> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: kColorSurface,
+              color: Theme.of(context).cardColor,
               borderRadius:
                   BorderRadius.circular(20),
               border: Border.all(
-                  color: kColorBorder),
+                  color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5)),
+              boxShadow: Theme.of(context).brightness == Brightness.light
+                  ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+                  : [],
             ),
             child: Column(
               crossAxisAlignment:
@@ -1296,7 +1300,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                           .textTheme
                           .titleMedium
                           ?.copyWith(
-                            color: kColorText,
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontWeight:
                                 FontWeight.bold,
                           ),
@@ -1334,7 +1338,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                           child: Text(
                             correction,
                             style: TextStyle(
-                              color: kColorText,
+                              color: Theme.of(context).colorScheme.onSurface,
                               height: 1.5,
                               fontSize: 14,
                             ),
@@ -1355,13 +1359,16 @@ class _IeltsScreenState extends State<IeltsScreen> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: kColorSurface,
+              color: Theme.of(context).cardColor,
               borderRadius:
                   BorderRadius.circular(20),
               border: Border.all(
                 color: const Color(0xFF2ECC71)
                     .withValues(alpha: 0.3),
               ),
+              boxShadow: Theme.of(context).brightness == Brightness.light
+                  ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))]
+                  : [],
             ),
             child: Column(
               crossAxisAlignment:
@@ -1394,7 +1401,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                           .textTheme
                           .titleMedium
                           ?.copyWith(
-                            color: kColorText,
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontWeight:
                                 FontWeight.bold,
                           ),
@@ -1417,9 +1424,9 @@ class _IeltsScreenState extends State<IeltsScreen> {
                           padding:
                               const EdgeInsets.all(6),
                           decoration: BoxDecoration(
-                            color: kColorBorder
+                            color: Theme.of(context).colorScheme.outline
                                 .withValues(
-                                    alpha: 0.5),
+                                    alpha: 0.3),
                             borderRadius:
                                 BorderRadius
                                     .circular(8),
@@ -1429,7 +1436,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                             textAlign:
                                 TextAlign.center,
                             style: TextStyle(
-                              color: kColorTextMuted,
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                               fontSize: 12,
                               decoration:
                                   TextDecoration

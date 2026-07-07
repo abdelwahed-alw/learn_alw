@@ -26,6 +26,7 @@ class _AppShellState extends State<AppShell> {
   Widget build(BuildContext context) {
     final state = context.watch<AppStateModel>();
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: state.showTranslationFab
           ? FloatingActionButton(
               onPressed: () => showQuickTranslationSheet(context),

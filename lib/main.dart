@@ -139,8 +139,8 @@ class LearnAlwApp extends StatelessWidget {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      scaffoldBackgroundColor: kColorBackgroundLight,
-      cardColor: kColorCardLight,
+      scaffoldBackgroundColor: const Color(0xFFF3F4F6),
+      cardColor: Colors.white,
       colorScheme: const ColorScheme.light(
         primary: kColorPrimary,
         secondary: kColorAccent,
@@ -149,26 +149,26 @@ class LearnAlwApp extends StatelessWidget {
         outline: kColorBorderLight,
         onPrimary: Colors.white,
         onSecondary: Colors.black,
-        onSurface: kColorTextLight,
+        onSurface: Colors.black87,
         onError: Colors.white,
       ),
       textTheme: buildLightTextTheme(),
       appBarTheme: AppBarTheme(
-        backgroundColor: kColorSurfaceLight,
-        foregroundColor: kColorTextLight,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black87,
         elevation: 0,
         centerTitle: false,
         titleTextStyle:
             buildLightTextTheme().titleLarge?.copyWith(fontSize: 22),
       ),
       drawerTheme: DrawerThemeData(
-        backgroundColor: kColorSurfaceLight,
+        backgroundColor: Colors.white,
         width: 320,
         elevation: 16,
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: kColorCardLight,
+        fillColor: Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
