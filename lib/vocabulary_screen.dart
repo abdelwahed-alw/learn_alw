@@ -44,7 +44,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
   Future<void> _fetchNextVocabularyQuestion() async {
     final state = context.read<AppStateModel>();
     if (!state.hasApiKey) {
-      _showError('Please configure your API key first.');
+      _showError('Please enter your activation code first.');
       return;
     }
     setState(() {
@@ -122,9 +122,9 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
   void _showError(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-          content: Text(msg),
-          backgroundColor: kColorError,
-          behavior: SnackBarBehavior.floating),
+        content: Text(msg),
+        behavior: SnackBarBehavior.floating,
+      ),
     );
   }
 
@@ -135,15 +135,20 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Vocabulary',
-            style: TextStyle(color: kColorText, fontWeight: FontWeight.w700)),
+        title: Text('Vocabulary',
+            style: TextStyle(
+                color: isLight ? Colors.black87 : Colors.white,
+                fontWeight: FontWeight.w700)),
         leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded, color: kColorText),
+            icon: Icon(Icons.arrow_back_rounded,
+                color: isLight ? Colors.black87 : Colors.white),
             onPressed: () => Navigator.pop(context)),
       ),
       body: Padding(
@@ -223,41 +228,47 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      ..._question!.options.map((opt) {
-                        Color? borderColor;
-                        Color? bgColor;
-                        if (_selectedOption != null) {
-                          if (opt == _question!.correctOption) {
-                            borderColor = const Color(0xFF2ECC71);
-                            bgColor =
-                                const Color(0xFF2ECC71).withValues(alpha: 0.1);
-                          } else if (opt == _selectedOption && !_isCorrect!) {
-                            borderColor = kColorError;
-                            bgColor = kColorError.withValues(alpha: 0.1);
+                        ..._question!.options.map((opt) {
+                          Color? borderColor;
+                          Color? bgColor;
+                          if (_selectedOption != null) {
+                            if (opt == _question!.correctOption) {
+                              borderColor = const Color(0xFF2ECC71);
+                              bgColor =
+                                  const Color(0xFF2ECC71).withValues(alpha: 0.1);
+                            } else if (opt == _selectedOption && !_isCorrect!) {
+                              borderColor = kColorError;
+                              bgColor = kColorError.withValues(alpha: 0.1);
+                            }
                           }
-                        }
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: GestureDetector(
-                            onTap: () => _selectOption(opt),
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 18, vertical: 16),
-                              decoration: BoxDecoration(
-                                color: bgColor ?? kColorSurface,
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(
-                                    color: borderColor ??
-                                        kColorBorder.withValues(alpha: 0.5)),
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                      child: Text(opt,
-                                          style: const TextStyle(
-                                              color: kColorText,
-                                              fontSize: 15))),
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: GestureDetector(
+                              onTap: () => _selectOption(opt),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 18, vertical: 16),
+                                decoration: BoxDecoration(
+                                  color: bgColor ?? Theme.of(context).cardColor,
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                      color: borderColor ??
+                                          cs.outline.withValues(alpha: 0.5)),
+                                  boxShadow: isLight
+                                      ? [BoxShadow(
+                                          color: Colors.black.withValues(alpha: 0.05),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2))]
+                                      : [],
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                        child: Text(opt,
+                                            style: TextStyle(
+                                                color: cs.onSurface,
+                                                fontSize: 15))),
                                   if (_selectedOption != null &&
                                       opt == _question!.correctOption)
                                     const Icon(Icons.check_circle_rounded,
@@ -280,10 +291,16 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                             width: double.infinity,
                             padding: const EdgeInsets.all(14),
                             decoration: BoxDecoration(
-                              color: kColorSurface,
+                              color: Theme.of(context).cardColor,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                  color: kColorBorder.withValues(alpha: 0.4)),
+                                  color: cs.outline.withValues(alpha: 0.4)),
+                              boxShadow: isLight
+                                  ? [BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.05),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2))]
+                                  : [],
                             ),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -298,7 +315,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                                     child: Text(
                                       _question!.exampleSentence,
                                       style: TextStyle(
-                                        color: kColorTextMuted,
+                                        color: cs.onSurface.withValues(alpha: 0.6),
                                         fontSize: 13,
                                         fontStyle: FontStyle.italic,
                                         height: 1.4,
@@ -343,8 +360,8 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                                     _isCorrect!
                                         ? 'Correct! The answer is: ${_question!.correctOption}'
                                         : 'The correct answer is: ${_question!.correctOption}',
-                                    style: const TextStyle(
-                                        color: kColorText, fontSize: 14),
+                                    style: TextStyle(
+                                        color: cs.onSurface, fontSize: 14),
                                   ),
                                 ),
                               ),
@@ -369,15 +386,17 @@ class _VocabularyProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final cs = Theme.of(context).colorScheme;
     final progress = maxWords > 0 ? askedCount / maxWords : 0.0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Text('تقدم المفردات',
+            Text('Vocabulary Progress',
                 style: TextStyle(
-                  color: kColorTextMuted.withValues(alpha: 0.8),
+                  color: cs.onSurface.withValues(alpha: 0.6),
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                 )),
@@ -397,7 +416,9 @@ class _VocabularyProgressBar extends StatelessWidget {
           borderRadius: BorderRadius.circular(4),
           child: LinearProgressIndicator(
             value: progress.clamp(0.0, 1.0),
-            backgroundColor: Colors.white.withValues(alpha: 0.1),
+            backgroundColor: isLight
+                ? Colors.grey.withValues(alpha: 0.2)
+                : Colors.white.withValues(alpha: 0.1),
             valueColor:
                 const AlwaysStoppedAnimation<Color>(kColorPrimary),
             minHeight: 8,

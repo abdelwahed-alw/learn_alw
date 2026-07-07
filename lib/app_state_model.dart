@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,7 +30,18 @@ class AppStateModel extends ChangeNotifier {
   final GeminiApiService _api = GeminiApiService();
 
   // ── Persisted settings ───────────────────────────────────────────────────
-  String _apiKey = '';
+  String _activationCode = '';
+  static final encrypt.Key _aesKey = encrypt.Key.fromUtf8('SaLearnAppSecretKey_32CharsLong!');
+  static final encrypt.IV _aesIv = encrypt.IV.fromUtf8('SaLearnInitVect!');
+
+  String _decryptActivationCode(String code) {
+    try {
+      final encrypter = encrypt.Encrypter(encrypt.AES(_aesKey, mode: encrypt.AESMode.cbc));
+      return encrypter.decrypt64(code, iv: _aesIv);
+    } catch (_) {
+      return '';
+    }
+  }
   String _nativeLanguage = 'en';
   String _targetLanguage = 'en';
   String _selectedTopic = kTopics.first;
@@ -128,8 +140,8 @@ class AppStateModel extends ChangeNotifier {
   bool get isGeneratingQuestion => _loadingPhase == LoadingPhase.generatingQ;
   bool get isSubmitting => _loadingPhase == LoadingPhase.submitting;
   bool get isTranslating => _loadingPhase == LoadingPhase.translating;
-  String get apiKey => _apiKey;
-  bool get hasApiKey => _apiKey.trim().isNotEmpty;
+  String get apiKey => _decryptActivationCode(_activationCode);
+  bool get hasApiKey => _activationCode.trim().isNotEmpty;
   bool get isDarkMode => _isDarkMode;
   bool get hasSelectedTheme => _hasSelectedTheme;
   bool get showTranslationFab => _showTranslationFab;
@@ -184,10 +196,10 @@ class AppStateModel extends ChangeNotifier {
 
   Future<void> _loadApiKey() async {
     try {
-      _apiKey = await _secureStorage.read(key: kPrefApiKey) ?? '';
+      _activationCode = await _secureStorage.read(key: kPrefActivationCode) ?? '';
       notifyListeners();
     } catch (_) {
-      _apiKey = '';
+      _activationCode = '';
     }
   }
 
@@ -262,20 +274,24 @@ class AppStateModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ─── API Key ───────────────────────────────────────────────────────────────
+  // ─── Activation Code ───────────────────────────────────────────────────────
   Future<({bool success, String message})> testAndSaveApiKey(
-      String rawKey) async {
-    final key = rawKey.trim();
-    if (key.isEmpty) {
-      return (success: false, message: 'Please enter an API key.');
+      String rawCode) async {
+    final code = rawCode.trim();
+    if (code.isEmpty) {
+      return (success: false, message: 'Please enter an activation code.');
+    }
+    final apiKey = _decryptActivationCode(code);
+    if (apiKey.isEmpty) {
+      return (success: false, message: 'Invalid activation code.');
     }
     _setPhase(LoadingPhase.testingKey);
     try {
-      await _api.testApiKey(key);
-      _apiKey = key;
-      await _secureStorage.write(key: kPrefApiKey, value: key);
+      await _api.testApiKey(apiKey);
+      _activationCode = code;
+      await _secureStorage.write(key: kPrefActivationCode, value: code);
       _setPhase(LoadingPhase.none);
-      return (success: true, message: '✓ API key verified and saved!');
+      return (success: true, message: '✓ Activation code verified and saved!');
     } on GeminiServiceException catch (e) {
       _setPhase(LoadingPhase.none);
       return (success: false, message: e.message);
@@ -443,7 +459,7 @@ class AppStateModel extends ChangeNotifier {
 
     try {
       final exercise = await _api.generateIeltsFillBlank(
-        apiKey: _apiKey,
+        apiKey: apiKey,
         targetLanguage: languageLabelFromCode(_targetLanguage),
         nativeLanguage: languageLabelFromCode(_nativeLanguage),
         topic: _selectedTopic,
@@ -471,7 +487,7 @@ class AppStateModel extends ChangeNotifier {
 
     try {
       final sentenceStart = await _api.generateIeltsSentenceStart(
-        apiKey: _apiKey,
+        apiKey: apiKey,
         targetLanguage: languageLabelFromCode(_targetLanguage),
         nativeLanguage: languageLabelFromCode(_nativeLanguage),
         topic: _selectedTopic,
@@ -496,7 +512,7 @@ class AppStateModel extends ChangeNotifier {
 
     try {
       final prompt = await _api.generateIeltsWritingPrompt(
-        apiKey: _apiKey,
+        apiKey: apiKey,
         targetLanguage: languageLabelFromCode(_targetLanguage),
         nativeLanguage: languageLabelFromCode(_nativeLanguage),
         topic: _selectedTopic,
@@ -533,7 +549,7 @@ class AppStateModel extends ChangeNotifier {
 
     try {
       final eval = await _api.evaluateIeltsSentenceCompletion(
-        apiKey: _apiKey,
+        apiKey: apiKey,
         targetLanguage: languageLabelFromCode(_targetLanguage),
         nativeLanguage: languageLabelFromCode(_nativeLanguage),
         sentenceStart: _ieltsPromptOrStart,
@@ -561,7 +577,7 @@ class AppStateModel extends ChangeNotifier {
 
     try {
       final eval = await _api.evaluateIeltsWriting(
-        apiKey: _apiKey,
+        apiKey: apiKey,
         targetLanguage: languageLabelFromCode(_targetLanguage),
         nativeLanguage: languageLabelFromCode(_nativeLanguage),
         prompt: _ieltsPromptOrStart,
@@ -589,7 +605,7 @@ class AppStateModel extends ChangeNotifier {
     _clearSession();
     try {
       final question = await _api.generateQuestion(
-        apiKey: _apiKey,
+        apiKey: apiKey,
         nativeLanguage: languageLabelFromCode(_nativeLanguage),
         targetLanguage: languageLabelFromCode(_targetLanguage),
         topic: _selectedTopic,
@@ -622,7 +638,7 @@ class AppStateModel extends ChangeNotifier {
 
     try {
       final analysis = await _api.analyzeAnswer(
-        apiKey: _apiKey,
+        apiKey: apiKey,
         nativeLanguage: languageLabelFromCode(_nativeLanguage),
         targetLanguage: languageLabelFromCode(_targetLanguage),
         topic: _selectedTopic,
@@ -656,7 +672,7 @@ class AppStateModel extends ChangeNotifier {
 
     try {
       final result = await _api.translateText(
-        apiKey: _apiKey,
+        apiKey: apiKey,
         text: text,
         fromLanguage: languageLabelFromCode(_targetLanguage),
         toLanguage: languageLabelFromCode(_nativeLanguage),
@@ -708,7 +724,7 @@ class AppStateModel extends ChangeNotifier {
           _beginnerVocabulary.map((e) => e['word'] ?? '').toList();
 
       final result = await _api.generateBeginnerSentence(
-        apiKey: _apiKey,
+        apiKey: apiKey,
         targetLanguage: languageLabelFromCode(_targetLanguage),
         nativeLanguage: languageLabelFromCode(_nativeLanguage),
         targetWord: targetWord,
@@ -744,7 +760,7 @@ class AppStateModel extends ChangeNotifier {
 
     try {
       final meaning = await _api.getWordMeaning(
-        apiKey: _apiKey,
+        apiKey: apiKey,
         word: word,
         targetLanguage: languageLabelFromCode(_targetLanguage),
         nativeLanguage: languageLabelFromCode(_nativeLanguage),
@@ -801,7 +817,7 @@ class AppStateModel extends ChangeNotifier {
   Future<void> _generateNextQuestionPreview() async {
     try {
       final preview = await _api.generateNextQuestion(
-        apiKey: _apiKey,
+        apiKey: apiKey,
         nativeLanguage: languageLabelFromCode(_nativeLanguage),
         targetLanguage: languageLabelFromCode(_targetLanguage),
         topic: _selectedTopic,

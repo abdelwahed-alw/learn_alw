@@ -56,7 +56,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
   Future<void> _generateSentence() async {
     final state = context.read<AppStateModel>();
     if (!state.hasApiKey) {
-      _showError('Please configure your API key first.');
+      _showError('Please enter your activation code first.');
       return;
     }
     setState(() {

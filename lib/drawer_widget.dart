@@ -7,9 +7,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'app_state_model.dart';
+import 'theme_colors.dart';
 import 'constants.dart';
 import 'ui_strings.dart';
 
@@ -38,41 +38,25 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   }
 
   Future<void> _testAndSaveKey(AppStateModel state) async {
-    final key = _apiKeyController.text.trim();
-    if (key.isEmpty) {
+    final code = _apiKeyController.text.trim();
+    if (code.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Please enter an API key.'),
-            backgroundColor: kColorError,
+            content: Text('Please enter an activation code.'),
           ),
         );
       }
       return;
     }
     FocusScope.of(context).unfocus();
-    final result = await state.testAndSaveApiKey(key);
+    final result = await state.testAndSaveApiKey(code);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(result.message),
-        backgroundColor: result.success ? kColorPrimary : kColorError,
       ),
     );
-  }
-
-  Future<void> _launchYouTube() async {
-    final url = Uri.parse(kYoutubeTutorialUrl);
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(t('couldNotOpenLink', context.read<AppStateModel>().nativeLanguage)),
-            backgroundColor: kColorError,
-          ),
-        );
-      }
-    }
   }
 
   @override
@@ -297,48 +281,42 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     );
   }
 
-  // ── API Key Section ───────────────────────────────────────────────────────
+  // ── Activation Code Section ───────────────────────────────────────────────
   Widget _buildApiKeySection(AppStateModel state) {
     final lang = state.nativeLanguage;
+    final cs = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader(t('apiKeySetup', lang), Icons.vpn_key_rounded),
+        _buildSectionHeader('ACTIVATION CODE', Icons.vpn_key_rounded),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: kColorSurface,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: kColorBorder.withValues(alpha: 0.6)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.15),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
+            border: Border.all(color: cs.outline.withValues(alpha: 0.6)),
+            boxShadow: context.cardShadow,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Key input with visibility toggle
               TextField(
                 controller: _apiKeyController,
                 obscureText: !_isKeyVisible,
-                style: const TextStyle(color: kColorText, fontSize: 13),
+                style: TextStyle(color: cs.onSurface, fontSize: 13),
                 decoration: InputDecoration(
-                  hintText: t('pasteApiKey', lang),
+                  hintText: 'Paste your activation code…',
                   hintStyle: TextStyle(
-                    color: kColorTextMuted.withValues(alpha: 0.7),
+                    color: cs.onSurface.withValues(alpha: 0.6),
                     fontSize: 13,
                   ),
-                  fillColor: kColorBackground,
+                  fillColor: cs.surfaceContainerHighest.withValues(alpha: 0.5),
                   contentPadding: const EdgeInsets.symmetric(
                       horizontal: 14, vertical: 12),
                   prefixIcon: Icon(
-                    Icons.key_rounded,
+                    Icons.vpn_key_rounded,
                     size: 16,
-                    color: kColorTextMuted.withValues(alpha: 0.6),
+                    color: cs.onSurface.withValues(alpha: 0.6),
                   ),
                   suffixIcon: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -351,16 +329,16 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                               ? Icons.visibility_off_rounded
                               : Icons.visibility_rounded,
                           size: 16,
-                          color: kColorTextMuted,
+                          color: cs.onSurface.withValues(alpha: 0.6),
                         ),
                       ),
                       const SizedBox(width: 8),
                       GestureDetector(
                         onTap: _apiKeyController.clear,
-                        child: const Icon(
+                        child: Icon(
                           Icons.close_rounded,
                           size: 16,
-                          color: kColorTextMuted,
+                          color: cs.onSurface.withValues(alpha: 0.6),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -369,7 +347,6 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 ),
               ),
               const SizedBox(height: 12),
-              // Save button
               _GradientButton(
                 label: t('testAndSave', lang),
                 icon: Icons.check_circle_outline_rounded,
@@ -377,13 +354,6 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 onTap: state.loadingPhase == LoadingPhase.testingKey
                     ? null
                     : () => _testAndSaveKey(state),
-              ),
-              const SizedBox(height: 8),
-              // Help link
-              _GhostButton(
-                label: t('howToGetKey', lang),
-                icon: Icons.play_circle_outline_rounded,
-                onTap: _launchYouTube,
               ),
             ],
           ),
@@ -997,53 +967,6 @@ class _GradientButtonState extends State<_GradientButton>
 }
 
 // ─── Ghost Button ─────────────────────────────────────────────────────────────
-class _GhostButton extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final VoidCallback onTap;
-
-  const _GhostButton({
-    required this.label,
-    required this.icon,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(10),
-        onTap: onTap,
-        child: Container(
-          height: 38,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: kColorBorder.withValues(alpha: 0.6),
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: kColorPrimary, size: 15),
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  color: kColorAccent.withValues(alpha: 0.8),
-                  fontWeight: FontWeight.w500,
-                  fontSize: 12,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 // ─── Language Row ─────────────────────────────────────────────────────────────
 class _LanguageRow extends StatelessWidget {
   final String label;

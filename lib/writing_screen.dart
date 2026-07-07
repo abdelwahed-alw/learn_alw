@@ -37,7 +37,7 @@ class _WritingScreenState extends State<WritingScreen> {
   Future<void> _generateExercise() async {
     final state = context.read<AppStateModel>();
     if (!state.hasApiKey) {
-      _showError('Please configure your API key first.');
+      _showError('Please enter your activation code first.');
       return;
     }
     setState(() {

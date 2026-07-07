@@ -123,11 +123,10 @@ void showQuickTranslationSheet(BuildContext context) {
                                     loading = false;
                                   });
                                 }
-                              } catch (e) {
+                              } catch (_) {
                                 if (ctx.mounted) {
                                   setSheetState(() {
-                                    result =
-                                        '${'translationFailed'.tr()} ${e.toString()}';
+                                    result = 'translationFailed'.tr();
                                     loading = false;
                                   });
                                 }

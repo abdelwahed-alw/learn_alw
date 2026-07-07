@@ -30,10 +30,13 @@ class _MainScreenBodyState extends State<MainScreenBody> {
       await state.submitAnswer(text);
       // Do NOT clear the controller — the user's input must remain
       // visible alongside the AI feedback (Task 1, Bug 1 fix).
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: kColorError),
+          SnackBar(
+            content: const Text('An error occurred. Please try again.'),
+            behavior: SnackBarBehavior.floating,
+          ),
         );
       }
     }
@@ -44,7 +47,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
     if (!state.hasApiKey) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please configure your API key first.'),
+          content: Text('Please enter your activation code first.'),
           backgroundColor: kColorError,
         ),
       );
@@ -882,6 +885,7 @@ class _TranslationSheetState extends State<_TranslationSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.6,
@@ -982,16 +986,32 @@ class _TranslationSheetState extends State<_TranslationSheet> {
                       ),
                     )
                   : _error != null
-                      ? Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: kColorError.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            _error!,
-                            style: const TextStyle(
-                                color: kColorError, fontSize: 14),
+                      ? GestureDetector(
+                          onTap: _translate,
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: cs.onSurface.withValues(alpha: 0.05),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.refresh_rounded,
+                                    size: 18,
+                                    color: cs.onSurface.withValues(alpha: 0.5)),
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: Text(
+                                    _error!,
+                                    style: TextStyle(
+                                      color: cs.onSurface.withValues(alpha: 0.7),
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         )
                       : Container(

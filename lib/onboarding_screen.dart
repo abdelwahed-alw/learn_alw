@@ -1,11 +1,10 @@
 // lib/onboarding_screen.dart
-// First-run onboarding: API key setup → level selection or proficiency test.
+// First-run onboarding: Activation code setup → level selection or proficiency test.
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'app_state_model.dart';
 import 'constants.dart';
@@ -191,7 +190,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           // ── Step 0: Language Selection ──
                           _buildLanguageSection(lang),
                           const SizedBox(height: 32),
-                          // ── Step 1: API Key ──
+                          // ── Step 1: Activation Code ──
                           AnimatedOpacity(
                             opacity: (_nativeSelected && _targetSelected)
                                 ? 1.0
@@ -518,7 +517,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     );
   }
 
-  // ── API Key Section ─────────────────────────────────────────────────────────
+  // ── Activation Code Section ─────────────────────────────────────────────────
   Widget _buildApiKeySection(String lang) {
     final model = context.watch<AppStateModel>();
     return Container(
@@ -609,18 +608,18 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           TextField(
             controller: _apiKeyCtrl,
             obscureText: !_isKeyVisible,
-            style: const TextStyle(color: kColorText, fontSize: 14),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 14),
             decoration: InputDecoration(
               hintText: t('pasteApiKey', lang),
               hintStyle: TextStyle(
                 color: kColorTextMuted.withValues(alpha: 0.7),
                 fontSize: 13,
               ),
-              fillColor: kColorBackground,
+              fillColor: Theme.of(context).cardColor,
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               prefixIcon: Icon(Icons.vpn_key_rounded,
-                  size: 16, color: kColorTextMuted.withValues(alpha: 0.6)),
+                  size: 16, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
               suffixIcon: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -631,7 +630,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           ? Icons.visibility_off_rounded
                           : Icons.visibility_rounded,
                       size: 16,
-                      color: kColorTextMuted,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -695,84 +694,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               ),
             ),
           ],
-          // ── Help Guide ──
-          if (!_keyValidated) ...[
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: kColorBackground.withValues(alpha: 0.6),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: kColorBorder.withValues(alpha: 0.4),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.help_outline_rounded,
-                          size: 16, color: kColorAccent.withValues(alpha: 0.8)),
-                      const SizedBox(width: 8),
-                      Text(
-                        t('howToGetKey', lang),
-                        style: const TextStyle(
-                          color: kColorAccent,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  _HelpStep(number: '1', text: t('helpStep1', lang)),
-                  const SizedBox(height: 6),
-                  _HelpStep(number: '2', text: t('helpStep2', lang)),
-                  const SizedBox(height: 6),
-                  _HelpStep(number: '3', text: t('helpStep3', lang)),
-                  const SizedBox(height: 12),
-                  GestureDetector(
-                    onTap: () async {
-                      final uri = Uri.parse(kYoutubeTutorialUrl);
-                      if (await canLaunchUrl(uri)) {
-                        await launchUrl(uri,
-                            mode: LaunchMode.externalApplication);
-                      }
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: kColorPrimary.withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: kColorPrimary.withValues(alpha: 0.2),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.play_circle_rounded,
-                              size: 18,
-                              color: kColorPrimary.withValues(alpha: 0.8)),
-                          const SizedBox(width: 8),
-                          Text(
-                            t('playTutorial', lang),
-                            style: TextStyle(
-                              color: kColorPrimary.withValues(alpha: 0.9),
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+
         ],
       ),
     );
@@ -1047,11 +969,11 @@ class _LevelCardState extends State<_LevelCard>
                         const SizedBox(width: 8),
                         Text(
                           widget.label,
-                          style: const TextStyle(
-                            color: kColorText,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
                         ),
                       ],
                     ),
@@ -1076,44 +998,4 @@ class _LevelCardState extends State<_LevelCard>
   }
 }
 
-// ─── Help Step ────────────────────────────────────────────────────────────────
-class _HelpStep extends StatelessWidget {
-  final String number;
-  final String text;
-  const _HelpStep({required this.number, required this.text});
 
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 20,
-          height: 20,
-          decoration: BoxDecoration(
-            color: kColorAccent.withValues(alpha: 0.1),
-            shape: BoxShape.circle,
-          ),
-          child: Center(
-            child: Text(
-              number,
-              style: TextStyle(
-                color: kColorAccent.withValues(alpha: 0.8),
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 10),
-        Text(
-          text,
-          style: TextStyle(
-            color: kColorTextMuted.withValues(alpha: 0.8),
-            fontSize: 12,
-            height: 1.3,
-          ),
-        ),
-      ],
-    );
-  }
-}

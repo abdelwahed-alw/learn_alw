@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // ─── SharedPreferences keys ───────────────────────────────────────────────────
-const String kPrefApiKey = 'api_key';
+const String kPrefActivationCode = 'activation_code';
 const String kPrefNativeLang = 'native_language';
 const String kPrefTargetLang = 'target_language';
 const String kPrefTopic = 'selected_topic';

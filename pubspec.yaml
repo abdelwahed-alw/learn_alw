@@ -46,6 +46,9 @@ dependencies:
   # Audio playback from file
   audioplayers: ^6.6.0
 
+  # AES decryption for activation codes
+  encrypt: ^5.0.3
+
   # Audio recording to temp file
   record: ^5.2.1
 

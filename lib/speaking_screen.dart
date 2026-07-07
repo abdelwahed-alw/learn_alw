@@ -55,7 +55,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
   Future<void> _generateSentence() async {
     final state = context.read<AppStateModel>();
     if (!state.hasApiKey) {
-      _showError('Please configure your API key first.');
+      _showError('Please enter your activation code first.');
       return;
     }
     setState(() {
@@ -123,7 +123,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _recording = false);
-        _showError('Mic Error: ${e.toString()}');
+        _showError('Microphone error. Try again.');
       }
     }
   }
@@ -213,10 +213,10 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
   void _showError(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-          content: Directionality(
-              textDirection: TextDirection.ltr, child: Text(msg)),
-          backgroundColor: kColorError,
-          behavior: SnackBarBehavior.floating),
+        content: Directionality(
+            textDirection: TextDirection.ltr, child: Text(msg)),
+        behavior: SnackBarBehavior.floating,
+      ),
     );
   }
 

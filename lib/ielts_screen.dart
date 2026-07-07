@@ -118,7 +118,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'IELTS Exam Prep',
+                    'Official Exam Prep',
                     style: Theme.of(context)
                         .textTheme
                         .titleLarge
@@ -312,7 +312,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
       case IeltsExerciseType.writingPractice:
         title = 'Writing Practice';
         desc =
-            'Write a full response to an IELTS-style prompt. Get a band score estimate and improvement suggestions.';
+            'Write a full response to an official exam-style prompt. Get a band score estimate and improvement suggestions.';
         icon = Icons.feed_rounded;
     }
     return Column(

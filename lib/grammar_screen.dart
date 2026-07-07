@@ -32,7 +32,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
   Future<void> _generateQuestion() async {
     final state = context.read<AppStateModel>();
     if (!state.hasApiKey) {
-      _showError('Please configure your API key first.');
+      _showError('Please enter your activation code first.');
       return;
     }
     setState(() {
@@ -106,7 +106,6 @@ class _GrammarScreenState extends State<GrammarScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: kColorError,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -114,17 +113,25 @@ class _GrammarScreenState extends State<GrammarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Grammar Exercise',
-          style: TextStyle(color: kColorText, fontWeight: FontWeight.w700),
+          style: TextStyle(
+            color: isLight ? Colors.black87 : Colors.white,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: kColorText),
+          icon: Icon(
+            Icons.arrow_back_rounded,
+            color: isLight ? Colors.black87 : Colors.white,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -201,10 +208,10 @@ class _GrammarScreenState extends State<GrammarScreen> {
                       const SizedBox(height: 20),
                       if (_question!.type == 'fill_blank' &&
                           _question!.options != null) ...[
-                        const Text(
+                        Text(
                           'Choose the correct option:',
                           style: TextStyle(
-                            color: kColorText,
+                            color: cs.onSurface,
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                           ),
@@ -241,12 +248,18 @@ class _GrammarScreenState extends State<GrammarScreen> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 16, vertical: 14),
                                   decoration: BoxDecoration(
-                                    color: bgColor ?? kColorSurface,
+                                    color: bgColor ?? Theme.of(context).cardColor,
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
                                       color: borderColor ??
-                                          kColorBorder.withValues(alpha: 0.5),
+                                          cs.outline.withValues(alpha: 0.5),
                                     ),
+                                    boxShadow: isLight
+                                        ? [BoxShadow(
+                                            color: Colors.black.withValues(alpha: 0.05),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2))]
+                                        : [],
                                   ),
                                   child: Row(
                                     children: [
@@ -264,8 +277,8 @@ class _GrammarScreenState extends State<GrammarScreen> {
                                                 ? kColorError
                                                 : isSelected
                                                     ? kColorPrimary
-                                                    : kColorTextMuted
-                                                        .withValues(alpha: 0.6),
+                                                    : cs.onSurface
+                                                        .withValues(alpha: 0.5),
                                       ),
                                       const SizedBox(width: 12),
                                       Expanded(
@@ -274,7 +287,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
                                           child: Text(
                                             option,
                                             style: TextStyle(
-                                              color: kColorText,
+                                              color: cs.onSurface,
                                               fontSize: 15,
                                             ),
                                           ),
@@ -311,7 +324,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
                           decoration: InputDecoration(
                             hintText: 'Type the corrected sentence...',
                             filled: true,
-                            fillColor: kColorSurface,
+                            fillColor: Theme.of(context).cardColor,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
                               borderSide: BorderSide.none,
@@ -376,8 +389,8 @@ class _GrammarScreenState extends State<GrammarScreen> {
                                 _feedback!.feedback,
                                 textDirection: TextDirection.rtl,
                                 textAlign: TextAlign.right,
-                                style: const TextStyle(
-                                  color: kColorText,
+                                style: TextStyle(
+                                  color: cs.onSurface,
                                   fontSize: 14,
                                   height: 1.5,
                                 ),

@@ -37,43 +37,25 @@ class _ProfileTabState extends State<ProfileTab> {
   }
 
   Future<void> _testAndSaveKey(AppStateModel state) async {
-    final key = _apiKeyController.text.trim();
-    if (key.isEmpty) {
+    final code = _apiKeyController.text.trim();
+    if (code.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Please enter an API key.'),
-            backgroundColor: kColorError,
+            content: Text('Please enter an activation code.'),
           ),
         );
       }
       return;
     }
     FocusScope.of(context).unfocus();
-    final result = await state.testAndSaveApiKey(key);
+    final result = await state.testAndSaveApiKey(code);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(result.message),
-        backgroundColor: result.success ? kColorPrimary : kColorError,
       ),
     );
-  }
-
-  Future<void> _launchYouTube() async {
-    final url = Uri.parse(kYoutubeTutorialUrl);
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-                t('couldNotOpenLink',
-                    context.read<AppStateModel>().nativeLanguage)),
-            backgroundColor: kColorError,
-          ),
-        );
-      }
-    }
   }
 
   void _showLevelPicker(AppStateModel state) {
@@ -344,7 +326,7 @@ class _ProfileTabState extends State<ProfileTab> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader('API KEY'),
+        _buildSectionHeader('ACTIVATION CODE'),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -440,36 +422,6 @@ class _ProfileTabState extends State<ProfileTab> {
                               ),
                             ],
                           ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              GestureDetector(
-                onTap: _launchYouTube,
-                child: Container(
-                  width: double.infinity,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.6),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.play_circle_outline_rounded,
-                          color: kColorPrimary, size: 15),
-                      const SizedBox(width: 6),
-                      Text(
-                        t('howToGetKey', lang),
-                        style: TextStyle(
-                          color: kColorAccent.withValues(alpha: 0.8),
-                          fontWeight: FontWeight.w500,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
                   ),
                 ),
               ),

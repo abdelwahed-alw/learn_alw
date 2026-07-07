@@ -1,3 +1,5 @@
+import 'dart:io' show InternetAddress;
+
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +18,8 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   bool _isVisible = false;
+  bool _isChecking = true;
+  bool _isOffline = false;
 
   @override
   void initState() {
@@ -24,7 +28,28 @@ class _SplashScreenState extends State<SplashScreen> {
       setState(() => _isVisible = true);
     });
 
-    Future.delayed(const Duration(milliseconds: 2500), _navigateNext);
+    _checkConnectivity();
+  }
+
+  Future<void> _checkConnectivity() async {
+    await Future.delayed(const Duration(milliseconds: 1500));
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        if (!mounted) return;
+        setState(() {
+          _isChecking = false;
+          _isOffline = false;
+        });
+        _navigateNext();
+        return;
+      }
+    } catch (_) {}
+    if (!mounted) return;
+    setState(() {
+      _isChecking = false;
+      _isOffline = true;
+    });
   }
 
   void _navigateNext() {
@@ -228,75 +253,142 @@ class _SplashScreenState extends State<SplashScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
-          Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                AnimatedOpacity(
-                  opacity: _isVisible ? 1.0 : 0.0,
-                  duration: const Duration(seconds: 1),
-                  child: AnimatedScale(
-                    scale: _isVisible ? 1.0 : 0.6,
+          if (!_isOffline)
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AnimatedOpacity(
+                    opacity: _isVisible ? 1.0 : 0.0,
                     duration: const Duration(seconds: 1),
-                    curve: Curves.easeOutBack,
-                    child: Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: RichText(
-                        text: TextSpan(
-                          style: const TextStyle(
-                            fontFamily: 'Outfit',
-                            fontSize: 52,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 4,
+                    child: AnimatedScale(
+                      scale: _isVisible ? 1.0 : 0.6,
+                      duration: const Duration(seconds: 1),
+                      curve: Curves.easeOutBack,
+                      child: Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: RichText(
+                          text: TextSpan(
+                            style: const TextStyle(
+                              fontFamily: 'Outfit',
+                              fontSize: 52,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 4,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: 'Sa',
+                                style: TextStyle(color: isLight ? Colors.black87 : Colors.white),
+                              ),
+                              TextSpan(
+                                text: 'Learn.',
+                                style: const TextStyle(color: kColorPrimary),
+                              ),
+                            ],
                           ),
-                          children: [
-                            TextSpan(
-                              text: 'Sa',
-                              style: TextStyle(color: isLight ? Colors.black87 : Colors.white),
-                            ),
-                            TextSpan(
-                              text: 'Learn.',
-                              style: const TextStyle(color: kColorPrimary),
-                            ),
-                          ],
                         ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 40),
-                AnimatedOpacity(
-                  opacity: _isVisible ? 1.0 : 0.0,
-                  duration: const Duration(seconds: 1),
-                  child: const SizedBox(
-                    width: 28,
-                    height: 28,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      valueColor: AlwaysStoppedAnimation<Color>(kColorPrimary),
+                  const SizedBox(height: 40),
+                  AnimatedOpacity(
+                    opacity: _isVisible && _isChecking ? 1.0 : 0.0,
+                    duration: const Duration(seconds: 1),
+                    child: const SizedBox(
+                      width: 28,
+                      height: 28,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        valueColor: AlwaysStoppedAnimation<Color>(kColorPrimary),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 40),
-              child: Text(
-                'By ABDELWAHED',
-                style: TextStyle(
-                  color: kColorTextMuted.withValues(alpha: 0.7),
-                  fontSize: 13,
-                  letterSpacing: 2.4,
-                  fontWeight: FontWeight.w300,
+          if (_isOffline)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.wifi_off_rounded,
+                      size: 64,
+                      color: cs.onSurface.withValues(alpha: 0.4),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      'noInternetConnection'.tr(),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: cs.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'checkConnectionAndRetry'.tr(),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: cs.onSurface.withValues(alpha: 0.6),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _isChecking = true;
+                          _isOffline = false;
+                        });
+                        _checkConnectivity();
+                      },
+                      child: Container(
+                        height: 50,
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        decoration: BoxDecoration(
+                          gradient: kPrimaryGradient,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'tryAgain'.tr(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ),
+          if (!_isOffline)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 40),
+                child: Text(
+                  'By ABDELWAHED',
+                  style: TextStyle(
+                    color: kColorTextMuted.withValues(alpha: 0.7),
+                    fontSize: 13,
+                    letterSpacing: 2.4,
+                    fontWeight: FontWeight.w300,
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
   }
+
+  ColorScheme get cs => Theme.of(context).colorScheme;
 }
