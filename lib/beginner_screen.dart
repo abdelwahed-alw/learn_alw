@@ -98,8 +98,8 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                             const EdgeInsets.only(left: 24, right: 24, top: 8),
                         sliver: SliverToBoxAdapter(
                           child: Center(
-                            child: Text(
-                              '+ ${state.beginnerVocabulary.length - 20} more words',
+                              child: Text(
+                                '+${state.beginnerVocabulary.length - 20} ${tr(context, 'moreWords')}',
                               style: TextStyle(
                                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                                 fontSize: 11,
@@ -406,7 +406,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                         color: kColorPrimary, size: 12),
                     const SizedBox(width: 4),
                     Text(
-                      'Tap words to learn',
+                      tr(context, 'tapWordsToLearn'),
                       style: TextStyle(
                         color: kColorPrimary.withValues(alpha: 0.9),
                         fontSize: 11,
@@ -508,13 +508,13 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
           // Legend
           Row(
             children: [
-              _legendDot(kColorPrimary, 'Target'),
+              _legendDot(kColorPrimary, tr(context, 'targetLegend')),
               const SizedBox(width: 16),
-              _legendDot(const Color(0xFFFF8E53), 'New'),
+              _legendDot(const Color(0xFFFF8E53), tr(context, 'newLegend')),
               const SizedBox(width: 16),
-              _legendDot(const Color(0xFF2ECC71), 'Known'),
+              _legendDot(const Color(0xFF2ECC71), tr(context, 'knownLegend')),
               const SizedBox(width: 16),
-              _legendDot(kColorAccent, 'Tap to learn'),
+              _legendDot(kColorAccent, tr(context, 'tapToLearnLegend')),
             ],
           ),
         ],
@@ -572,7 +572,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                   color: Color(0xFFFF8E53), size: 16),
               const SizedBox(width: 8),
               Text(
-                'New words in this sentence',
+                tr(context, 'newWordsInSentence'),
                 style: TextStyle(
                   color: cs.onSurface.withValues(alpha: 0.9),
                   fontWeight: FontWeight.w600,
@@ -626,22 +626,22 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                         color: const Color(0xFF2ECC71).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.add_rounded,
-                              color: Color(0xFF2ECC71), size: 12),
-                          SizedBox(width: 2),
-                          Text(
-                            'Add',
-                            style: TextStyle(
-                              color: Color(0xFF2ECC71),
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.add_rounded,
+                                  color: Color(0xFF2ECC71), size: 12),
+                              const SizedBox(width: 2),
+                              Text(
+                                tr(context, 'add'),
+                                style: const TextStyle(
+                                  color: Color(0xFF2ECC71),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
                     ),
                   ),
                 ],
@@ -1003,7 +1003,7 @@ class _WordMeaningSheet extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Meaning',
+                        tr(context, 'meaning'),
                         style: TextStyle(
                           color: cs.onSurface.withValues(alpha: 0.6),
                           fontSize: 11,
@@ -1015,7 +1015,7 @@ class _WordMeaningSheet extends StatelessWidget {
                       Text(
                         meaning.isNotEmpty
                             ? meaning
-                            : 'Added to your vocabulary!',
+                            : tr(context, 'addedToVocabulary'),
                         style: TextStyle(
                           color: cs.onSurface,
                           fontSize: 16,
@@ -1042,7 +1042,7 @@ class _WordMeaningSheet extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Example',
+                          tr(context, 'example'),
                           style: TextStyle(
                             color: cs.onSurface.withValues(alpha: 0.6),
                             fontSize: 11,
@@ -1070,15 +1070,15 @@ class _WordMeaningSheet extends StatelessWidget {
                     color: const Color(0xFF2ECC71).withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.check_circle_rounded,
+                      const Icon(Icons.check_circle_rounded,
                           color: Color(0xFF2ECC71), size: 16),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       Text(
-                        'Added to your vocabulary',
-                        style: TextStyle(
+                        tr(context, 'addedToVocabulary'),
+                        style: const TextStyle(
                           color: Color(0xFF2ECC71),
                           fontSize: 12,
                           fontWeight: FontWeight.w600,

@@ -462,7 +462,6 @@ class AppStateModel extends ChangeNotifier {
         apiKey: apiKey,
         targetLanguage: languageLabelFromCode(_targetLanguage),
         nativeLanguage: languageLabelFromCode(_nativeLanguage),
-        topic: _selectedTopic,
       );
       _ieltsPassage = exercise.passage;
       _ieltsCorrectAnswer = exercise.blankWord;
@@ -490,7 +489,6 @@ class AppStateModel extends ChangeNotifier {
         apiKey: apiKey,
         targetLanguage: languageLabelFromCode(_targetLanguage),
         nativeLanguage: languageLabelFromCode(_nativeLanguage),
-        topic: _selectedTopic,
       );
       _ieltsPromptOrStart = sentenceStart;
       _ieltsLoading = false;
@@ -515,7 +513,6 @@ class AppStateModel extends ChangeNotifier {
         apiKey: apiKey,
         targetLanguage: languageLabelFromCode(_targetLanguage),
         nativeLanguage: languageLabelFromCode(_nativeLanguage),
-        topic: _selectedTopic,
       );
       _ieltsPromptOrStart = prompt;
       _ieltsLoading = false;

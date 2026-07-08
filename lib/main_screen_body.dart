@@ -34,7 +34,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('An error occurred. Please try again.'),
+            content: Text(t('errorOccurred', state.nativeLanguage)),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -46,9 +46,8 @@ class _MainScreenBodyState extends State<MainScreenBody> {
     final state = context.read<AppStateModel>();
     if (!state.hasApiKey) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter your activation code first.'),
-          backgroundColor: kColorError,
+        SnackBar(
+          content: Text(t('configureApiKeyFirst', state.nativeLanguage)),
         ),
       );
       return;

@@ -116,26 +116,26 @@ class _ListeningScreenState extends State<ListeningScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
           content: Text(msg),
-          backgroundColor: kColorError,
           behavior: SnackBarBehavior.floating),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Listening',
-            style: TextStyle(color: kColorText, fontWeight: FontWeight.w700)),
+        title: Text('Listening',
+            style: TextStyle(color: cs.onSurface, fontWeight: FontWeight.w700)),
         leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded, color: kColorText),
+            icon: Icon(Icons.arrow_back_rounded, color: cs.onSurface),
             onPressed: () => Navigator.pop(context)),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: kColorPrimary))
+          ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
@@ -156,7 +156,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: _playing ? kPrimaryGradient : null,
-                          color: _playing ? null : kColorSurface,
+                          color: _playing ? null : Theme.of(context).cardColor,
                           boxShadow: _playing
                               ? [
                                   BoxShadow(
@@ -189,7 +189,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
                             ? 'Playing slowly...'
                             : 'Tap to play audio',
                     style: TextStyle(
-                        color: kColorTextMuted.withValues(alpha: 0.7),
+                        color: cs.onSurface.withValues(alpha: 0.6),
                         fontSize: 13),
                   ),
                   const SizedBox(height: 12),
@@ -202,7 +202,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
                       decoration: BoxDecoration(
                         color: _playingSlow
                             ? kColorAccent.withValues(alpha: 0.2)
-                            : kColorSurface,
+                            : Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: kColorAccent.withValues(alpha: 0.4),
@@ -217,14 +217,14 @@ class _ListeningScreenState extends State<ListeningScreen> {
                                 : Icons.speed_rounded,
                             size: 18,
                             color:
-                                _playingSlow ? kColorAccent : kColorTextMuted,
+                                _playingSlow ? kColorAccent : cs.onSurface.withValues(alpha: 0.6),
                           ),
                           const SizedBox(width: 6),
                           Text(
                             '0.5x',
                             style: TextStyle(
                               color:
-                                  _playingSlow ? kColorAccent : kColorTextMuted,
+                                  _playingSlow ? kColorAccent : cs.onSurface.withValues(alpha: 0.6),
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
                             ),
@@ -243,7 +243,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
                     decoration: InputDecoration(
                       hintText: 'Type what you heard...',
                       filled: true,
-                      fillColor: kColorSurface,
+                      fillColor: Theme.of(context).brightness == Brightness.light ? Colors.grey[100] : const Color(0xFF0F172A),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide.none),
@@ -258,14 +258,14 @@ class _ListeningScreenState extends State<ListeningScreen> {
                         height: 52,
                         decoration: BoxDecoration(
                           gradient: _isInputEmpty ? null : kPrimaryGradient,
-                          color: _isInputEmpty ? kColorSurface : null,
+                          color: _isInputEmpty ? Theme.of(context).cardColor : null,
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Center(
                           child: Text('Check Answer',
                               style: TextStyle(
                                 color: _isInputEmpty
-                                    ? kColorTextMuted
+                                    ? cs.onSurface.withValues(alpha: 0.6)
                                     : Colors.white,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
@@ -328,7 +328,7 @@ class _FeedbackCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text('The sentence was: $targetSentence',
               style: TextStyle(
-                  color: kColorTextMuted.withValues(alpha: 0.8), fontSize: 14)),
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 14)),
         ],
       ),
     );

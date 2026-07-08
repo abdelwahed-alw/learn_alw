@@ -76,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               const SizedBox(width: 12),
                               // App title
                               Text(
-                                'Salearn',
+                                t('salearn', model.nativeLanguage),
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleLarge

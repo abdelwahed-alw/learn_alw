@@ -18,9 +18,10 @@ class CategoriesTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppStateModel>(
       builder: (context, state, _) {
+        final lang = state.nativeLanguage;
         final categories = [
           (
-            'Writing',
+            t('writing', lang),
             Icons.edit_rounded,
             const Color(0xFFFF6B6B),
             () => Navigator.push(
@@ -31,7 +32,7 @@ class CategoriesTab extends StatelessWidget {
                 ),
           ),
           (
-            'Grammar',
+            t('grammar', lang),
             Icons.text_fields_rounded,
             const Color(0xFFFF8E53),
             () => Navigator.push(
@@ -42,28 +43,28 @@ class CategoriesTab extends StatelessWidget {
                 ),
           ),
           (
-            'Vocabulary',
+            t('vocabulary', lang),
             Icons.spellcheck_rounded,
             const Color(0xFF2ECC71),
             () => Navigator.push(context,
                 MaterialPageRoute(builder: (_) => const VocabularyScreen())),
           ),
           (
-            'Reading',
+            t('reading', lang),
             Icons.auto_stories_rounded,
             const Color(0xFF3498DB),
             () => Navigator.push(context,
                 MaterialPageRoute(builder: (_) => const ReadingScreen())),
           ),
           (
-            'Speaking',
+            t('speaking', lang),
             Icons.record_voice_over_rounded,
             const Color(0xFF9B59B6),
             () => Navigator.push(context,
                 MaterialPageRoute(builder: (_) => const SpeakingScreen())),
           ),
           (
-            'Listening',
+            t('listening', lang),
             Icons.headphones_rounded,
             const Color(0xFF1ABC9C),
             () => Navigator.push(context,

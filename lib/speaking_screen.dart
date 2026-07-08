@@ -11,6 +11,7 @@ import 'app_state_model.dart';
 import 'constants.dart';
 import 'gemini_api_service.dart';
 import 'string_utils.dart';
+import 'theme_colors.dart';
 
 class SpeakingScreen extends StatefulWidget {
   const SpeakingScreen({super.key});
@@ -222,19 +223,20 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Speaking',
-            style: TextStyle(color: kColorText, fontWeight: FontWeight.w700)),
+        title: Text('Speaking',
+            style: TextStyle(color: cs.onSurface, fontWeight: FontWeight.w700)),
         leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded, color: kColorText),
+            icon: Icon(Icons.arrow_back_rounded, color: cs.onSurface),
             onPressed: () => Navigator.pop(context)),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: kColorPrimary))
+          ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
@@ -277,14 +279,13 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
                     ),
                     const SizedBox(height: 32),
                     _transcribing
-                        ? const Column(
+                        ? Column(
                             children: [
-                              CircularProgressIndicator(
-                                  color: kColorPrimary),
-                              SizedBox(height: 12),
+                              const CircularProgressIndicator(),
+                              const SizedBox(height: 12),
                               Text('Transcribing…',
                                   style: TextStyle(
-                                      color: kColorTextMuted, fontSize: 13)),
+                                      color: cs.onSurface.withValues(alpha: 0.6), fontSize: 13)),
                             ],
                           )
                         : Listener(
@@ -305,7 +306,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
                                 shape: BoxShape.circle,
                                 gradient:
                                     _recording ? kPrimaryGradient : null,
-                                color: _recording ? null : kColorSurface,
+                                color: _recording ? null : Theme.of(context).cardColor,
                                 boxShadow: [
                                   BoxShadow(
                                     color: _recording
@@ -335,7 +336,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
                               ? 'Release to check'
                               : 'Hold to speak',
                       style: TextStyle(
-                          color: kColorTextMuted.withValues(alpha: 0.7),
+                          color: cs.onSurface.withValues(alpha: 0.6),
                           fontSize: 13),
                     ),
                     if (_recognizedText.isNotEmpty) ...[
@@ -343,26 +344,27 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: kColorSurface,
+                          color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                              color: kColorBorder.withValues(alpha: 0.5)),
+                              color: cs.outline.withValues(alpha: 0.5)),
+                          boxShadow: context.cardShadow,
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Directionality(
                               textDirection: TextDirection.ltr,
-                              child: const Text('You said:',
+                              child: Text('You said:',
                                   style: TextStyle(
-                                      color: kColorTextMuted,
+                                      color: cs.onSurface.withValues(alpha: 0.6),
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600)),
                             ),
                             const SizedBox(height: 6),
                             Text(_recognizedText,
-                                style: const TextStyle(
-                                    color: kColorText, fontSize: 16)),
+                                style: TextStyle(
+                                    color: cs.onSurface, fontSize: 16)),
                           ],
                         ),
                       ),
@@ -383,12 +385,12 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
                                 decoration: BoxDecoration(
                                   color: _isPlayingMyVoice
                                       ? kColorPrimary.withValues(alpha: 0.15)
-                                      : kColorSurface,
+                                      : Theme.of(context).cardColor,
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
                                     color: _isPlayingMyVoice
                                         ? kColorPrimary.withValues(alpha: 0.4)
-                                        : kColorBorder.withValues(alpha: 0.5),
+                                        : cs.outline.withValues(alpha: 0.5),
                                   ),
                                 ),
                                 child: Row(
@@ -402,7 +404,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
                                       size: 18,
                                       color: _isPlayingMyVoice
                                           ? kColorPrimary
-                                          : kColorTextMuted,
+                                          : cs.onSurface.withValues(alpha: 0.6),
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
@@ -412,7 +414,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
                                       style: TextStyle(
                                         color: _isPlayingMyVoice
                                             ? kColorPrimary
-                                            : kColorTextMuted,
+                                            : cs.onSurface.withValues(alpha: 0.6),
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600,
                                       ),
@@ -434,12 +436,12 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
                                 decoration: BoxDecoration(
                                   color: _isPlayingTts
                                       ? kColorAccent.withValues(alpha: 0.15)
-                                      : kColorSurface,
+                                      : Theme.of(context).cardColor,
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
                                     color: _isPlayingTts
                                         ? kColorAccent.withValues(alpha: 0.4)
-                                        : kColorBorder.withValues(alpha: 0.5),
+                                        : cs.outline.withValues(alpha: 0.5),
                                   ),
                                 ),
                                 child: Row(
@@ -453,7 +455,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
                                       size: 18,
                                       color: _isPlayingTts
                                           ? kColorAccent
-                                          : kColorTextMuted,
+                                          : cs.onSurface.withValues(alpha: 0.6),
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
@@ -463,7 +465,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
                                       style: TextStyle(
                                         color: _isPlayingTts
                                             ? kColorAccent
-                                            : kColorTextMuted,
+                                            : cs.onSurface.withValues(alpha: 0.6),
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600,
                                       ),

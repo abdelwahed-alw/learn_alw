@@ -540,13 +540,11 @@ class GeminiApiService {
     required String apiKey,
     required String targetLanguage,
     required String nativeLanguage,
-    required String topic,
   }) async {
     return _withRetry(() async {
       final prompt = buildIeltsFillBlankPrompt(
         targetLanguage: targetLanguage,
         nativeLanguage: nativeLanguage,
-        topic: topic,
       );
       final model = _buildModel(apiKey.trim());
       final response =
@@ -561,13 +559,11 @@ class GeminiApiService {
     required String apiKey,
     required String targetLanguage,
     required String nativeLanguage,
-    required String topic,
   }) async {
     return _withRetry(() async {
       final prompt = buildIeltsSentenceCompletionPrompt(
         targetLanguage: targetLanguage,
         nativeLanguage: nativeLanguage,
-        topic: topic,
       );
       final model = _buildModel(apiKey.trim());
       final response =
@@ -588,13 +584,11 @@ class GeminiApiService {
     required String apiKey,
     required String targetLanguage,
     required String nativeLanguage,
-    required String topic,
   }) async {
     return _withRetry(() async {
       final prompt = buildIeltsWritingPrompt(
         targetLanguage: targetLanguage,
         nativeLanguage: nativeLanguage,
-        topic: topic,
       );
       final model = _buildModel(apiKey.trim());
       final response =

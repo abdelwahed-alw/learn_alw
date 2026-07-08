@@ -516,12 +516,11 @@ Return ONLY valid JSON.''';
 String buildIeltsFillBlankPrompt({
   required String targetLanguage,
   required String nativeLanguage,
-  required String topic,
 }) {
   return '''You are an IELTS exam preparation tutor for $targetLanguage learners who speak $nativeLanguage.
 
 ## Task
-Generate an IELTS-style fill-in-the-blank exercise about "$topic".
+Generate a highly challenging IELTS-style fill-in-the-blank exercise. Do NOT use basic daily topics. Instead, use advanced topics commonly found in official B2/C1 language proficiency exams (such as technology ethics, environmental policies, or philosophical dilemmas).
 Create a paragraph (2-4 sentences) with exactly ONE missing word marked as "______".
 The missing word should test vocabulary appropriate for IELTS.
 ${seedSuffix()}
@@ -545,12 +544,11 @@ Rules:
 String buildIeltsSentenceCompletionPrompt({
   required String targetLanguage,
   required String nativeLanguage,
-  required String topic,
 }) {
   return '''You are an IELTS exam preparation tutor for $targetLanguage learners who speak $nativeLanguage.
 
 ## Task
-Generate an IELTS-style sentence completion exercise about "$topic".
+Generate a highly challenging IELTS-style sentence completion exercise. Do NOT use basic daily topics. Instead, use advanced topics commonly found in official B2/C1 language proficiency exams (such as technology ethics, environmental policies, or philosophical dilemmas).
 Provide the FIRST HALF of a sentence in $targetLanguage (a sentence stem).
 The student must complete the rest.
 ${seedSuffix()}
@@ -567,12 +565,11 @@ Reply with ONLY the sentence stem text — no explanation, no numbering, no quot
 String buildIeltsWritingPrompt({
   required String targetLanguage,
   required String nativeLanguage,
-  required String topic,
 }) {
   return '''You are an IELTS Writing Task examiner for $targetLanguage.
 
 ## Task
-Generate an IELTS-style writing prompt about "$topic".
+Generate a highly challenging IELTS-style writing prompt. Do NOT use basic daily topics. Instead, use advanced topics commonly found in official B2/C1 language proficiency exams (such as technology ethics, environmental policies, or philosophical dilemmas).
 The prompt should resemble either IELTS Writing Task 1 (describing a situation) or Task 2 (essay).
 ${seedSuffix()}
 

@@ -95,7 +95,6 @@ class _WritingScreenState extends State<WritingScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: kColorError,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -108,12 +107,12 @@ class _WritingScreenState extends State<WritingScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Writing Exercise',
-          style: TextStyle(color: kColorText, fontWeight: FontWeight.w700),
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w700),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: kColorText),
+          icon: Icon(Icons.arrow_back_rounded, color: Theme.of(context).colorScheme.onSurface),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -195,7 +194,7 @@ class _WritingScreenState extends State<WritingScreen> {
                   hintText:
                       'Write your story here in ${languageLabelFromCode(context.read<AppStateModel>().targetLanguage)}...',
                   filled: true,
-                  fillColor: kColorSurface,
+                  fillColor: Theme.of(context).brightness == Brightness.light ? Colors.grey[100] : const Color(0xFF0F172A),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
                     borderSide: BorderSide.none,
@@ -228,10 +227,10 @@ class _WritingScreenState extends State<WritingScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      const Text(
+                      Text(
                         'Creative Writing',
                         style: TextStyle(
-                          color: kColorText,
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
                         ),
@@ -241,7 +240,7 @@ class _WritingScreenState extends State<WritingScreen> {
                         'Get a random topic and write a short story.\nSubmit to receive AI feedback.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: kColorTextMuted.withValues(alpha: 0.7),
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                           fontSize: 13,
                         ),
                       ),
@@ -260,115 +259,115 @@ class _WritingScreenState extends State<WritingScreen> {
               const SizedBox(height: 20),
               Expanded(
                 child: SingleChildScrollView(
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: kColorAccent.withValues(alpha: 0.05),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: kColorAccent.withValues(alpha: 0.3),
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: kColorAccent.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: kColorAccent.withValues(alpha: 0.3),
+                        ),
                       ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.auto_awesome,
-                              color: kColorAccent,
-                              size: 18,
-                            ),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'Feedback',
-                              style: TextStyle(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.auto_awesome,
                                 color: kColorAccent,
-                                fontSize: 16,
+                                size: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'Feedback',
+                                style: TextStyle(
+                                  color: kColorAccent,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            _feedback!.feedback,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              height: 1.6,
+                              fontSize: 14,
+                            ),
+                          ),
+                          if (_feedback!.suggestions.isNotEmpty) ...[
+                            const SizedBox(height: 16),
+                            Text(
+                              'Suggestions:',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          _feedback!.feedback,
-                          style: const TextStyle(
-                            color: kColorText,
-                            height: 1.6,
-                            fontSize: 14,
-                          ),
-                        ),
-                        if (_feedback!.suggestions.isNotEmpty) ...[
-                          const SizedBox(height: 16),
-                          const Text(
-                            'Suggestions:',
-                            style: TextStyle(
-                              color: kColorText,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
+                            const SizedBox(height: 8),
+                            ..._feedback!.suggestions.map(
+                              (s) => Padding(
+                                padding: const EdgeInsets.only(bottom: 6),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      ' • ',
+                                      style: TextStyle(color: kColorPrimary),
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        s,
+                                        style: TextStyle(
+                                          color: Theme.of(context).colorScheme.onSurface.withValues(
+                                              alpha: 0.6),
+                                          fontSize: 13,
+                                          height: 1.4,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          ..._feedback!.suggestions.map(
-                            (s) => Padding(
-                              padding: const EdgeInsets.only(bottom: 6),
-                              child: Row(
+                          ],
+                          if (_feedback!.correctedVersion.isNotEmpty) ...[
+                            const SizedBox(height: 16),
+                            Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).cardColor,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
-                                    ' • ',
-                                    style: TextStyle(color: kColorPrimary),
+                                  Text(
+                                    'Corrected Version:',
+                                    style: TextStyle(
+                                      color: Theme.of(context).colorScheme.onSurface,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700,
+                                    ),
                                   ),
-                                  Expanded(
-                                    child: Text(
-                                      s,
-                                      style: TextStyle(
-                                        color: kColorTextMuted.withValues(
-                                            alpha: 0.8),
-                                        fontSize: 13,
-                                        height: 1.4,
-                                      ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    _feedback!.correctedVersion,
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                                      fontSize: 13,
+                                      height: 1.5,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                        ],
-                        if (_feedback!.correctedVersion.isNotEmpty) ...[
-                          const SizedBox(height: 16),
-                          Container(
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              color: kColorSurface,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Corrected Version:',
-                                  style: TextStyle(
-                                    color: kColorText,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  _feedback!.correctedVersion,
-                                  style: TextStyle(
-                                    color:
-                                        kColorTextMuted.withValues(alpha: 0.8),
-                                    fontSize: 13,
-                                    height: 1.5,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                          ],
                         const SizedBox(height: 20),
                         _AnimatedButton(
                           isLoading: false,
@@ -407,6 +406,7 @@ class _AnimatedButtonState extends State<_AnimatedButton> {
   @override
   Widget build(BuildContext context) {
     final enabled = widget.onTap != null && !widget.isLoading;
+    final cs = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: enabled ? widget.onTap : null,
       child: AnimatedContainer(
@@ -414,7 +414,7 @@ class _AnimatedButtonState extends State<_AnimatedButton> {
         height: 52,
         decoration: BoxDecoration(
           gradient: enabled ? kPrimaryGradient : null,
-          color: enabled ? null : kColorSurface,
+          color: enabled ? null : Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(14),
           boxShadow: enabled
               ? [
@@ -439,7 +439,7 @@ class _AnimatedButtonState extends State<_AnimatedButton> {
               : Text(
                   widget.label,
                   style: TextStyle(
-                    color: enabled ? Colors.white : kColorTextMuted,
+                    color: enabled ? Colors.white : cs.onSurface.withValues(alpha: 0.6),
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                   ),

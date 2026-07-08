@@ -25,7 +25,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   late final Animation<double> _fadeIn;
   final TextEditingController _apiKeyCtrl = TextEditingController();
 
-  bool _isKeyVisible = false;
   bool _keyValidated = false;
   bool _nativeSelected = false;
   bool _targetSelected = false;
@@ -607,7 +606,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           const SizedBox(height: 16),
           TextField(
             controller: _apiKeyCtrl,
-            obscureText: !_isKeyVisible,
+            obscureText: true,
             style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 14),
             decoration: InputDecoration(
               hintText: t('pasteApiKey', lang),
@@ -620,22 +619,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               prefixIcon: Icon(Icons.vpn_key_rounded,
                   size: 16, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  GestureDetector(
-                    onTap: () => setState(() => _isKeyVisible = !_isKeyVisible),
-                    child: Icon(
-                      _isKeyVisible
-                          ? Icons.visibility_off_rounded
-                          : Icons.visibility_rounded,
-                      size: 16,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                ],
-              ),
             ),
           ),
           const SizedBox(height: 12),

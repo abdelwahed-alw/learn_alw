@@ -104,26 +104,26 @@ class _ReadingScreenState extends State<ReadingScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
           content: Text(msg),
-          backgroundColor: kColorError,
           behavior: SnackBarBehavior.floating),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Reading',
-            style: TextStyle(color: kColorText, fontWeight: FontWeight.w700)),
+        title: Text('Reading',
+            style: TextStyle(color: cs.onSurface, fontWeight: FontWeight.w700)),
         leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded, color: kColorText),
+            icon: Icon(Icons.arrow_back_rounded, color: cs.onSurface),
             onPressed: () => Navigator.pop(context)),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: kColorPrimary))
+          ? const Center(child: CircularProgressIndicator())
           : _exercise == null
               ? const SizedBox()
               : SingleChildScrollView(
@@ -134,10 +134,10 @@ class _ReadingScreenState extends State<ReadingScreen> {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: kColorSurface,
+                          color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                              color: kColorBorder.withValues(alpha: 0.5)),
+                              color: cs.outline.withValues(alpha: 0.5)),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,14 +171,14 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                       size: 18,
                                       color: _isSpeaking
                                           ? kColorPrimary
-                                          : kColorTextMuted,
+                                          : cs.onSurface.withValues(alpha: 0.6),
                                     ),
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                const Text('Reading Passage',
+                                Text('Reading Passage',
                                     style: TextStyle(
-                                        color: kColorText,
+                                        color: cs.onSurface,
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600)),
                                 const Spacer(),
@@ -197,7 +197,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                         color: _showTranslation
                                             ? kColorPrimary.withValues(
                                                 alpha: 0.4)
-                                            : kColorBorder.withValues(
+                                            : cs.outline.withValues(
                                                 alpha: 0.5),
                                       ),
                                     ),
@@ -206,7 +206,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                       size: 18,
                                       color: _showTranslation
                                           ? kColorPrimary
-                                          : kColorTextMuted,
+                                          : cs.onSurface.withValues(alpha: 0.6),
                                     ),
                                   ),
                                 ),
@@ -225,8 +225,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                           : _exercise!.passageTranslation,
                                       key: const ValueKey('translation'),
                                       textDirection: TextDirection.rtl,
-                                      style: const TextStyle(
-                                          color: kColorText,
+                                      style: TextStyle(
+                                          color: cs.onSurface,
                                           fontSize: 15,
                                           height: 1.7),
                                     )
@@ -235,8 +235,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                       child: Text(
                                         _exercise!.passage,
                                         key: const ValueKey('original'),
-                                        style: const TextStyle(
-                                            color: kColorText,
+                                        style: TextStyle(
+                                            color: cs.onSurface,
                                             fontSize: 15,
                                             height: 1.7),
                                       ),
@@ -290,18 +290,18 @@ class _ReadingScreenState extends State<ReadingScreen> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 14),
                               decoration: BoxDecoration(
-                                color: bgColor ?? kColorSurface,
+                                color: bgColor ?? Theme.of(context).cardColor,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                     color: borderColor ??
-                                        kColorBorder.withValues(alpha: 0.5)),
+                                        cs.outline.withValues(alpha: 0.5)),
                               ),
                               child: Row(
                                 children: [
                                   Expanded(
                                       child: Text(opt,
-                                          style: const TextStyle(
-                                              color: kColorText,
+                                          style: TextStyle(
+                                              color: cs.onSurface,
                                               fontSize: 14))),
                                   if (_selectedOption != null &&
                                       opt == _exercise!.correctAnswer)

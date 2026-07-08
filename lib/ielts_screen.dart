@@ -118,7 +118,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Official Exam Prep',
+                    t('ieltsExamPrep', state.nativeLanguage),
                     style: Theme.of(context)
                         .textTheme
                         .titleLarge
@@ -128,7 +128,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                         ),
                   ),
                   Text(
-                    '${t('topicLabel', state.nativeLanguage)}: ${tTopic(state.selectedTopic, state.nativeLanguage)}',
+                    '${t('topicLabel', state.nativeLanguage)}: ${t('officialPastExams', state.nativeLanguage)}',
                     style: TextStyle(
                       color: cs.onSurface.withValues(alpha: 0.6),
                       fontSize: 12,
@@ -161,7 +161,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
         children: types.map((type) {
           final isSelected =
               state.ieltsExerciseType == type;
-          final label = _ieltsTypeLabel(type);
+          final label = _ieltsTypeLabel(type, state.nativeLanguage);
           final icon = _ieltsTypeIcon(type);
           return Expanded(
             child: GestureDetector(
@@ -216,14 +216,14 @@ class _IeltsScreenState extends State<IeltsScreen> {
     );
   }
 
-  String _ieltsTypeLabel(IeltsExerciseType type) {
+  String _ieltsTypeLabel(IeltsExerciseType type, String langCode) {
     switch (type) {
       case IeltsExerciseType.fillBlanks:
-        return 'Fill Blanks';
+        return t('fillBlanksTab', langCode);
       case IeltsExerciseType.sentenceCompletion:
-        return 'Complete';
+        return t('completeTab', langCode);
       case IeltsExerciseType.writingPractice:
-        return 'Writing';
+        return t('writingTab', langCode);
     }
   }
 
@@ -294,25 +294,23 @@ class _IeltsScreenState extends State<IeltsScreen> {
   }
 
   Widget _buildGenerateSection(AppStateModel state) {
+    final lang = state.nativeLanguage;
     final type = state.ieltsExerciseType;
     String title;
     String desc;
     IconData icon;
     switch (type) {
       case IeltsExerciseType.fillBlanks:
-        title = 'Fill in the Blanks';
-        desc =
-            'Read the passage and select the correct word to fill the gap. Tests reading comprehension and vocabulary.';
+        title = t('fillBlanksTitle', lang);
+        desc = t('fillBlanksDesc', lang);
         icon = Icons.space_bar_rounded;
       case IeltsExerciseType.sentenceCompletion:
-        title = 'Sentence Completion';
-        desc =
-            'Complete the sentence stem with your own words. The AI will evaluate grammar and context.';
+        title = t('sentenceCompletionTitle', lang);
+        desc = t('sentenceCompletionDesc', lang);
         icon = Icons.edit_note_rounded;
       case IeltsExerciseType.writingPractice:
-        title = 'Writing Practice';
-        desc =
-            'Write a full response to an official exam-style prompt. Get a band score estimate and improvement suggestions.';
+        title = t('writingPracticeTitle', lang);
+        desc = t('writingPracticeDesc', lang);
         icon = Icons.feed_rounded;
     }
     return Column(
@@ -405,16 +403,16 @@ class _IeltsScreenState extends State<IeltsScreen> {
             ),
           ],
         ),
-        child: const Center(
+        child: Center(
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.auto_awesome_rounded,
+              const Icon(Icons.auto_awesome_rounded,
                   color: Colors.white, size: 18),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               Text(
-                'Generate Exercise',
-                style: TextStyle(
+                t('generateExercise', state.nativeLanguage),
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -468,7 +466,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Reading Passage',
+                    t('readingPassage', state.nativeLanguage),
                     style: Theme.of(context)
                         .textTheme
                         .labelLarge
@@ -524,7 +522,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
         const SizedBox(height: 24),
         // Options
         Text(
-          'Select the correct word:',
+          t('selectCorrectWord', state.nativeLanguage),
           style: Theme.of(context)
               .textTheme
               .titleMedium
@@ -669,14 +667,15 @@ class _IeltsScreenState extends State<IeltsScreen> {
         // Submit / Feedback
         if (state.ieltsFeedback.isEmpty)
           _buildSmallSubmitButton(
-            label: 'Check Answer',
+            label: t('checkAnswer', state.nativeLanguage),
+            icon: Icons.check_circle_outline_rounded,
             onTap: () {
               if (_selectedOptionIndex == null) {
                 ScaffoldMessenger.of(context)
                     .showSnackBar(
-                  const SnackBar(
+                  SnackBar(
                     content: Text(
-                        'Please select an option first.'),
+                        t('selectOptionFirst', state.nativeLanguage)),
                   ),
                 );
                 return;
@@ -735,7 +734,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Complete the sentence',
+                    t('completeSentence', state.nativeLanguage),
                     style: Theme.of(context)
                         .textTheme
                         .labelLarge
@@ -796,13 +795,13 @@ class _IeltsScreenState extends State<IeltsScreen> {
             maxLines: 3,
             minLines: 2,
             style: const TextStyle(fontSize: 16),
-            decoration: const InputDecoration(
-              hintText: 'Complete the sentence…',
+            decoration: InputDecoration(
+              hintText: t('completeSentenceHint', state.nativeLanguage),
             ),
           ),
           const SizedBox(height: 16),
           _buildSmallSubmitButton(
-            label: 'Submit Completion',
+            label: t('submitCompletion', state.nativeLanguage),
             onTap: () {
               final text =
                   _answerController.text.trim();
@@ -860,7 +859,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Writing Task',
+                    t('writingTask', state.nativeLanguage),
                     style: Theme.of(context)
                         .textTheme
                         .labelLarge
@@ -893,14 +892,14 @@ class _IeltsScreenState extends State<IeltsScreen> {
             maxLines: 8,
             minLines: 5,
             style: const TextStyle(fontSize: 15),
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText:
-                  'Write your essay here…',
+                  t('writeEssayHint', state.nativeLanguage),
             ),
           ),
           const SizedBox(height: 16),
           _buildSmallSubmitButton(
-            label: 'Submit for Evaluation',
+            label: t('submitEvaluation', state.nativeLanguage),
             onTap: () {
               final text =
                   _answerController.text.trim();
@@ -908,9 +907,9 @@ class _IeltsScreenState extends State<IeltsScreen> {
               if (text.length < 50) {
                 ScaffoldMessenger.of(context)
                     .showSnackBar(
-                  const SnackBar(
+                  SnackBar(
                     content: Text(
-                        'Please write at least 50 characters for a meaningful evaluation.'),
+                        t('minCharEvaluation', state.nativeLanguage)),
                   ),
                 );
                 return;
@@ -934,6 +933,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
   Widget _buildSmallSubmitButton({
     required String label,
     required VoidCallback onTap,
+    IconData icon = Icons.send_rounded,
   }) {
     return GestureDetector(
       onTap: () {
@@ -959,11 +959,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                label.contains('Generate')
-                    ? Icons.auto_awesome_rounded
-                    : label.contains('Check')
-                        ? Icons.check_circle_outline_rounded
-                        : Icons.send_rounded,
+                icon,
                 color: Colors.white,
                 size: 18,
               ),
@@ -1016,7 +1012,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
               ),
               const SizedBox(width: 10),
               Text(
-                'Result',
+                t('result', state.nativeLanguage),
                 style: Theme.of(context)
                     .textTheme
                     .titleMedium
@@ -1093,8 +1089,8 @@ class _IeltsScreenState extends State<IeltsScreen> {
               const SizedBox(width: 10),
               Text(
                 state.ieltsSentenceCorrect
-                    ? '✓ Good Completion'
-                    : 'Feedback',
+                    ? t('goodCompletion', state.nativeLanguage)
+                    : t('feedback', state.nativeLanguage),
                 style: Theme.of(context)
                     .textTheme
                     .titleMedium
@@ -1133,7 +1129,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                     CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Model Completion:',
+                    t('modelCompletion', state.nativeLanguage),
                     style: TextStyle(
                       color: cs.onSurface.withValues(alpha: 0.6),
                       fontSize: 11,
@@ -1184,7 +1180,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
           child: Column(
             children: [
               Text(
-                'Estimated Band Score',
+                t('estimatedBandScore', state.nativeLanguage),
                 style: TextStyle(
                   color: Colors.white
                       .withValues(alpha: 0.8),
@@ -1235,7 +1231,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    'Feedback',
+                    t('feedback', state.nativeLanguage),
                     style: Theme.of(context)
                         .textTheme
                         .titleMedium
@@ -1296,7 +1292,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                     ),
                     const SizedBox(width: 10),
                     Text(
-                      'Corrections',
+                      t('corrections', state.nativeLanguage),
                       style: Theme.of(context)
                           .textTheme
                           .titleMedium
@@ -1397,7 +1393,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                     ),
                     const SizedBox(width: 10),
                     Text(
-                      'Vocabulary Upgrades',
+                      t('vocabularyUpgrades', state.nativeLanguage),
                       style: Theme.of(context)
                           .textTheme
                           .titleMedium

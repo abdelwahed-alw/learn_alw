@@ -21,7 +21,6 @@ class ProfileTab extends StatefulWidget {
 
 class _ProfileTabState extends State<ProfileTab> {
   final TextEditingController _apiKeyController = TextEditingController();
-  bool _isKeyVisible = false;
 
   @override
   void initState() {
@@ -41,8 +40,8 @@ class _ProfileTabState extends State<ProfileTab> {
     if (code.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please enter an activation code.'),
+          SnackBar(
+            content: Text('enterActivationCode'.tr()),
           ),
         );
       }
@@ -232,7 +231,7 @@ class _ProfileTabState extends State<ProfileTab> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildHeader(state),
+                      _buildHeader(state, lang),
                       const SizedBox(height: 24),
                       _buildApiKeySection(state, lang),
                       const SizedBox(height: 24),
@@ -259,7 +258,7 @@ class _ProfileTabState extends State<ProfileTab> {
     );
   }
 
-  Widget _buildHeader(AppStateModel state) {
+  Widget _buildHeader(AppStateModel state, String lang) {
     return Row(
       children: [
         Container(
@@ -286,7 +285,7 @@ class _ProfileTabState extends State<ProfileTab> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Profile',
+              t('profileTab', lang),
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onSurface,
                 fontSize: 22,
@@ -326,7 +325,7 @@ class _ProfileTabState extends State<ProfileTab> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader('ACTIVATION CODE'),
+        _buildSectionHeader(t('apiKeySetup', lang)),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -339,7 +338,7 @@ class _ProfileTabState extends State<ProfileTab> {
             children: [
               TextField(
                 controller: _apiKeyController,
-                obscureText: !_isKeyVisible,
+                obscureText: true,
                 style: TextStyle(color: cs.onSurface, fontSize: 13),
                 decoration: InputDecoration(
                   hintText: t('pasteApiKey', lang),
@@ -354,23 +353,6 @@ class _ProfileTabState extends State<ProfileTab> {
                     Icons.key_rounded,
                     size: 16,
                     color: cs.onSurface.withValues(alpha: 0.6),
-                  ),
-                  suffixIcon: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      GestureDetector(
-                        onTap: () =>
-                            setState(() => _isKeyVisible = !_isKeyVisible),
-                        child: Icon(
-                          _isKeyVisible
-                              ? Icons.visibility_off_rounded
-                              : Icons.visibility_rounded,
-                          size: 16,
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                    ],
                   ),
                 ),
               ),
@@ -613,7 +595,7 @@ class _ProfileTabState extends State<ProfileTab> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Salearn',
+                      'appName'.tr(),
                       style: TextStyle(
                         color: cs.onSurface,
                         fontWeight: FontWeight.w700,
@@ -621,7 +603,7 @@ class _ProfileTabState extends State<ProfileTab> {
                       ),
                     ),
                     Text(
-                      'AI Language Tutor',
+                      'aiLanguageTutor'.tr(),
                       style: TextStyle(
                         color: cs.onSurface.withValues(alpha: 0.6),
                         fontSize: 11,

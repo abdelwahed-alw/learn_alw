@@ -22,7 +22,6 @@ class DrawerWidget extends StatefulWidget {
 
 class _DrawerWidgetState extends State<DrawerWidget> {
   final TextEditingController _apiKeyController = TextEditingController();
-  bool _isKeyVisible = false;
 
   @override
   void initState() {
@@ -42,13 +41,14 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     if (code.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please enter an activation code.'),
+          SnackBar(
+            content: Text(t('enterActivationCode', state.nativeLanguage)),
           ),
-        );
-      }
-      return;
-    }
+    );
+  }
+}
+
+
     FocusScope.of(context).unfocus();
     final result = await state.testAndSaveApiKey(code);
     if (!mounted) return;
@@ -204,7 +204,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Salearn',
+                          t('salearn', state.nativeLanguage),
                           style: Theme.of(context)
                               .textTheme
                               .titleLarge
@@ -288,7 +288,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader('ACTIVATION CODE', Icons.vpn_key_rounded),
+        _buildSectionHeader(t('apiKeySetup', lang), Icons.vpn_key_rounded),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -302,10 +302,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             children: [
               TextField(
                 controller: _apiKeyController,
-                obscureText: !_isKeyVisible,
+                obscureText: true,
                 style: TextStyle(color: cs.onSurface, fontSize: 13),
                 decoration: InputDecoration(
-                  hintText: 'Paste your activation code…',
+                  hintText: t('pasteApiKey', lang),
                   hintStyle: TextStyle(
                     color: cs.onSurface.withValues(alpha: 0.6),
                     fontSize: 13,
@@ -318,31 +318,13 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     size: 16,
                     color: cs.onSurface.withValues(alpha: 0.6),
                   ),
-                  suffixIcon: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      GestureDetector(
-                        onTap: () =>
-                            setState(() => _isKeyVisible = !_isKeyVisible),
-                        child: Icon(
-                          _isKeyVisible
-                              ? Icons.visibility_off_rounded
-                              : Icons.visibility_rounded,
-                          size: 16,
-                          color: cs.onSurface.withValues(alpha: 0.6),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      GestureDetector(
-                        onTap: _apiKeyController.clear,
-                        child: Icon(
-                          Icons.close_rounded,
-                          size: 16,
-                          color: cs.onSurface.withValues(alpha: 0.6),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                    ],
+                  suffixIcon: GestureDetector(
+                    onTap: _apiKeyController.clear,
+                    child: Icon(
+                      Icons.close_rounded,
+                      size: 16,
+                      color: cs.onSurface.withValues(alpha: 0.6),
+                    ),
                   ),
                 ),
               ),
@@ -807,7 +789,7 @@ class _ApiStatusDot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Tooltip(
-      message: isConnected ? 'API Connected' : 'No API Key',
+      message: isConnected ? 'apiConnected'.tr() : 'noApiKey'.tr(),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
@@ -844,7 +826,7 @@ class _ApiStatusDot extends StatelessWidget {
             ),
             const SizedBox(width: 6),
             Text(
-              isConnected ? 'ON' : 'OFF',
+              isConnected ? 'on'.tr() : 'off'.tr(),
               style: TextStyle(
                 fontSize: 9,
                 fontWeight: FontWeight.w800,
