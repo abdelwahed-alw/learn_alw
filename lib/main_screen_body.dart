@@ -1,6 +1,7 @@
 // lib/main_screen_body.dart
 
 import 'dart:ui';
+import 'package:easy_localization/easy_localization.dart' hide tr;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -153,7 +154,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                 children: [
                   Expanded(
                     child: Text(
-                      '${t('topicLabel', state.nativeLanguage)}: ${tTopic(state.selectedTopic, state.nativeLanguage)}',
+                      '${t('topicLabel', state.nativeLanguage)}: ${topicLocaleKey(state.selectedTopic).tr()}',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             color: kColorPrimary,
                           ),
@@ -725,7 +726,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       child: Text(
-                        tTopic(topic, state.nativeLanguage),
+                        topicLocaleKey(topic).tr(),
                         textAlign: TextAlign.center,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -1264,7 +1265,7 @@ class _AnimatedSubmitButtonState extends State<_AnimatedSubmitButton>
                           ),
                           const SizedBox(width: 10),
                           Text(
-                            'Submit Answer',
+                            'submitAnswer'.tr(),
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,

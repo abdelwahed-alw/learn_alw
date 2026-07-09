@@ -690,8 +690,8 @@ class _DrawerWidgetState extends State<DrawerWidget> {
 
               return Column(
                 children: [
-                  _TopicTile(
-                    topic: tTopic(topic, state.nativeLanguage),
+                    _TopicTile(
+                      topic: topicLocaleKey(topic).tr(),
                     icon: icon,
                     isSelected: isSelected,
                     onTap: () {

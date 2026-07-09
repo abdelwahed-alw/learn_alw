@@ -285,7 +285,7 @@ class _ProfileTabState extends State<ProfileTab> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              t('profileTab', lang),
+              'profileTitle'.tr(),
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onSurface,
                 fontSize: 22,
@@ -648,7 +648,7 @@ class _ProfileTabState extends State<ProfileTab> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'darkMode'.tr(),
+                      'darkModeToggle'.tr(),
                       style: TextStyle(
                         color: cs.onSurface,
                         fontSize: 14,
@@ -680,7 +680,7 @@ class _ProfileTabState extends State<ProfileTab> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'showTranslationFab'.tr(),
+                      'showTranslationFabToggle'.tr(),
                       style: TextStyle(
                         color: cs.onSurface,
                         fontSize: 14,
@@ -708,7 +708,7 @@ class _ProfileTabState extends State<ProfileTab> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader('quickTranslation'.tr()),
+        _buildSectionHeader('quickTranslationTitle'.tr()),
         GestureDetector(
           onTap: () => showQuickTranslationSheet(context),
           child: Container(
@@ -737,7 +737,7 @@ class _ProfileTabState extends State<ProfileTab> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'quickTranslation'.tr(),
+                        'quickTranslationTitle'.tr(),
                         style: TextStyle(
                           color: cs.onSurface,
                           fontSize: 14,
@@ -745,7 +745,7 @@ class _ProfileTabState extends State<ProfileTab> {
                         ),
                       ),
                       Text(
-                        'quickTranslation'.tr(),
+                        'quickTranslationTitle'.tr(),
                         style: TextStyle(
                           color: cs.onSurface.withValues(alpha: 0.6),
                           fontSize: 11,

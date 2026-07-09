@@ -225,7 +225,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    tTopic(topic, state.nativeLanguage),
+                    topicLocaleKey(topic).tr(),
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -334,7 +335,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
                         const SizedBox(height: 16),
                         _AnimatedButton(
                           isLoading: _submitting,
-                          label: 'Submit Answer',
+                          label: 'submitAnswer'.tr(),
                           onTap: _feedback != null ? null : _submitAnswer,
                         ),
                       ],

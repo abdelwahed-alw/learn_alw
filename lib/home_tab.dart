@@ -175,10 +175,10 @@ class HomeTab extends StatelessWidget {
           Row(
             children: [
               _statChip(context, Icons.check_circle_rounded,
-                  '${state.totalExercisesDone}', 'exercises'.tr()),
+                  'exercisesCount'.tr(args: ['${state.totalExercisesDone}']), ''),
               const SizedBox(width: 16),
               _statChip(context, Icons.local_fire_department_rounded,
-                  '${state.streakDays}', 'dayStreak'.tr()),
+                  'dayStreakCount'.tr(args: ['${state.streakDays}']), ''),
             ],
           ),
         ],
@@ -374,7 +374,7 @@ class HomeTab extends StatelessWidget {
           child: _QuickStatCard(
             icon: Icons.menu_book_rounded,
             value: '${state.beginnerVocabulary.length}',
-            label: 'words'.tr(),
+            label: 'quickStatsWords'.tr(),
             color: kColorPrimary,
           ),
         ),
@@ -383,7 +383,7 @@ class HomeTab extends StatelessWidget {
           child: _QuickStatCard(
             icon: Icons.assignment_rounded,
             value: '${state.totalExercisesDone}',
-            label: 'exercises'.tr(),
+            label: 'quickStatsExercises'.tr(),
             color: const Color(0xFFFF8E53),
           ),
         ),
@@ -392,7 +392,7 @@ class HomeTab extends StatelessWidget {
           child: _QuickStatCard(
             icon: Icons.local_fire_department_rounded,
             value: '${state.streakDays}',
-            label: 'streak'.tr(),
+            label: 'quickStatsStreak'.tr(),
             color: kColorPrimary,
           ),
         ),

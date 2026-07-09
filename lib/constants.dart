@@ -145,6 +145,11 @@ const List<String> kTopics = [
 /// Picks a random topic from [kTopics].
 String randomTopic() => kTopics[Random().nextInt(kTopics.length)];
 
+/// Map an English topic string to its `topic_*` localization key.
+String topicLocaleKey(String topic) {
+  return 'topic_${topic.toLowerCase().replaceAll(" & ", "_").replaceAll(" &", "_").replaceAll("& ", "_").replaceAll("&", "_").replaceAll(" ", "_")}';
+}
+
 const List<String> grammarTopics = [
   'Present Perfect',
   'Past Continuous',

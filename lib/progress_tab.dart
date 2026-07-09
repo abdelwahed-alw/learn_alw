@@ -59,7 +59,7 @@ class ProgressTab extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          'trackYourLearning'.tr(),
+          'trackYourLearningJourney'.tr(),
           style: TextStyle(
             color: cs.onSurface.withValues(alpha: 0.6),
             fontSize: 13,
@@ -124,7 +124,7 @@ class ProgressTab extends StatelessWidget {
                 color: cs.onSurface.withValues(alpha: 0.4), size: 40),
             const SizedBox(height: 8),
             Text(
-              'noExercisesYet'.tr(),
+              'noExercisesCompletedYet'.tr(),
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: cs.onSurface.withValues(alpha: 0.6),
@@ -203,12 +203,10 @@ class ProgressTab extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Row(
                   children: [
-                    SizedBox(
-                      width: 100,
-                      child: Text(
-                        entry.key.length > 14
-                            ? '${entry.key.substring(0, 14)}…'
-                            : entry.key,
+                      SizedBox(
+                        width: 100,
+                        child: Text(
+                          topicLocaleKey(entry.key).tr(),
                         style: TextStyle(
                           color: cs.onSurface.withValues(alpha: 0.8),
                           fontSize: 12,
@@ -256,12 +254,12 @@ class ProgressTab extends StatelessWidget {
   Widget _buildSkillBreakdown(BuildContext context, AppStateModel state) {
     final cs = Theme.of(context).colorScheme;
     final skills = <(String, IconData, double)>[
-      ('writing'.tr(), Icons.edit_rounded, state.writingProgress),
-      ('grammar'.tr(), Icons.text_fields_rounded, state.grammarProgress),
-      ('vocabulary'.tr(), Icons.spellcheck_rounded, state.vocabularyProgress),
-      ('reading'.tr(), Icons.auto_stories_rounded, state.readingProgress),
-      ('speaking'.tr(), Icons.record_voice_over_rounded, state.speakingProgress),
-      ('listening'.tr(), Icons.headphones_rounded, state.listeningProgress),
+      ('writingKey'.tr(), Icons.edit_rounded, state.writingProgress),
+      ('grammarKey'.tr(), Icons.text_fields_rounded, state.grammarProgress),
+      ('vocabularyKey'.tr(), Icons.spellcheck_rounded, state.vocabularyProgress),
+      ('readingKey'.tr(), Icons.auto_stories_rounded, state.readingProgress),
+      ('speakingKey'.tr(), Icons.record_voice_over_rounded, state.speakingProgress),
+      ('listeningKey'.tr(), Icons.headphones_rounded, state.listeningProgress),
     ];
 
     return Column(

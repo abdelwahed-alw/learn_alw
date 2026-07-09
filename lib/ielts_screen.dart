@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
+import 'package:easy_localization/easy_localization.dart' hide tr;
 import 'app_state_model.dart';
 import 'constants.dart';
 import 'ui_strings.dart';
@@ -118,7 +119,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    t('ieltsExamPrep', state.nativeLanguage),
+                    'officialExamPrep'.tr(),
                     style: Theme.of(context)
                         .textTheme
                         .titleLarge
@@ -301,7 +302,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
     IconData icon;
     switch (type) {
       case IeltsExerciseType.fillBlanks:
-        title = t('fillBlanksTitle', lang);
+        title = 'fillInTheBlanksTitle'.tr();
         desc = t('fillBlanksDesc', lang);
         icon = Icons.space_bar_rounded;
       case IeltsExerciseType.sentenceCompletion:
