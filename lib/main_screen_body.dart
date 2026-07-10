@@ -468,6 +468,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
     return _NextQuestionButton(
       previewText: state.nextQuestionPreview,
       onTap: () async {
+        _answerController.clear();
         final error = await state.generateNextQuestion();
         if (error != null && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
