@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
-import 'package:easy_localization/easy_localization.dart' hide tr;
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'app_state_model.dart';
 import 'constants.dart';
 import 'ui_strings.dart';
@@ -1510,7 +1510,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
                 kColorPrimary.withValues(alpha: 0.4),
           ),
         ),
-        child: const Center(
+        child: Center(
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
