@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 
 String sanitize(String s) {
@@ -42,14 +43,14 @@ int similarityPercent(String input, String target) {
 
 (Color color, IconData icon, String label) matchFeedback(int pct) {
   if (pct >= 85) {
-    return (const Color(0xFF2ECC71), Icons.check_circle_rounded, 'Correct!');
+    return (const Color(0xFF2ECC71), Icons.check_circle_rounded, 'correctFeedback'.tr());
   } else if (pct >= 50) {
     return (
       Colors.orange.shade700,
       Icons.warning_amber_rounded,
-      'Almost there'
+      'almostThere'.tr()
     );
   } else {
-    return (const Color(0xFFE74C3C), Icons.cancel_rounded, 'Try again');
+    return (const Color(0xFFE74C3C), Icons.cancel_rounded, 'tryAgain'.tr());
   }
 }

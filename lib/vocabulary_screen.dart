@@ -44,7 +44,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
   Future<void> _fetchNextVocabularyQuestion() async {
     final state = context.read<AppStateModel>();
     if (!state.hasApiKey) {
-      _showError('Please enter your activation code first.');
+      _showError('configureApiKeyFirst'.tr());
       return;
     }
     setState(() {
@@ -142,7 +142,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text('Vocabulary',
+        title: Text('vocabulary'.tr(),
             style: TextStyle(
                 color: isLight ? Colors.black87 : Colors.white,
                 fontWeight: FontWeight.w700)),
@@ -182,7 +182,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                           children: [
                             Directionality(
                               textDirection: TextDirection.ltr,
-                              child: Text('What does this word mean?',
+                              child: Text('vocabQuestion'.tr(),
                                   style: TextStyle(
                                       color:
                                           Colors.white.withValues(alpha: 0.7),
@@ -358,8 +358,8 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                                   textDirection: TextDirection.ltr,
                                   child: Text(
                                     _isCorrect!
-                                        ? 'Correct! The answer is: ${_question!.correctOption}'
-                                        : 'The correct answer is: ${_question!.correctOption}',
+                                        ? 'correctAnswerIs'.tr(args: [_question!.correctOption])
+                                        : 'theCorrectAnswerIs'.tr(args: [_question!.correctOption]),
                                     style: TextStyle(
                                         color: cs.onSurface, fontSize: 14),
                                   ),
@@ -394,7 +394,7 @@ class _VocabularyProgressBar extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text('Vocabulary Progress',
+            Text('vocabularyProgress'.tr(),
                 style: TextStyle(
                   color: cs.onSurface.withValues(alpha: 0.6),
                   fontSize: 11,

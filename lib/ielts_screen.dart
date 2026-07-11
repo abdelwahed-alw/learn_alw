@@ -1521,7 +1521,7 @@ class _IeltsScreenState extends State<IeltsScreen> {
               ),
               SizedBox(width: 8),
               Text(
-                'Try Another',
+                'tryAnother'.tr(),
                 style: TextStyle(
                   color: kColorPrimary,
                   fontWeight: FontWeight.bold,

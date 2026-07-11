@@ -37,7 +37,7 @@ class _WritingScreenState extends State<WritingScreen> {
   Future<void> _generateExercise() async {
     final state = context.read<AppStateModel>();
     if (!state.hasApiKey) {
-      _showError('Please enter your activation code first.');
+      _showError('configureApiKeyFirst'.tr());
       return;
     }
     setState(() {
@@ -108,7 +108,7 @@ class _WritingScreenState extends State<WritingScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'Writing Exercise',
+          'writingExercise'.tr(),
           style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w700),
         ),
         leading: IconButton(
@@ -153,8 +153,8 @@ class _WritingScreenState extends State<WritingScreen> {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        const Text(
-                          'Your Topic',
+                        Text(
+                          'yourTopic'.tr(),
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 13,
@@ -192,7 +192,7 @@ class _WritingScreenState extends State<WritingScreen> {
                 minLines: 6,
                 decoration: InputDecoration(
                   hintText:
-                      'Write your story here in ${languageLabelFromCode(context.read<AppStateModel>().targetLanguage)}...',
+                      'writeStoryHere'.tr(args: [languageLabelFromCode(context.read<AppStateModel>().targetLanguage)]),
                   filled: true,
                   fillColor: Theme.of(context).brightness == Brightness.light ? Colors.grey[100] : const Color(0xFF0F172A),
                   border: OutlineInputBorder(
@@ -204,7 +204,7 @@ class _WritingScreenState extends State<WritingScreen> {
               const SizedBox(height: 16),
               _AnimatedButton(
                 isLoading: _submitting,
-                label: 'Submit Story',
+                label: 'submitStory'.tr(),
                 onTap:
                     _storyController.text.trim().isEmpty ? null : _submitStory,
               ),
@@ -228,7 +228,7 @@ class _WritingScreenState extends State<WritingScreen> {
                       ),
                       const SizedBox(height: 20),
                       Text(
-                        'Creative Writing',
+                        'creativeWriting'.tr(),
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onSurface,
                           fontSize: 20,
@@ -237,7 +237,7 @@ class _WritingScreenState extends State<WritingScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Get a random topic and write a short story.\nSubmit to receive AI feedback.',
+                        'writingDesc'.tr(),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
@@ -247,7 +247,7 @@ class _WritingScreenState extends State<WritingScreen> {
                       const SizedBox(height: 32),
                       _AnimatedButton(
                         isLoading: _loading,
-                        label: 'Generate Topic',
+                        label: 'generateTopic'.tr(),
                         onTap: _generateExercise,
                       ),
                     ],
@@ -279,8 +279,8 @@ class _WritingScreenState extends State<WritingScreen> {
                                 size: 18,
                               ),
                               const SizedBox(width: 8),
-                              const Text(
-                                'Feedback',
+                              Text(
+                                'feedback'.tr(),
                                 style: TextStyle(
                                   color: kColorAccent,
                                   fontSize: 16,
@@ -301,7 +301,7 @@ class _WritingScreenState extends State<WritingScreen> {
                           if (_feedback!.suggestions.isNotEmpty) ...[
                             const SizedBox(height: 16),
                             Text(
-                              'Suggestions:',
+                              'suggestions'.tr(),
                               style: TextStyle(
                                 color: Theme.of(context).colorScheme.onSurface,
                                 fontSize: 13,
@@ -347,7 +347,7 @@ class _WritingScreenState extends State<WritingScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Corrected Version:',
+                                    'correctedVersion'.tr(),
                                     style: TextStyle(
                                       color: Theme.of(context).colorScheme.onSurface,
                                       fontSize: 12,
@@ -371,7 +371,7 @@ class _WritingScreenState extends State<WritingScreen> {
                         const SizedBox(height: 20),
                         _AnimatedButton(
                           isLoading: false,
-                          label: 'Try New Topic',
+                          label: 'tryNewTopic'.tr(),
                           onTap: _generateExercise,
                         ),
                       ],

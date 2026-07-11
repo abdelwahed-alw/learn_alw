@@ -56,7 +56,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
   Future<void> _generateSentence() async {
     final state = context.read<AppStateModel>();
     if (!state.hasApiKey) {
-      _showError('Please enter your activation code first.');
+      _showError('configureApiKeyFirst'.tr());
       return;
     }
     setState(() {
@@ -101,7 +101,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
     if (!await _audioRecorder.hasPermission()) {
       if (mounted) {
         setState(() => _recording = false);
-        _showError('Microphone permission is required.');
+        _showError('microphonePermissionRequired'.tr());
       }
       return;
     }
@@ -124,7 +124,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _recording = false);
-        _showError('Microphone error. Try again.');
+        _showError('microphoneError'.tr());
       }
     }
   }
@@ -141,7 +141,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
 
     final path = recPath ?? _recordedFilePath;
     if (path == null || !File(path).existsSync()) {
-      if (mounted) _showError('Recording failed.');
+      if (mounted) _showError('recordingFailed'.tr());
       return;
     }
 
@@ -171,7 +171,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _transcribing = false);
-        _showError('Transcription failed. Try again.');
+        _showError('transcriptionFailed'.tr());
       }
     }
   }
@@ -190,7 +190,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isPlayingMyVoice = false);
-        _showError('Could not play your voice.');
+        _showError('couldNotPlayVoice'.tr());
       }
     }
   }
@@ -229,7 +229,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text('Speaking',
+        title: Text('speaking'.tr(),
             style: TextStyle(color: cs.onSurface, fontWeight: FontWeight.w700)),
         leading: IconButton(
             icon: Icon(Icons.arrow_back_rounded, color: cs.onSurface),
@@ -259,7 +259,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
                         children: [
                           Directionality(
                             textDirection: TextDirection.ltr,
-                            child: Text('Say this sentence:',
+                            child: Text('sayThisSentence'.tr(),
                                 style: TextStyle(
                                     color: Colors.white.withValues(alpha: 0.7),
                                     fontSize: 12)),
@@ -283,7 +283,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
                             children: [
                               const CircularProgressIndicator(),
                               const SizedBox(height: 12),
-                              Text('Transcribing…',
+                              Text('transcribing'.tr(),
                                   style: TextStyle(
                                       color: cs.onSurface.withValues(alpha: 0.6), fontSize: 13)),
                             ],
@@ -331,10 +331,10 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
                     const SizedBox(height: 12),
                     Text(
                       _transcribing
-                          ? 'Transcribing…'
+                          ? 'transcribing'.tr()
                           : _recording
-                              ? 'Release to check'
-                              : 'Hold to speak',
+                              ? 'releaseToCheck'.tr()
+                              : 'holdToSpeak'.tr(),
                       style: TextStyle(
                           color: cs.onSurface.withValues(alpha: 0.6),
                           fontSize: 13),
@@ -355,7 +355,7 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
                           children: [
                             Directionality(
                               textDirection: TextDirection.ltr,
-                              child: Text('You said:',
+                              child: Text('youSaid'.tr(),
                                   style: TextStyle(
                                       color: cs.onSurface.withValues(alpha: 0.6),
                                       fontSize: 12,
@@ -409,8 +409,8 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
                                     const SizedBox(width: 6),
                                     Text(
                                       _isPlayingMyVoice
-                                          ? 'Playing…'
-                                          : 'My Voice',
+                                          ? 'playing'.tr()
+                                          : 'myVoice'.tr(),
                                       style: TextStyle(
                                         color: _isPlayingMyVoice
                                             ? kColorPrimary
@@ -460,8 +460,8 @@ class _SpeakingScreenState extends State<SpeakingScreen> {
                                     const SizedBox(width: 6),
                                     Text(
                                       _isPlayingTts
-                                          ? 'Playing…'
-                                          : 'Correct Pronunciation',
+                                          ? 'playing'.tr()
+                                          : 'correctPronunciation'.tr(),
                                       style: TextStyle(
                                         color: _isPlayingTts
                                             ? kColorAccent
@@ -515,7 +515,7 @@ class _SpeakingFeedbackCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          Text('Match: $matchPercent%',
+          Text('matchPercent'.tr(args: [matchPercent.toString()]),
               style: TextStyle(
                   color: color.withValues(alpha: 0.9),
                   fontSize: 14,
@@ -546,8 +546,8 @@ class _NextButton extends StatelessWidget {
                 offset: const Offset(0, 4))
           ],
         ),
-        child: const Center(
-            child: Text('New Sentence',
+        child: Center(
+            child: Text('newSentence'.tr(),
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,

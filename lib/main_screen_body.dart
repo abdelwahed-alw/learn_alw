@@ -924,7 +924,7 @@ class _TranslationSheetState extends State<_TranslationSheet> {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'Translation',
+                  'translation'.tr(),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: Theme.of(context).colorScheme.onSurface,
                         fontWeight: FontWeight.w700,
@@ -1103,7 +1103,7 @@ class _ExampleCard extends StatelessWidget {
             await Clipboard.setData(ClipboardData(text: text));
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Copied to clipboard!')),
+                SnackBar(content: Text('copiedToClipboard'.tr())),
               );
             }
           },
@@ -1359,14 +1359,14 @@ class _NextQuestionButtonState extends State<_NextQuestionButton>
                       color: kColorPrimary.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
-                        Icon(Icons.arrow_forward_rounded,
+                        const Icon(Icons.arrow_forward_rounded,
                             color: kColorPrimary, size: 12),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text(
-                          'Next Question',
-                          style: TextStyle(
+                          'nextQuestion'.tr(),
+                          style: const TextStyle(
                             color: kColorPrimary,
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
@@ -1391,8 +1391,8 @@ class _NextQuestionButtonState extends State<_NextQuestionButton>
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text(
-                    'Tap to answer',
+                    Text(
+                      'tapToAnswer'.tr(),
                     style: TextStyle(
                       color: kColorPrimary.withValues(alpha: 0.8),
                       fontSize: 12,

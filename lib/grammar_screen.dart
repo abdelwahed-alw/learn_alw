@@ -33,7 +33,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
   Future<void> _generateQuestion() async {
     final state = context.read<AppStateModel>();
     if (!state.hasApiKey) {
-      _showError('Please enter your activation code first.');
+      _showError('configureApiKeyFirst'.tr());
       return;
     }
     setState(() {
@@ -122,7 +122,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'Grammar Exercise',
+          'grammarExercise'.tr(),
           style: TextStyle(
             color: isLight ? Colors.black87 : Colors.white,
             fontWeight: FontWeight.w700,
@@ -180,8 +180,8 @@ class _GrammarScreenState extends State<GrammarScreen> {
                                 const SizedBox(width: 12),
                                 Text(
                                   _question!.type == 'error_correction'
-                                      ? 'Find the Error'
-                                      : 'Fill in the Blank',
+                                      ? 'findTheError'.tr()
+                                      : 'fillInBlank'.tr(),
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 13,
@@ -210,7 +210,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
                       if (_question!.type == 'fill_blank' &&
                           _question!.options != null) ...[
                         Text(
-                          'Choose the correct option:',
+                          'chooseCorrectOption'.tr(),
                           style: TextStyle(
                             color: cs.onSurface,
                             fontSize: 13,
@@ -323,7 +323,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
                           maxLines: 3,
                           readOnly: _feedback != null,
                           decoration: InputDecoration(
-                            hintText: 'Type the corrected sentence...',
+                            hintText: 'typeCorrectedSentence'.tr(),
                             filled: true,
                             fillColor: Theme.of(context).cardColor,
                             border: OutlineInputBorder(
@@ -373,8 +373,8 @@ class _GrammarScreenState extends State<GrammarScreen> {
                                   const SizedBox(width: 8),
                                   Text(
                                     _feedback!.isCorrect
-                                        ? 'Correct!'
-                                        : 'Not quite',
+                                        ? 'correctFeedback'.tr()
+                                        : 'notQuite'.tr(),
                                     style: TextStyle(
                                       color: _feedback!.isCorrect
                                           ? const Color(0xFF2ECC71)
@@ -413,8 +413,8 @@ class _GrammarScreenState extends State<GrammarScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                const Text(
-                                  'Grammar Rule:',
+                                Text(
+                                  'grammarRule'.tr(),
                                   style: TextStyle(
                                     color: kColorAccent,
                                     fontSize: 12,
@@ -440,7 +440,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
                         const SizedBox(height: 20),
                         _AnimatedButton(
                           isLoading: false,
-                          label: 'Next Question',
+                          label: 'nextQuestion'.tr(),
                           onTap: _generateQuestion,
                         ),
                       ],
@@ -467,8 +467,8 @@ class _GrammarScreenState extends State<GrammarScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      const Text(
-                        'Grammar Practice',
+                      Text(
+                        'grammarPractice'.tr(),
                         style: TextStyle(
                           color: kColorText,
                           fontSize: 20,
@@ -477,7 +477,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Test your grammar with error correction\nand fill-in-the-blank exercises.',
+                        'grammarDesc'.tr(),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: kColorTextMuted.withValues(alpha: 0.7),
@@ -487,7 +487,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
                       const SizedBox(height: 32),
                       _AnimatedButton(
                         isLoading: _loading,
-                        label: 'Start Exercise',
+                        label: 'startExercise'.tr(),
                         onTap: _generateQuestion,
                       ),
                     ],

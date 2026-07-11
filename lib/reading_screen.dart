@@ -34,7 +34,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
   Future<void> _generateExercise() async {
     final state = context.read<AppStateModel>();
     if (!state.hasApiKey) {
-      _showError('Please enter your activation code first.');
+      _showError('configureApiKeyFirst'.tr());
       return;
     }
     setState(() {
@@ -116,7 +116,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text('Reading',
+        title: Text('reading'.tr(),
             style: TextStyle(color: cs.onSurface, fontWeight: FontWeight.w700)),
         leading: IconButton(
             icon: Icon(Icons.arrow_back_rounded, color: cs.onSurface),
@@ -176,7 +176,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                Text('Reading Passage',
+                                Text('readingPassage'.tr(),
                                     style: TextStyle(
                                         color: cs.onSurface,
                                         fontSize: 13,
@@ -349,8 +349,8 @@ class _NextButton extends StatelessWidget {
                 offset: const Offset(0, 4))
           ],
         ),
-        child: const Center(
-            child: Text('Next Passage',
+            child: Center(
+                child: Text('nextPassage'.tr(),
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,

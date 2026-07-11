@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -279,11 +280,11 @@ class AppStateModel extends ChangeNotifier {
       String rawCode) async {
     final code = rawCode.trim();
     if (code.isEmpty) {
-      return (success: false, message: 'Please enter an activation code.');
+      return (success: false, message: 'enterActivationCode'.tr());
     }
     final apiKey = _decryptActivationCode(code);
     if (apiKey.isEmpty) {
-      return (success: false, message: 'Invalid activation code.');
+      return (success: false, message: 'invalidActivationCode'.tr());
     }
     _setPhase(LoadingPhase.testingKey);
     try {
@@ -291,7 +292,7 @@ class AppStateModel extends ChangeNotifier {
       _activationCode = code;
       await _secureStorage.write(key: kPrefActivationCode, value: code);
       _setPhase(LoadingPhase.none);
-      return (success: true, message: '✓ Activation code verified and saved!');
+      return (success: true, message: 'activationCodeVerified'.tr());
     } on GeminiServiceException catch (e) {
       _setPhase(LoadingPhase.none);
       return (success: false, message: e.message);

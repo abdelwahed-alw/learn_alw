@@ -56,7 +56,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
   Future<void> _generateSentence() async {
     final state = context.read<AppStateModel>();
     if (!state.hasApiKey) {
-      _showError('Please enter your activation code first.');
+      _showError('configureApiKeyFirst'.tr());
       return;
     }
     setState(() {
@@ -128,7 +128,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text('Listening',
+        title: Text('listening'.tr(),
             style: TextStyle(color: cs.onSurface, fontWeight: FontWeight.w700)),
         leading: IconButton(
             icon: Icon(Icons.arrow_back_rounded, color: cs.onSurface),
@@ -184,10 +184,10 @@ class _ListeningScreenState extends State<ListeningScreen> {
                   const SizedBox(height: 16),
                   Text(
                     _playing
-                        ? 'Playing...'
+                        ? 'playing'.tr()
                         : _playingSlow
-                            ? 'Playing slowly...'
-                            : 'Tap to play audio',
+                            ? 'playingSlowly'.tr()
+                            : 'tapToPlay'.tr(),
                     style: TextStyle(
                         color: cs.onSurface.withValues(alpha: 0.6),
                         fontSize: 13),
@@ -241,7 +241,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
                     enabled: !_submitted,
                     onChanged: (v) => setState(() => _isInputEmpty = v.trim().isEmpty),
                     decoration: InputDecoration(
-                      hintText: 'Type what you heard...',
+                      hintText: 'typeWhatYouHeard'.tr(),
                       filled: true,
                       fillColor: Theme.of(context).brightness == Brightness.light ? Colors.grey[100] : const Color(0xFF0F172A),
                       border: OutlineInputBorder(
@@ -262,7 +262,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Center(
-                          child: Text('Check Answer',
+                          child: Text('checkAnswer'.tr(),
                               style: TextStyle(
                                 color: _isInputEmpty
                                     ? cs.onSurface.withValues(alpha: 0.6)
@@ -320,13 +320,13 @@ class _FeedbackCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          Text('Match: $matchPercent%',
+          Text('matchPercent'.tr(args: [matchPercent.toString()]),
               style: TextStyle(
                   color: color.withValues(alpha: 0.9),
                   fontSize: 14,
                   fontWeight: FontWeight.w600)),
           const SizedBox(height: 4),
-          Text('The sentence was: $targetSentence',
+          Text('sentenceWas'.tr(args: [targetSentence]),
               style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 14)),
         ],
@@ -355,8 +355,8 @@ class _NextButton extends StatelessWidget {
                 offset: const Offset(0, 4))
           ],
         ),
-        child: const Center(
-            child: Text('New Sentence',
+        child: Center(
+            child: Text('newSentence'.tr(),
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
