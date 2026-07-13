@@ -2,6 +2,7 @@
 // Thin shell: assembles the Scaffold with DrawerWidget + MainScreenBody.
 // Now includes level badge and custom app icon in the header.
 
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -14,7 +15,6 @@ import 'constants.dart';
 import 'drawer_widget.dart';
 import 'ielts_screen.dart';
 import 'main_screen_body.dart';
-import 'ui_strings.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -76,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               const SizedBox(width: 12),
                               // App title
                               Text(
-                                t('salearn', model.nativeLanguage),
+                                'salearn'.tr(),
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleLarge
@@ -135,9 +135,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildModeSelector(AppStateModel model) {
     final modes = [
-      (mode: AppMode.practice, icon: Icons.chat_rounded, label: tr(context, 'practice')),
-      (mode: AppMode.ielts, icon: Icons.assignment_rounded, label: tr(context, 'ielts')),
-      (mode: AppMode.beginner, icon: Icons.auto_stories_rounded, label: tr(context, 'beginner')),
+      (mode: AppMode.practice, icon: Icons.chat_rounded, label: 'practice'.tr()),
+      (mode: AppMode.ielts, icon: Icons.assignment_rounded, label: 'ielts'.tr()),
+      (mode: AppMode.beginner, icon: Icons.auto_stories_rounded, label: 'beginner'.tr()),
     ];
     return Container(
       padding: const EdgeInsets.all(3),

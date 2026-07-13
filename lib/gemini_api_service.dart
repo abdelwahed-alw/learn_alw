@@ -434,12 +434,36 @@ class GeminiApiService {
     required String targetLanguage,
   }) async {
     return _withRetry(() async {
-      final prompt =
-          'You are an expert translator. Translate the following text between '
-          '$nativeLanguage and $targetLanguage. Detect the input language '
-          'automatically and translate it to the other language. Only return '
-          'the translated text without any extra conversation or quotes. '
-          "Text to translate: '$inputText'";
+      final prompt = '''
+You are an expert language translator and language teacher.
+
+A language learner who speaks $nativeLanguage is learning $targetLanguage.
+They have written the following text in $targetLanguage:
+
+Original Text: "$inputText"
+
+Your job:
+1. Translate the Original Text into $nativeLanguage.
+2. If the Original Text has spelling or grammar mistakes, provide the corrected version in $targetLanguage.
+
+IMPORTANT EXAMPLE:
+- If Original Text is "com back" and native language is Arabic and target language is English:
+  - "translation" should be: "عودة" (the Arabic meaning of "come back")
+  - "correction" should be: "come back" (the corrected English)
+
+You MUST respond ONLY with this exact JSON format:
+{
+  "translation": "<The $nativeLanguage translation of the original text. This MUST be written in $nativeLanguage script/characters. NEVER write $targetLanguage here.>",
+  "correction": "<If the original text has mistakes, write the corrected $targetLanguage text here. If no mistakes, write an empty string.>"
+}
+
+ABSOLUTE RULES — VIOLATING ANY OF THESE IS FORBIDDEN:
+- "translation" MUST be in $nativeLanguage. It is FORBIDDEN to put $targetLanguage text in "translation".
+- "correction" MUST be in $targetLanguage only. It is FORBIDDEN to put $nativeLanguage text in "correction".
+- Do NOT add any explanation, markdown, or extra fields.
+- Return ONLY the raw JSON object.
+''';
+
       final model = _buildModel(apiKey.trim());
       final response =
           await model.generateContent([Content.text(prompt)]).timeout(_timeout);

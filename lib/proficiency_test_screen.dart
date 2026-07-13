@@ -1,6 +1,7 @@
 // lib/proficiency_test_screen.dart
 // Dynamic 10-question MCQ proficiency assessment powered by Gemini.
 
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -9,7 +10,6 @@ import 'app_state_model.dart';
 import 'constants.dart';
 import 'gemini_api_service.dart';
 import 'app_shell.dart';
-import 'ui_strings.dart';
 
 class ProficiencyTestScreen extends StatefulWidget {
   const ProficiencyTestScreen({super.key});
@@ -209,7 +209,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
               const SizedBox(width: 14),
               Expanded(
                 child: Text(
-                  t('placementTest', lang),
+                  'placementTest'.tr(),
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
@@ -264,7 +264,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              '${t('question', lang)} $_questionNumber ${t('of', lang)} $_totalQuestions',
+              '${'question'.tr()} $_questionNumber ${'of'.tr()} $_totalQuestions',
               style: const TextStyle(
                 color: kColorTextMuted,
                 fontSize: 13,
@@ -326,8 +326,8 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
           const SizedBox(height: 20),
           Text(
             _isEvaluating
-                ? t('analyzingProficiency', lang)
-                : t('generatingQuestion', lang),
+                ? 'analyzingProficiency'.tr()
+                : 'generatingQuestion'.tr(),
             style: const TextStyle(
               color: kColorTextMuted,
               fontSize: 15,
@@ -361,7 +361,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                t('tryAgain', lang),
+                'tryAgain'.tr(),
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
@@ -408,7 +408,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  '${t('question', lang)} $_questionNumber',
+                  '${'question'.tr()} $_questionNumber',
                   style: const TextStyle(
                     color: kColorPrimary,
                     fontSize: 12,
@@ -475,8 +475,8 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
             child: Center(
               child: Text(
                 _questionNumber >= _totalQuestions
-                    ? t('submitGetResults', lang)
-                    : t('nextQuestion', lang),
+                    ? 'submitGetResults'.tr()
+                    : 'nextQuestion'.tr(),
                 style: TextStyle(
                   color: hasSelected ? Colors.white : kColorTextMuted,
                   fontSize: 16,
@@ -521,7 +521,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
               ),
               const SizedBox(height: 20),
               Text(
-                t('yourLevel', lang),
+                'yourLevel'.tr(),
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: kColorTextMuted,
                       fontWeight: FontWeight.w600,
@@ -556,7 +556,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
               const SizedBox(height: 16),
               // Score
               Text(
-                '$correctCount / $_totalQuestions ${t('correct', lang)}',
+                '$correctCount / $_totalQuestions ${'correct'.tr()}',
                 style: const TextStyle(
                   color: kColorAccent,
                   fontSize: 14,
@@ -602,7 +602,7 @@ class _ProficiencyTestScreenState extends State<ProficiencyTestScreen> {
                   ),
                   child: Center(
                     child: Text(
-                      t('startLearningArrow', lang),
+                      'startLearningArrow'.tr(),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,

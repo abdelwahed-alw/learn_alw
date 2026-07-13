@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
 
@@ -11,8 +14,24 @@ void showQuickTranslationSheet(BuildContext context) {
   final state = context.read<AppStateModel>();
   final api = GeminiApiService();
   final inputController = TextEditingController();
-  String result = '';
+  String translationText = '';
+  String correctionText = '';
   bool loading = false;
+
+  void _parseResponse(String response) {
+    try {
+      final Map<String, dynamic> data = jsonDecode(response);
+      final String rawTranslation = data['translation'] ?? '';
+      final String rawCorrection = data['correction'] ?? '';
+      translationText = rawTranslation.trim();
+      correctionText = rawCorrection.isNotEmpty
+          ? 'أنت تقصد: $rawCorrection'
+          : '';
+    } catch (_) {
+      translationText = response;
+      correctionText = '';
+    }
+  }
 
   final cs = Theme.of(context).colorScheme;
 
@@ -103,10 +122,11 @@ void showQuickTranslationSheet(BuildContext context) {
                               if (text.isEmpty) return;
                               setSheetState(() {
                                 loading = true;
-                                result = '';
+                                translationText = '';
+                                correctionText = '';
                               });
                               try {
-                                final translation =
+                                final response =
                                     await api.quickTranslate(
                                   apiKey: state.apiKey,
                                   inputText: text,
@@ -119,14 +139,16 @@ void showQuickTranslationSheet(BuildContext context) {
                                 );
                                 if (ctx.mounted) {
                                   setSheetState(() {
-                                    result = translation;
+                                    _parseResponse(response);
                                     loading = false;
                                   });
                                 }
                               } catch (_) {
                                 if (ctx.mounted) {
                                   setSheetState(() {
-                                    result = 'translationFailed'.tr();
+                                    translationText =
+                                        'translationFailed'.tr();
+                                    correctionText = '';
                                     loading = false;
                                   });
                                 }
@@ -170,22 +192,87 @@ void showQuickTranslationSheet(BuildContext context) {
                         ),
                       ),
                     ),
-                    if (result.isNotEmpty) ...[
+                    if (translationText.isNotEmpty ||
+                        correctionText.isNotEmpty) ...[
                       const SizedBox(height: 24),
+                      if (correctionText.isNotEmpty) ...[
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).cardColor,
+                            borderRadius:
+                                BorderRadius.circular(12),
+                          ),
+                          child: Directionality(
+                            textDirection: TextDirection.rtl,
+                            child: Text(
+                              correctionText,
+                              style: TextStyle(
+                                color: cs.onSurface,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
                       Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.all(14),
+                        padding: const EdgeInsets.only(
+                          left: 14,
+                          top: 14,
+                          bottom: 14,
+                          right: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Theme.of(context).cardColor,
                           borderRadius:
                               BorderRadius.circular(12),
                         ),
-                        child: Text(
-                          result,
-                          style: TextStyle(
-                            color: cs.onSurface,
-                            fontSize: 14,
-                          ),
+                        child: Row(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Directionality(
+                                textDirection:
+                                    TextDirection.ltr,
+                                child: Text(
+                                  translationText,
+                                  style: TextStyle(
+                                    color: cs.onSurface,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.copy,
+                                  size: 20, color: Colors.grey),
+                              onPressed: () {
+                                if (translationText
+                                    .isNotEmpty) {
+                                  Clipboard.setData(
+                                    ClipboardData(
+                                      text: translationText
+                                          .trim(),
+                                    ),
+                                  );
+                                  ScaffoldMessenger.of(
+                                          context)
+                                      .showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'copied_successfully'
+                                            .tr(),
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                          ],
                         ),
                       ),
                     ],

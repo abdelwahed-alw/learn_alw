@@ -11,7 +11,6 @@ import 'package:provider/provider.dart';
 import 'app_state_model.dart';
 import 'theme_colors.dart';
 import 'constants.dart';
-import 'ui_strings.dart';
 
 class DrawerWidget extends StatefulWidget {
   const DrawerWidget({super.key});
@@ -42,7 +41,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(t('enterActivationCode', state.nativeLanguage)),
+            content: Text('enterActivationCode'.tr()),
           ),
     );
   }
@@ -204,7 +203,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          t('salearn', state.nativeLanguage),
+                          'salearn'.tr(),
                           style: Theme.of(context)
                               .textTheme
                               .titleLarge
@@ -216,7 +215,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          t('aiLanguageTutor', state.nativeLanguage),
+                          'aiLanguageTutor'.tr(),
                           style:
                               Theme.of(context).textTheme.bodySmall?.copyWith(
                                     color: kColorTextMuted,
@@ -288,7 +287,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader(t('apiKeySetup', lang), Icons.vpn_key_rounded),
+        _buildSectionHeader('apiKeySetup'.tr(), Icons.vpn_key_rounded),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -305,7 +304,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 obscureText: true,
                 style: TextStyle(color: cs.onSurface, fontSize: 13),
                 decoration: InputDecoration(
-                  hintText: t('pasteApiKey', lang),
+                  hintText: 'pasteApiKey'.tr(),
                   hintStyle: TextStyle(
                     color: cs.onSurface.withValues(alpha: 0.6),
                     fontSize: 13,
@@ -330,7 +329,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               ),
               const SizedBox(height: 12),
               _GradientButton(
-                label: t('testAndSave', lang),
+                label: 'testAndSave'.tr(),
                 icon: Icons.check_circle_outline_rounded,
                 isLoading: state.loadingPhase == LoadingPhase.testingKey,
                 onTap: state.loadingPhase == LoadingPhase.testingKey
@@ -350,7 +349,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader(t('languages', lang), Icons.translate_rounded),
+        _buildSectionHeader('languages'.tr(), Icons.translate_rounded),
         Container(
           decoration: BoxDecoration(
             color: kColorSurface,
@@ -367,7 +366,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           child: Column(
             children: [
               _LanguageRow(
-                label: t('iSpeak', lang),
+                label: 'iSpeak'.tr(),
                 icon: Icons.record_voice_over_rounded,
                 value: state.nativeLanguage,
                 items: kSupportedLanguages,
@@ -414,7 +413,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 ),
               ),
               _LanguageRow(
-                label: t('iWantToLearn', lang),
+                label: 'iWantToLearn'.tr(),
                 icon: Icons.school_rounded,
                 value: state.targetLanguage,
                 items: kSupportedLanguages,
@@ -434,7 +433,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader(t('proficiency', lang), Icons.bar_chart_rounded),
+        _buildSectionHeader('proficiency'.tr(), Icons.bar_chart_rounded),
         GestureDetector(
           onTap: () => _showLevelPicker(state),
           child: Container(
@@ -499,7 +498,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    t('change', lang),
+                    'change'.tr(),
                     style: const TextStyle(
                       color: kColorPrimary,
                       fontSize: 11,
@@ -546,7 +545,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               child: Row(
                 children: [
                   Text(
-                    t('changeLevel', state.nativeLanguage),
+                    'changeLevel'.tr(),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: kColorText,
                           fontWeight: FontWeight.w700,
@@ -664,7 +663,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader(t('topics', lang), Icons.menu_book_rounded),
+        _buildSectionHeader('topics'.tr(), Icons.menu_book_rounded),
         Container(
           decoration: BoxDecoration(
             color: kColorSurface,
@@ -741,7 +740,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           ),
           const SizedBox(width: 8),
           Text(
-            'Salearn v1.0.0',
+            'SaLearn $kAppVersion',
             style: TextStyle(
               color: kColorTextMuted.withValues(alpha: 0.7),
               fontSize: 11,

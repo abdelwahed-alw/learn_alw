@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -8,7 +9,6 @@ import 'package:shimmer/shimmer.dart';
 
 import 'app_state_model.dart';
 import 'constants.dart';
-import 'ui_strings.dart';
 
 class BeginnerScreen extends StatefulWidget {
   const BeginnerScreen({super.key});
@@ -99,7 +99,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                         sliver: SliverToBoxAdapter(
                           child: Center(
                               child: Text(
-                                '+${state.beginnerVocabulary.length - 20} ${tr(context, 'moreWords')}',
+                                '+${state.beginnerVocabulary.length - 20} ${'moreWords'.tr()}',
                               style: TextStyle(
                                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                                 fontSize: 11,
@@ -156,14 +156,14 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    tr(context, 'beginner'),
+                    'beginner'.tr(),
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           color: cs.onSurface,
                           fontWeight: FontWeight.bold,
                         ),
                   ),
                   Text(
-                    tr(context, 'learnWordsThroughContext'),
+                    'learnWordsThroughContext'.tr(),
                     style: TextStyle(
                       color: cs.onSurface.withValues(alpha: 0.6),
                       fontSize: 12,
@@ -217,7 +217,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  tr(context, 'wordsDiscovered'),
+                  'wordsDiscovered'.tr(),
                   style: TextStyle(
                     color: cs.onSurface.withValues(alpha: 0.8),
                     fontWeight: FontWeight.w600,
@@ -311,14 +311,14 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
               ),
               const SizedBox(height: 24),
               Text(
-                tr(context, 'startYourJourney'),
+                'startYourJourney'.tr(),
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
               ),
               const SizedBox(height: 12),
               Text(
-                tr(context, 'learnFirstWordDesc'),
+                'learnFirstWordDesc'.tr(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
@@ -350,7 +350,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                             color: Colors.white, size: 18),
                         const SizedBox(width: 10),
                         Text(
-                          tr(context, 'learnMyFirstWord'),
+                          'learnMyFirstWord'.tr(),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -406,7 +406,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                         color: kColorPrimary, size: 12),
                     const SizedBox(width: 4),
                     Text(
-                      tr(context, 'tapWordsToLearn'),
+                      'tapWordsToLearn'.tr(),
                       style: TextStyle(
                         color: kColorPrimary.withValues(alpha: 0.9),
                         fontSize: 11,
@@ -508,13 +508,13 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
           // Legend
           Row(
             children: [
-              _legendDot(kColorPrimary, tr(context, 'targetLegend')),
+              _legendDot(kColorPrimary, 'targetLegend'.tr()),
               const SizedBox(width: 16),
-              _legendDot(const Color(0xFFFF8E53), tr(context, 'newLegend')),
+              _legendDot(const Color(0xFFFF8E53), 'newLegend'.tr()),
               const SizedBox(width: 16),
-              _legendDot(const Color(0xFF2ECC71), tr(context, 'knownLegend')),
+              _legendDot(const Color(0xFF2ECC71), 'knownLegend'.tr()),
               const SizedBox(width: 16),
-              _legendDot(kColorAccent, tr(context, 'tapToLearnLegend')),
+              _legendDot(kColorAccent, 'tapToLearnLegend'.tr()),
             ],
           ),
         ],
@@ -572,7 +572,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                   color: Color(0xFFFF8E53), size: 16),
               const SizedBox(width: 8),
               Text(
-                tr(context, 'newWordsInSentence'),
+                'newWordsInSentence'.tr(),
                 style: TextStyle(
                   color: cs.onSurface.withValues(alpha: 0.9),
                   fontWeight: FontWeight.w600,
@@ -633,7 +633,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                                   color: Color(0xFF2ECC71), size: 12),
                               const SizedBox(width: 2),
                               Text(
-                                tr(context, 'add'),
+                                'add'.tr(),
                                 style: const TextStyle(
                                   color: Color(0xFF2ECC71),
                                   fontSize: 10,
@@ -680,7 +680,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                         color: Colors.white, size: 16),
                     const SizedBox(width: 8),
                     Text(
-                      tr(context, 'nextSentence'),
+                      'nextSentence'.tr(),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 14,
@@ -708,7 +708,7 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
           Icon(Icons.menu_book_rounded, color: cs.onSurface.withValues(alpha: 0.6), size: 16),
           const SizedBox(width: 8),
           Text(
-            '${tr(context, 'myVocabulary')} (${vocab.length})',
+            '${'myVocabulary'.tr()} (${vocab.length})',
             style: TextStyle(
               color: cs.onSurface.withValues(alpha: 0.6),
               fontWeight: FontWeight.w700,
@@ -948,7 +948,7 @@ class _WordMeaningSheet extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  tr(context, 'newWord'),
+                  'newWord'.tr(),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: cs.onSurface,
                         fontWeight: FontWeight.w700,
@@ -1003,7 +1003,7 @@ class _WordMeaningSheet extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        tr(context, 'meaning'),
+                        'meaning'.tr(),
                         style: TextStyle(
                           color: cs.onSurface.withValues(alpha: 0.6),
                           fontSize: 11,
@@ -1015,7 +1015,7 @@ class _WordMeaningSheet extends StatelessWidget {
                       Text(
                         meaning.isNotEmpty
                             ? meaning
-                            : tr(context, 'addedToVocabulary'),
+                            : 'addedToVocabulary'.tr(),
                         style: TextStyle(
                           color: cs.onSurface,
                           fontSize: 16,
@@ -1042,7 +1042,7 @@ class _WordMeaningSheet extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          tr(context, 'example'),
+                          'example'.tr(),
                           style: TextStyle(
                             color: cs.onSurface.withValues(alpha: 0.6),
                             fontSize: 11,
@@ -1077,7 +1077,7 @@ class _WordMeaningSheet extends StatelessWidget {
                           color: Color(0xFF2ECC71), size: 16),
                       const SizedBox(width: 8),
                       Text(
-                        tr(context, 'addedToVocabulary'),
+                        'addedToVocabulary'.tr(),
                         style: const TextStyle(
                           color: Color(0xFF2ECC71),
                           fontSize: 12,

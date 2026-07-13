@@ -279,5 +279,6 @@
   "yourTopic": "موضوعك",
   "tapToAnswer": "اضغط للإجابة",
   "invalidActivationCode": "كود التفعيل غير صالح.",
-  "activationCodeVerified": "✓ تم التحقق من كود التفعيل وحفظه!"
+  "activationCodeVerified": "✓ تم التحقق من كود التفعيل وحفظه!",
+  "copied_successfully": "تم النسخ!"
 }

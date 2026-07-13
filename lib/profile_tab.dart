@@ -10,7 +10,6 @@ import 'app_state_model.dart';
 import 'constants.dart';
 import 'quick_translation_sheet.dart';
 import 'theme_colors.dart';
-import 'ui_strings.dart';
 
 class ProfileTab extends StatefulWidget {
   const ProfileTab({super.key});
@@ -88,7 +87,7 @@ class _ProfileTabState extends State<ProfileTab> {
               child: Row(
                 children: [
                   Text(
-                    t('changeLevel', state.nativeLanguage),
+                    'changeLevel'.tr(),
                     style: Theme.of(context)
                         .textTheme
                         .titleMedium
@@ -325,7 +324,7 @@ class _ProfileTabState extends State<ProfileTab> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader(t('apiKeySetup', lang)),
+        _buildSectionHeader('apiKeySetup'.tr()),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -341,7 +340,7 @@ class _ProfileTabState extends State<ProfileTab> {
                 obscureText: true,
                 style: TextStyle(color: cs.onSurface, fontSize: 13),
                 decoration: InputDecoration(
-                  hintText: t('pasteApiKey', lang),
+                  hintText: 'pasteApiKey'.tr(),
                   hintStyle: TextStyle(
                     color: cs.onSurface.withValues(alpha: 0.6),
                     fontSize: 13,
@@ -395,7 +394,7 @@ class _ProfileTabState extends State<ProfileTab> {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                t('testAndSave', lang),
+                                'testAndSave'.tr(),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w700,
@@ -419,7 +418,7 @@ class _ProfileTabState extends State<ProfileTab> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader(t('languages', lang)),
+        _buildSectionHeader('languages'.tr()),
         Container(
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
@@ -430,7 +429,7 @@ class _ProfileTabState extends State<ProfileTab> {
           child: Column(
             children: [
               _LanguageRow(
-                label: t('iSpeak', lang),
+                label: 'iSpeak'.tr(),
                 icon: Icons.record_voice_over_rounded,
                 value: state.nativeLanguage,
                 items: kSupportedLanguages,
@@ -443,7 +442,7 @@ class _ProfileTabState extends State<ProfileTab> {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(t('sameLanguageWarning', lang)),
+                          content: Text('sameLanguageWarning'.tr()),
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
@@ -455,7 +454,7 @@ class _ProfileTabState extends State<ProfileTab> {
                   height: 1,
                   color: cs.outline.withValues(alpha: 0.5)),
               _LanguageRow(
-                label: t('iWantToLearn', lang),
+                label: 'iWantToLearn'.tr(),
                 icon: Icons.school_rounded,
                 value: state.targetLanguage,
                 items: kSupportedLanguages,
@@ -467,7 +466,7 @@ class _ProfileTabState extends State<ProfileTab> {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(t('sameLanguageWarning', lang)),
+                          content: Text('sameLanguageWarning'.tr()),
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
@@ -487,7 +486,7 @@ class _ProfileTabState extends State<ProfileTab> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader(t('proficiency', lang)),
+        _buildSectionHeader('proficiency'.tr()),
         GestureDetector(
           onTap: () => _showLevelPicker(state),
           child: Container(
@@ -546,7 +545,7 @@ class _ProfileTabState extends State<ProfileTab> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    t('change', lang),
+                    'change'.tr(),
                     style: const TextStyle(
                       color: kColorPrimary,
                       fontSize: 11,
@@ -745,7 +744,7 @@ class _ProfileTabState extends State<ProfileTab> {
                         ),
                       ),
                       Text(
-                        'quickTranslationTitle'.tr(),
+                        'quickTranslation'.tr(),
                         style: TextStyle(
                           color: cs.onSurface.withValues(alpha: 0.6),
                           fontSize: 11,

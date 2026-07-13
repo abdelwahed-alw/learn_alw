@@ -1072,3 +1072,212 @@ const Curve kQuickCurve = Curves.easeOutCubic;
 
 // Spring curve for bouncy/organic feel
 const Curve kSpringCurve = Curves.elasticOut;
+
+
+// ─── Native names for the language picker ─────────────────────────────────────
+const Map<String, String> kLanguageNativeNames = {
+  'ar': 'العربية',
+  'en': 'English',
+  'fr': 'Français',
+  'es': 'Español',
+  'de': 'Deutsch',
+  'tr': 'Türkçe',
+  'it': 'Italiano',
+  'pt': 'Português',
+  'zh': '中文',
+  'ja': '日本語',
+};
+
+const Map<String, String> kLanguageFlags = {
+  'ar': '🇸🇦',
+  'en': '🇬🇧',
+  'fr': '🇫🇷',
+  'es': '🇪🇸',
+  'de': '🇩🇪',
+  'tr': '🇹🇷',
+  'it': '🇮🇹',
+  'pt': '🇵🇹',
+  'zh': '🇨🇳',
+  'ja': '🇯🇵',
+};
+
+// ─── Localized Level Labels ─────────────────────────────────────────────────
+const Map<String, Map<String, String>> _levelLabels = {
+  'en': {
+    'A1': 'Beginner',
+    'A2': 'Elementary',
+    'B1': 'Intermediate',
+    'B2': 'Upper Intermediate',
+    'C1': 'Advanced',
+    'C2': 'Mastery',
+  },
+  'ar': {
+    'A1': 'مبتدئ',
+    'A2': 'أساسي',
+    'B1': 'متوسط',
+    'B2': 'فوق المتوسط',
+    'C1': 'متقدم',
+    'C2': 'إتقان',
+  },
+  'fr': {
+    'A1': 'Débutant',
+    'A2': 'Élémentaire',
+    'B1': 'Intermédiaire',
+    'B2': 'Intermédiaire avancé',
+    'C1': 'Avancé',
+    'C2': 'Maîtrise',
+  },
+  'es': {
+    'A1': 'Principiante',
+    'A2': 'Elemental',
+    'B1': 'Intermedio',
+    'B2': 'Intermedio alto',
+    'C1': 'Avanzado',
+    'C2': 'Dominio',
+  },
+  'tr': {
+    'A1': 'Başlangıç',
+    'A2': 'Temel',
+    'B1': 'Orta',
+    'B2': 'Orta üstü',
+    'C1': 'İleri',
+    'C2': 'Uzman',
+  },
+  'de': {
+    'A1': 'Anfänger',
+    'A2': 'Grundlagen',
+    'B1': 'Mittelstufe',
+    'B2': 'Obere Mittelstufe',
+    'C1': 'Fortgeschritten',
+    'C2': 'Kompetent',
+  },
+  'it': {
+    'A1': 'Principiante',
+    'A2': 'Elementare',
+    'B1': 'Intermedio',
+    'B2': 'Intermedio alto',
+    'C1': 'Avanzato',
+    'C2': 'Padronanza',
+  },
+  'pt': {
+    'A1': 'Iniciante',
+    'A2': 'Básico',
+    'B1': 'Intermediário',
+    'B2': 'Intermediário superior',
+    'C1': 'Avançado',
+    'C2': 'Fluente',
+  },
+  'zh': {
+    'A1': '入门',
+    'A2': '初级',
+    'B1': '中级',
+    'B2': '中高级',
+    'C1': '高级',
+    'C2': '精通',
+  },
+  'ja': {
+    'A1': '入門',
+    'A2': '初級',
+    'B1': '中級',
+    'B2': '中上級',
+    'C1': '上級',
+    'C2': 'マスター',
+  },
+};
+
+const Map<String, Map<String, String>> _levelDescs = {
+  'en': {
+    'A1': 'Basic phrases and simple interactions',
+    'A2': 'Routine tasks and familiar topics',
+    'B1': 'Main points and everyday situations',
+    'B2': 'Complex texts and abstract topics',
+    'C1': 'Fluent expression and implicit meaning',
+    'C2': 'Near-native precision and nuance',
+  },
+  'ar': {
+    'A1': 'عبارات أساسية وتفاعلات بسيطة',
+    'A2': 'مهام روتينية ومواضيع مألوفة',
+    'B1': 'النقاط الرئيسية والمواقف اليومية',
+    'B2': 'نصوص معقدة ومواضيع مجردة',
+    'C1': 'تعبير طليق ومعانٍ ضمنية',
+    'C2': 'دقة وتمييز قريبة من الناطق الأصلي',
+  },
+  'fr': {
+    'A1': 'Phrases de base et interactions simples',
+    'A2': 'Tâches courantes et sujets familiers',
+    'B1': 'Points principaux et situations quotidiennes',
+    'B2': 'Textes complexes et sujets abstraits',
+    'C1': 'Expression fluide et sens implicite',
+    'C2': 'Précision et nuance quasi natives',
+  },
+  'es': {
+    'A1': 'Frases básicas e interacciones simples',
+    'A2': 'Tareas rutinarias y temas familiares',
+    'B1': 'Puntos principales y situaciones cotidianas',
+    'B2': 'Textos complejos y temas abstractos',
+    'C1': 'Expresión fluida y significado implícito',
+    'C2': 'Precisión y matiz casi nativos',
+  },
+  'tr': {
+    'A1': 'Temel ifadeler ve basit etkileşimler',
+    'A2': 'Günlük görevler ve tanıdık konular',
+    'B1': 'Ana noktalar ve günlük durumlar',
+    'B2': 'Karmaşık metinler ve soyut konular',
+    'C1': 'Akıcı ifade ve örtük anlam',
+    'C2': 'Ana dile yakın hassasiyet ve nüans',
+  },
+  'de': {
+    'A1': 'Grundlegende Phrasen und einfache Interaktionen',
+    'A2': 'Routineaufgaben und vertraute Themen',
+    'B1': 'Hauptpunkte und Alltagssituationen',
+    'B2': 'Komplexe Texte und abstrakte Themen',
+    'C1': 'Fließender Ausdruck und implizite Bedeutung',
+    'C2': 'Nahezu muttersprachliche Präzision',
+  },
+  'it': {
+    'A1': 'Frasi di base e interazioni semplici',
+    'A2': 'Compiti di routine e argomenti familiari',
+    'B1': 'Punti principali e situazioni quotidiane',
+    'B2': 'Testi complessi e argomenti astratti',
+    'C1': 'Espressione fluida e significato implicito',
+    'C2': 'Precisione e sfumature quasi madrelingua',
+  },
+  'pt': {
+    'A1': 'Frases básicas e interações simples',
+    'A2': 'Tarefas rotineiras e tópicos familiares',
+    'B1': 'Pontos principais e situações cotidianas',
+    'B2': 'Textos complexos e tópicos abstratos',
+    'C1': 'Expressão fluente e significado implícito',
+    'C2': 'Precisão e nuances quase nativas',
+  },
+  'zh': {
+    'A1': '基本短语和简单交流',
+    'A2': '日常任务和熟悉主题',
+    'B1': '要点和日常情境',
+    'B2': '复杂文本和抽象主题',
+    'C1': '流利表达和隐含意义',
+    'C2': '近乎母语的精确度和细微差别',
+  },
+  'ja': {
+    'A1': '基本的なフレーズと簡単なやり取り',
+    'A2': '日常的なタスクと身近なトピック',
+    'B1': '要点と日常的な状況',
+    'B2': '複雑なテキストと抽象的なトピック',
+    'C1': '流暢な表現と暗黙の意味',
+    'C2': 'ネイティブに近い正確さとニュアンス',
+  },
+};
+
+/// Get a localized level label. Falls back to English.
+String tLevel(String levelCode, String langCode) {
+  return _levelLabels[langCode]?[levelCode] ??
+      _levelLabels['en']?[levelCode] ??
+      levelCode;
+}
+
+/// Get a localized level description. Falls back to English.
+String tLevelDesc(String levelCode, String langCode) {
+  return _levelDescs[langCode]?[levelCode] ??
+      _levelDescs['en']?[levelCode] ??
+      '';
+}

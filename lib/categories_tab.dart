@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -9,7 +10,6 @@ import 'vocabulary_screen.dart';
 import 'reading_screen.dart';
 import 'listening_screen.dart';
 import 'speaking_screen.dart';
-import 'ui_strings.dart';
 
 class CategoriesTab extends StatelessWidget {
   const CategoriesTab({super.key});
@@ -18,10 +18,9 @@ class CategoriesTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppStateModel>(
       builder: (context, state, _) {
-        final lang = state.nativeLanguage;
         final categories = [
           (
-            t('writing', lang),
+            'writing'.tr(),
             Icons.edit_rounded,
             const Color(0xFFFF6B6B),
             () => Navigator.push(
@@ -32,7 +31,7 @@ class CategoriesTab extends StatelessWidget {
                 ),
           ),
           (
-            t('grammar', lang),
+            'grammar'.tr(),
             Icons.text_fields_rounded,
             const Color(0xFFFF8E53),
             () => Navigator.push(
@@ -43,28 +42,28 @@ class CategoriesTab extends StatelessWidget {
                 ),
           ),
           (
-            t('vocabulary', lang),
+            'vocabulary'.tr(),
             Icons.spellcheck_rounded,
             const Color(0xFF2ECC71),
             () => Navigator.push(context,
                 MaterialPageRoute(builder: (_) => const VocabularyScreen())),
           ),
           (
-            t('reading', lang),
+            'reading'.tr(),
             Icons.auto_stories_rounded,
             const Color(0xFF3498DB),
             () => Navigator.push(context,
                 MaterialPageRoute(builder: (_) => const ReadingScreen())),
           ),
           (
-            t('speaking', lang),
+            'speaking'.tr(),
             Icons.record_voice_over_rounded,
             const Color(0xFF9B59B6),
             () => Navigator.push(context,
                 MaterialPageRoute(builder: (_) => const SpeakingScreen())),
           ),
           (
-            t('listening', lang),
+            'listening'.tr(),
             Icons.headphones_rounded,
             const Color(0xFF1ABC9C),
             () => Navigator.push(context,
@@ -78,7 +77,7 @@ class CategoriesTab extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                tr(context, 'skillCategories'),
+                'skillCategories'.tr(),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                   fontSize: 13,
@@ -172,7 +171,7 @@ class _CategoryCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                tr(context, 'practice'),
+                'practice'.tr(),
                 style: TextStyle(
                   color: color.withValues(alpha: 0.8),
                   fontSize: 10,

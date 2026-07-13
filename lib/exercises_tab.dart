@@ -9,7 +9,6 @@ import 'ielts_screen.dart';
 import 'beginner_screen.dart';
 import 'categories_tab.dart';
 import 'main_screen_body.dart';
-import 'ui_strings.dart';
 
 class ExercisesTab extends StatefulWidget {
   final VoidCallback? onNavigateProfile;
@@ -120,10 +119,10 @@ class _ExercisesTabState extends State<ExercisesTab> {
     final isLight = Theme.of(context).brightness == Brightness.light;
     final cs = Theme.of(context).colorScheme;
     final modes = [
-      (AppMode.practice, tr(context, 'practice'), Icons.chat_rounded),
+      (AppMode.practice, 'practice'.tr(), Icons.chat_rounded),
       (AppMode.ielts, 'ielts'.tr(), Icons.assignment_rounded),
-      (AppMode.beginner, tr(context, 'beginner'), Icons.auto_stories_rounded),
-      (AppMode.categories, tr(context, 'categories'), Icons.grid_view_rounded),
+      (AppMode.beginner, 'beginner'.tr(), Icons.auto_stories_rounded),
+      (AppMode.categories, 'categories'.tr(), Icons.grid_view_rounded),
     ];
     return Container(
       padding: const EdgeInsets.all(3),

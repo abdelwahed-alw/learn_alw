@@ -9,7 +9,6 @@ import 'package:shimmer/shimmer.dart';
 
 import 'app_state_model.dart';
 import 'constants.dart';
-import 'ui_strings.dart';
 
 class MainScreenBody extends StatefulWidget {
   final VoidCallback? onNavigateProfile;
@@ -35,7 +34,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(t('errorOccurred', state.nativeLanguage)),
+            content: Text('errorOccurred'.tr()),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -48,7 +47,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
     if (!state.hasApiKey) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(t('configureApiKeyFirst', state.nativeLanguage)),
+          content: Text('configureApiKeyFirst'.tr()),
         ),
       );
       return;
@@ -154,7 +153,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                 children: [
                   Expanded(
                     child: Text(
-                      '${t('topicLabel', state.nativeLanguage)}: ${topicLocaleKey(state.selectedTopic).tr()}',
+                      '${'topicLabel'.tr()}: ${topicLocaleKey(state.selectedTopic).tr()}',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             color: kColorPrimary,
                           ),
@@ -270,7 +269,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  t('translateOrAnswer', state.nativeLanguage),
+                  'translateOrAnswer'.tr(),
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                         color: cs.onSurface.withValues(alpha: 0.6),
                         letterSpacing: 1.2,
@@ -310,7 +309,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
           minLines: 3,
           style: const TextStyle(fontSize: 18),
           decoration: InputDecoration(
-            hintText: t('typeAnswer', state.nativeLanguage),
+            hintText: 'typeAnswer'.tr(),
           ),
         ),
         const SizedBox(height: 16),
@@ -367,7 +366,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        t('feedback', state.nativeLanguage),
+                        'feedback'.tr(),
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               color: Theme.of(context).colorScheme.onSurface,
                               fontWeight: FontWeight.bold,
@@ -421,7 +420,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
         Padding(
           padding: const EdgeInsets.only(left: 8, bottom: 16),
           child: Text(
-            t('examples', state.nativeLanguage),
+            'examples'.tr(),
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                   fontWeight: FontWeight.bold,
@@ -500,16 +499,16 @@ class _MainScreenBodyState extends State<MainScreenBody> {
     String greeting;
     String emoji;
     if (hour < 12) {
-      greeting = t('goodMorning', state.nativeLanguage);
+      greeting = 'goodMorning'.tr();
       emoji = '☀️';
     } else if (hour < 17) {
-      greeting = t('goodAfternoon', state.nativeLanguage);
+      greeting = 'goodAfternoon'.tr();
       emoji = '🌤️';
     } else if (hour < 21) {
-      greeting = t('goodEvening', state.nativeLanguage);
+      greeting = 'goodEvening'.tr();
       emoji = '🌙';
     } else {
-      greeting = t('lateSession', state.nativeLanguage);
+      greeting = 'lateSession'.tr();
       emoji = '🌜';
     }
 
@@ -553,7 +552,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          "${t('letsPractice', state.nativeLanguage)} $targetLang",
+                          "${'letsPractice'.tr()} $targetLang",
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                             fontSize: 13,
@@ -650,7 +649,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    t('change', state.nativeLanguage),
+                    'change'.tr(),
                     style: const TextStyle(
                       color: kColorPrimary,
                       fontSize: 11,
@@ -665,7 +664,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
         const SizedBox(height: 24),
         // ── Topic Selector ──
         Text(
-          t('whatToTalkAbout', state.nativeLanguage),
+          'whatToTalkAbout'.tr(),
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w700,
@@ -797,7 +796,7 @@ class _MainScreenBodyState extends State<MainScreenBody> {
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    t('startLearning', state.nativeLanguage),
+                    'startLearning'.tr(),
                     style: TextStyle(
                       color: _selectedDashboardTopic != null
                           ? Colors.white

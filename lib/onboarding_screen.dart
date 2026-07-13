@@ -10,7 +10,6 @@ import 'app_state_model.dart';
 import 'constants.dart';
 import 'app_shell.dart';
 import 'proficiency_test_screen.dart';
-import 'ui_strings.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -63,7 +62,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     final key = _apiKeyCtrl.text.trim();
     if (key.isEmpty) {
       final lang = context.read<AppStateModel>().nativeLanguage;
-      setState(() => _keyMessage = t('pleaseEnterKey', lang));
+      setState(() => _keyMessage = 'pleaseEnterKey'.tr());
       return;
     }
     FocusScope.of(context).unfocus();
@@ -75,7 +74,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         // The message returned by the service might not be localized easily without rewriting the service,
         // so we can fallback to the english/service returned ones or try to map them.
         _keyMessage = result.success
-            ? t('apiKeyVerified', model.nativeLanguage)
+            ? 'apiKeyVerified'.tr()
             : result.message;
       });
     }
@@ -97,7 +96,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   void _navigateToTest() {
     final lang = context.read<AppStateModel>().nativeLanguage;
     if (!_keyValidated) {
-      setState(() => _keyMessage = t('pleaseValidateKey', lang));
+      setState(() => _keyMessage = 'pleaseValidateKey'.tr());
       return;
     }
     Navigator.of(context).push(
@@ -120,7 +119,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   Future<void> _selectLevel(String level) async {
     final lang = context.read<AppStateModel>().nativeLanguage;
     if (!_keyValidated) {
-      setState(() => _keyMessage = t('pleaseValidateKey', lang));
+      setState(() => _keyMessage = 'pleaseValidateKey'.tr());
       return;
     }
     HapticFeedback.mediumImpact();
@@ -270,7 +269,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         ),
         const SizedBox(height: 24),
         Text(
-          t('welcomeTo', lang),
+          'welcomeTo'.tr(),
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 color: kColorText,
                 fontWeight: FontWeight.w800,
@@ -278,7 +277,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         ),
         const SizedBox(height: 8),
         Text(
-          t('setupApiKey', lang),
+          'setupApiKey'.tr(),
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: kColorTextMuted,
                 height: 1.5,
@@ -338,7 +337,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      t('selectLanguage', lang),
+                      'selectLanguage'.tr(),
                       style: const TextStyle(
                         color: kColorText,
                         fontSize: 15,
@@ -346,7 +345,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       ),
                     ),
                     Text(
-                      t('selectLanguageDesc', lang).replaceAll('\n', ' '),
+                      'selectLanguageDesc'.tr().replaceAll('\n', ' '),
                       style: TextStyle(
                         color: kColorTextMuted.withValues(alpha: 0.7),
                         fontSize: 11,
@@ -364,7 +363,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    t('ready', lang),
+                    'ready'.tr(),
                     style: const TextStyle(
                       color: Colors.green,
                       fontSize: 11,
@@ -377,7 +376,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           const SizedBox(height: 16),
           // ── Native language dropdown ──
           Text(
-            t('selectNativeLanguage', lang),
+            'selectNativeLanguage'.tr(),
             style: TextStyle(
               color: kColorTextMuted.withValues(alpha: 0.9),
               fontSize: 12,
@@ -386,7 +385,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           ),
           const SizedBox(height: 4),
           Text(
-            t('selectNativeLanguageDesc', lang),
+            'selectNativeLanguageDesc'.tr(),
             style: TextStyle(
               color: kColorTextMuted.withValues(alpha: 0.6),
               fontSize: 11,
@@ -407,7 +406,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 value: _nativeSelected ? model.nativeLanguage : null,
-                hint: Text(t('selectNativeLanguage', lang)),
+                hint: Text('selectNativeLanguage'.tr()),
                 isExpanded: true,
                 dropdownColor: kColorSurface,
                 icon: const Icon(Icons.arrow_drop_down, color: kColorTextMuted),
@@ -455,7 +454,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           const SizedBox(height: 12),
           // ── Target language dropdown ──
           Text(
-            t('selectTargetLanguage', lang),
+            'selectTargetLanguage'.tr(),
             style: TextStyle(
               color: kColorTextMuted.withValues(alpha: 0.9),
               fontSize: 12,
@@ -464,7 +463,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           ),
           const SizedBox(height: 4),
           Text(
-            t('selectTargetLanguageDesc', lang),
+            'selectTargetLanguageDesc'.tr(),
             style: TextStyle(
               color: kColorTextMuted.withValues(alpha: 0.6),
               fontSize: 11,
@@ -485,7 +484,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 value: _targetSelected ? model.targetLanguage : null,
-                hint: Text(t('selectTargetLanguage', lang)),
+                hint: Text('selectTargetLanguage'.tr()),
                 isExpanded: true,
                 dropdownColor: kColorSurface,
                 icon: const Icon(Icons.arrow_drop_down, color: kColorTextMuted),
@@ -566,8 +565,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   children: [
                     Text(
                       _keyValidated
-                          ? t('apiKeyVerified', lang)
-                          : t('step1ApiKey', lang),
+                          ? 'apiKeyVerified'.tr()
+                          : 'step1ApiKey'.tr(),
                       style: const TextStyle(
                         color: kColorText,
                         fontSize: 15,
@@ -575,7 +574,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       ),
                     ),
                     Text(
-                      t('apiKeyRequired', lang),
+                      'apiKeyRequired'.tr(),
                       style: TextStyle(
                         color: kColorTextMuted.withValues(alpha: 0.7),
                         fontSize: 11,
@@ -593,7 +592,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    t('ready', lang),
+                    'ready'.tr(),
                     style: const TextStyle(
                       color: Colors.green,
                       fontSize: 11,
@@ -609,7 +608,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             obscureText: true,
             style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 14),
             decoration: InputDecoration(
-              hintText: t('pasteApiKey', lang),
+              hintText: 'pasteApiKey'.tr(),
               hintStyle: TextStyle(
                 color: kColorTextMuted.withValues(alpha: 0.7),
                 fontSize: 13,
@@ -654,7 +653,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                               size: 16, color: Colors.white),
                           const SizedBox(width: 8),
                           Text(
-                            t('validateSave', lang),
+                            'validateSave'.tr(),
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 14,
@@ -721,7 +720,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        t('takeTest', lang),
+                        'takeTest'.tr(),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 17,
@@ -730,7 +729,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        t('testDesc', lang),
+                        'testDesc'.tr(),
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.8),
                           fontSize: 13,
@@ -745,7 +744,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             ),
             const SizedBox(height: 14),
             Text(
-              t('testDescLong', lang),
+              'testDescLong'.tr(),
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.85),
                 fontSize: 13,
@@ -775,7 +774,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
-            t('orChooseManually', lang).toUpperCase(),
+            'orChooseManually'.tr().toUpperCase(),
             style: TextStyle(
               color: kColorTextMuted.withValues(alpha: 0.7),
               fontSize: 11,
@@ -804,7 +803,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          t('selectYourLevel', lang),
+          'selectYourLevel'.tr(),
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: kColorText,
                 fontWeight: FontWeight.w700,
