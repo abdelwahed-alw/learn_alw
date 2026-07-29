@@ -41,7 +41,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
                     MainScreenBody(onNavigateProfile: widget.onNavigateProfile),
                     const IeltsScreen(),
                     const BeginnerScreen(),
-                    const CategoriesTab(),
+                    CategoriesTab(onNavigateProfile: widget.onNavigateProfile),
                   ],
                 ),
               ),
@@ -55,7 +55,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
   Widget _buildHeader(AppStateModel state) {
     final cs = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 8),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         border: Border(
@@ -71,7 +71,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
                 'exercisesTab'.tr(),
                 style: TextStyle(
                   color: cs.onSurface,
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -105,11 +105,10 @@ class _ExercisesTabState extends State<ExercisesTab> {
                 ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           _buildModeSelector(state),
-          const SizedBox(height: 14),
+          const SizedBox(height: 10),
           _buildTopicSelector(state),
-          const SizedBox(height: 2),
         ],
       ),
     );
