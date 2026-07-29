@@ -280,5 +280,16 @@
   "youSaid": "You said:",
   "yourLevel": "あなたのレベル",
   "yourTopic": "あなたのトピック",
-  "zeroToHero": "Zero to Hero"
+  "zeroToHero": "Zero to Hero",
+  "weeklyActivity": "週間アクティビティ",
+  "thisWeek": "今週",
+  "today": "今日",
+  "weakAreaTitle": "最も弱いスキルを練習しよう",
+  "weakAreaSubtitle": "{0} は {1}% しか完了していません",
+  "practiceNow": "今すぐ練習",
+  "noActivityYet": "まだアクティビティがありません",
+  "tapToPractice": "タップして練習",
+  "searchVocabulary": "語彙を検索…",
+  "noVocabularyYet": "まだ単語を覚えていません。",
+  "last7Days": "過去7日間"
 }

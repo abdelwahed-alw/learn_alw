@@ -66,6 +66,7 @@ class AppStateModel extends ChangeNotifier {
   int _totalExercisesDone = 0;
   Map<String, int> _topicProgress = {};
   Map<String, int> _categoryProgress = {};
+  Map<String, int> _dailyHistory = {};
   DateTime? _lastActiveDate;
   int _streakCount = 0;
 
@@ -126,6 +127,25 @@ class AppStateModel extends ChangeNotifier {
               (_topicProgress.length * 10))
           .clamp(0.0, 1.0);
 
+  int get todayExercisesCount =>
+      _dailyHistory[_isoDate(DateTime.now())] ?? 0;
+
+  List<int> get weeklyActivityCounts {
+    final now = DateTime.now();
+    final counts = <int>[];
+    for (int i = 6; i >= 0; i--) {
+      final d = now.subtract(Duration(days: i));
+      counts.add(_dailyHistory[_isoDate(d)] ?? 0);
+    }
+    return counts;
+  }
+
+  int get weeklyExercisesCount =>
+      weeklyActivityCounts.fold<int>(0, (a, b) => a + b);
+
+  static String _isoDate(DateTime d) =>
+      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
   double _categoryPct(String cat) =>
       ((_categoryProgress[cat] ?? 0) / 10.0).clamp(0.0, 1.0);
 
@@ -141,6 +161,7 @@ class AppStateModel extends ChangeNotifier {
   bool get isGeneratingQuestion => _loadingPhase == LoadingPhase.generatingQ;
   bool get isSubmitting => _loadingPhase == LoadingPhase.submitting;
   bool get isTranslating => _loadingPhase == LoadingPhase.translating;
+  String get activationCode => _activationCode;
   String get apiKey => _decryptActivationCode(_activationCode);
   bool get hasApiKey => _activationCode.trim().isNotEmpty;
   bool get isDarkMode => _isDarkMode;
@@ -357,6 +378,7 @@ class AppStateModel extends ChangeNotifier {
         _categoryProgress = {};
       }
     }
+    _loadDailyHistoryFromPrefs();
     final savedMode = _prefs.getInt(kPrefLastMode);
     if (savedMode != null &&
         savedMode >= 0 &&
@@ -373,10 +395,32 @@ class AppStateModel extends ChangeNotifier {
     await _prefs.setInt(kPrefStreak, _streakCount);
     await _prefs.setInt(kPrefLastMode, _lastAccessedMode.index);
     await _prefs.setString(kPrefCategoryProgress, jsonEncode(_categoryProgress));
+    await _prefs.setString(kPrefDailyHistory, jsonEncode(_dailyHistory));
+  }
+
+  void _loadDailyHistoryFromPrefs() {
+    final raw = _prefs.getString(kPrefDailyHistory);
+    if (raw != null && raw.isNotEmpty) {
+      try {
+        final Map<String, dynamic> decoded =
+            jsonDecode(raw) as Map<String, dynamic>;
+        _dailyHistory =
+            decoded.map((k, v) => MapEntry(k, (v as num).toInt()));
+      } catch (_) {
+        _dailyHistory = {};
+      }
+    }
+  }
+
+  void _incrementDailyCount() {
+    final key = _isoDate(DateTime.now());
+    _dailyHistory[key] = (_dailyHistory[key] ?? 0) + 1;
   }
 
   void incrementCategoryProgress(String category) {
     _categoryProgress[category] = (_categoryProgress[category] ?? 0) + 1;
+    _incrementDailyCount();
+    _lastActiveDate = DateTime.now();
     _saveProgress();
     notifyListeners();
   }
@@ -384,6 +428,7 @@ class AppStateModel extends ChangeNotifier {
   void incrementExerciseProgress(String topic) {
     _totalExercisesDone++;
     _topicProgress[topic] = (_topicProgress[topic] ?? 0) + 1;
+    _incrementDailyCount();
 
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -447,6 +492,15 @@ class AppStateModel extends ChangeNotifier {
     _clearSession();
     notifyListeners();
     return generateQuestion();
+  }
+
+  /// Updates the selected topic without generating a question. Used when the
+  /// user changes context from non-exercise screens such as progress.
+  void setSelectedTopic(String topic) {
+    if (_selectedTopic == topic) return;
+    _selectedTopic = topic;
+    _prefs.setString(kPrefTopic, topic);
+    notifyListeners();
   }
 
   // ─── IELTS Exercise Generation ──────────────────────────────────────────────

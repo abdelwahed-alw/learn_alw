@@ -280,5 +280,16 @@
   "youSaid": "You said:",
   "yourLevel": "您的水平",
   "yourTopic": "你的主题",
-  "zeroToHero": "Zero to Hero"
+  "zeroToHero": "Zero to Hero",
+  "weeklyActivity": "每周活动",
+  "thisWeek": "本周",
+  "today": "今天",
+  "weakAreaTitle": "练习最弱的技能",
+  "weakAreaSubtitle": "{0} 仅完成 {1}%",
+  "practiceNow": "立即练习",
+  "noActivityYet": "暂无活动",
+  "tapToPractice": "点击练习",
+  "searchVocabulary": "搜索词汇…",
+  "noVocabularyYet": "还没有学会单词。",
+  "last7Days": "最近7天"
 }

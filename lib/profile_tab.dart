@@ -25,7 +25,7 @@ class _ProfileTabState extends State<ProfileTab> {
   void initState() {
     super.initState();
     final state = context.read<AppStateModel>();
-    _apiKeyController.text = state.apiKey;
+    _apiKeyController.text = state.activationCode;
   }
 
   @override

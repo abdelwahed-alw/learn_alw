@@ -225,7 +225,7 @@ class GrammarFeedback {
 // ─── Service ──────────────────────────────────────────────────────────────────
 
 class GeminiApiService {
-  static const String _modelName = 'gemini-3.1-flash-lite';
+  static const String _modelName = 'gemini-3.5-flash-lite';
   static const Duration _timeout = Duration(seconds: 30);
 
   static const int _maxRetries = 3;
@@ -432,34 +432,30 @@ class GeminiApiService {
     required String inputText,
     required String nativeLanguage,
     required String targetLanguage,
+    bool reverse = false,
   }) async {
     return _withRetry(() async {
+      final inputLang = reverse ? nativeLanguage : targetLanguage;
+      final outputLang = reverse ? targetLanguage : nativeLanguage;
       final prompt = '''
 You are an expert language translator and language teacher.
 
 A language learner who speaks $nativeLanguage is learning $targetLanguage.
-They have written the following text in $targetLanguage:
+They have written the following text in $inputLang:
 
 Original Text: "$inputText"
 
 Your job:
-1. Translate the Original Text into $nativeLanguage.
-2. If the Original Text has spelling or grammar mistakes, provide the corrected version in $targetLanguage.
-
-IMPORTANT EXAMPLE:
-- If Original Text is "com back" and native language is Arabic and target language is English:
-  - "translation" should be: "عودة" (the Arabic meaning of "come back")
-  - "correction" should be: "come back" (the corrected English)
+1. Translate the Original Text into $outputLang.
+${reverse ? '' : '2. If the Original Text has spelling or grammar mistakes, provide the corrected version in $targetLanguage.'}
 
 You MUST respond ONLY with this exact JSON format:
 {
-  "translation": "<The $nativeLanguage translation of the original text. This MUST be written in $nativeLanguage script/characters. NEVER write $targetLanguage here.>",
-  "correction": "<If the original text has mistakes, write the corrected $targetLanguage text here. If no mistakes, write an empty string.>"
+  "translation": "<The $outputLang translation of the original text. This MUST be written in $outputLang script/characters. NEVER write $inputLang here.>"${reverse ? '' : ',\n  "correction": "<If the original text has mistakes, write the corrected $targetLanguage text here. If no mistakes, write an empty string.>"'}
 }
 
 ABSOLUTE RULES — VIOLATING ANY OF THESE IS FORBIDDEN:
-- "translation" MUST be in $nativeLanguage. It is FORBIDDEN to put $targetLanguage text in "translation".
-- "correction" MUST be in $targetLanguage only. It is FORBIDDEN to put $nativeLanguage text in "correction".
+- "translation" MUST be in $outputLang. It is FORBIDDEN to put $inputLang text in "translation".${reverse ? '' : '\n- "correction" MUST be in $targetLanguage only.'}
 - Do NOT add any explanation, markdown, or extra fields.
 - Return ONLY the raw JSON object.
 ''';

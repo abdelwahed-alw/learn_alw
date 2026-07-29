@@ -280,5 +280,16 @@
   "tapToAnswer": "اضغط للإجابة",
   "invalidActivationCode": "كود التفعيل غير صالح.",
   "activationCodeVerified": "✓ تم التحقق من كود التفعيل وحفظه!",
-  "copied_successfully": "تم النسخ!"
+  "copied_successfully": "تم النسخ!",
+  "weeklyActivity": "النشاط الأسبوعي",
+  "thisWeek": "هذا الأسبوع",
+  "today": "اليوم",
+  "weakAreaTitle": "درب أضعف مهارة",
+  "weakAreaSubtitle": "{0} مكتملة بنسبة {1}% فقط",
+  "practiceNow": "تدرب الآن",
+  "noActivityYet": "لا يوجد نشاط بعد",
+  "tapToPractice": "اضغط للتدرب",
+  "searchVocabulary": "البحث في المفردات…",
+  "noVocabularyYet": "لم تتعلم أي كلمات بعد.",
+  "last7Days": "آخر 7 أيام"
 }

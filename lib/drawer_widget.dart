@@ -26,7 +26,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   void initState() {
     super.initState();
     final state = context.read<AppStateModel>();
-    _apiKeyController.text = state.apiKey;
+    _apiKeyController.text = state.activationCode;
   }
 
   @override

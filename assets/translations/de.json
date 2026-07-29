@@ -280,5 +280,16 @@
   "youSaid": "You said:",
   "yourLevel": "Ihr Niveau",
   "yourTopic": "Dein Thema",
-  "zeroToHero": "Zero to Hero"
+  "zeroToHero": "Zero to Hero",
+  "weeklyActivity": "Wöchentliche Aktivität",
+  "thisWeek": "Diese Woche",
+  "today": "Heute",
+  "weakAreaTitle": "Übe deine schwächste Fähigkeit",
+  "weakAreaSubtitle": "{0} ist nur zu {1}% abgeschlossen",
+  "practiceNow": "Jetzt üben",
+  "noActivityYet": "Noch keine Aktivität",
+  "tapToPractice": "Tippen zum Üben",
+  "searchVocabulary": "Wortschatz durchsuchen…",
+  "noVocabularyYet": "Noch keine Wörter gelernt.",
+  "last7Days": "Letzte 7 Tage"
 }

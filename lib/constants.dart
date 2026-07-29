@@ -18,7 +18,11 @@ const String kPrefLastActive = 'last_active_date';
 const String kPrefStreak = 'streak';
 const String kPrefLastMode = 'last_mode';
 const String kPrefCategoryProgress = 'progress_categories';
+const String kPrefDailyHistory = 'daily_history';
 const String kPrefIsDarkMode = 'is_dark_mode';
+
+/// Daily exercise goal used in progress widgets.
+const int kDailyExerciseGoal = 10;
 const String kPrefHasSelectedTheme = 'has_selected_theme';
 const String kPrefIsFabVisible = 'is_fab_visible';
 

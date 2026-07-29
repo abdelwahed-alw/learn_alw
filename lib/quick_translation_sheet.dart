@@ -17,6 +17,7 @@ void showQuickTranslationSheet(BuildContext context) {
   String translationText = '';
   String correctionText = '';
   bool loading = false;
+  bool reverse = false;
 
   void _parseResponse(String response) {
     try {
@@ -45,6 +46,12 @@ void showQuickTranslationSheet(BuildContext context) {
     builder: (sheetContext) {
       return StatefulBuilder(
         builder: (ctx, setSheetState) {
+          final fromLabel = reverse
+              ? languageLabelFromCode(state.targetLanguage)
+              : languageLabelFromCode(state.nativeLanguage);
+          final toLabel = reverse
+              ? languageLabelFromCode(state.nativeLanguage)
+              : languageLabelFromCode(state.targetLanguage);
           return Padding(
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
@@ -91,7 +98,46 @@ void showQuickTranslationSheet(BuildContext context) {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          fromLabel,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: cs.onSurface.withValues(alpha: 0.7),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: () => setSheetState(() => reverse = !reverse),
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: kColorPrimary.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Icon(
+                              Icons.swap_horiz_rounded,
+                              size: 18,
+                              color: kColorPrimary,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          toLabel,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: cs.onSurface.withValues(alpha: 0.7),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
                     TextField(
                       controller: inputController,
                       maxLines: 3,
@@ -136,6 +182,7 @@ void showQuickTranslationSheet(BuildContext context) {
                                   targetLanguage:
                                       languageLabelFromCode(
                                           state.targetLanguage),
+                                  reverse: reverse,
                                 );
                                 if (ctx.mounted) {
                                   setSheetState(() {

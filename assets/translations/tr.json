@@ -280,5 +280,16 @@
   "youSaid": "You said:",
   "yourLevel": "Seviyeniz",
   "yourTopic": "Konun",
-  "zeroToHero": "Zero to Hero"
+  "zeroToHero": "Zero to Hero",
+  "weeklyActivity": "Haftalık Aktivite",
+  "thisWeek": "Bu hafta",
+  "today": "Bugün",
+  "weakAreaTitle": "En zayıf becerini çalış",
+  "weakAreaSubtitle": "{0} sadece %{1} tamamlandı",
+  "practiceNow": "Şimdi çalış",
+  "noActivityYet": "Henüz aktivite yok",
+  "tapToPractice": "Pratik yapmak için dokun",
+  "searchVocabulary": "Kelime ara…",
+  "noVocabularyYet": "Henüz kelime öğrenmediniz.",
+  "last7Days": "Son 7 gün"
 }
