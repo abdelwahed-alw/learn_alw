@@ -148,29 +148,34 @@ class _ExercisesTabState extends State<ExercisesTab> {
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    m.$3,
-                    size: 14,
-                    color: isSelected
-                        ? kColorPrimary
-                        : (isLight ? Colors.black54 : kColorAccent.withValues(alpha: 0.6)),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    m.$2,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight:
-                          isSelected ? FontWeight.w700 : FontWeight.w500,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      m.$3,
+                      size: 14,
                       color: isSelected
                           ? kColorPrimary
                           : (isLight ? Colors.black54 : kColorAccent.withValues(alpha: 0.6)),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 4),
+                    Text(
+                      m.$2,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight:
+                            isSelected ? FontWeight.w700 : FontWeight.w500,
+                        color: isSelected
+                            ? kColorPrimary
+                            : (isLight ? Colors.black54 : kColorAccent.withValues(alpha: 0.6)),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ));

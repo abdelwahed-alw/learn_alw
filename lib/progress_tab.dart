@@ -518,7 +518,7 @@ class _ProgressTabState extends State<ProgressTab> {
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            childAspectRatio: 1.5,
+            childAspectRatio: 1.35,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
           ),
@@ -563,6 +563,8 @@ class _ProgressTabState extends State<ProgressTab> {
                     const SizedBox(height: 8),
                     Text(
                       s.$1,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: cs.onSurface,
                         fontSize: 15,

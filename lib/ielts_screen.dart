@@ -114,27 +114,33 @@ class _IeltsScreenState extends State<IeltsScreen> {
                 ),
               ),
               const SizedBox(width: 14),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'officialExamPrep'.tr(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge
-                        ?.copyWith(
-                          color: cs.onSurface,
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                  Text(
-                    '${'topicLabel'.tr()}: ${'officialPastExams'.tr()}',
-                    style: TextStyle(
-                      color: cs.onSurface.withValues(alpha: 0.6),
-                      fontSize: 12,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'officialExamPrep'.tr(),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge
+                          ?.copyWith(
+                            color: cs.onSurface,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
-                  ),
-                ],
+                    Text(
+                      '${'topicLabel'.tr()}: ${'officialPastExams'.tr()}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: cs.onSurface.withValues(alpha: 0.6),
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

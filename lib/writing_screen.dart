@@ -117,12 +117,13 @@ class _WritingScreenState extends State<WritingScreen> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (_exercise != null) ...[
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (_exercise != null) ...[
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -210,7 +211,8 @@ class _WritingScreenState extends State<WritingScreen> {
                     _storyController.text.trim().isEmpty ? null : _submitStory,
               ),
             ] else ...[
-              Expanded(
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.5,
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -258,9 +260,7 @@ class _WritingScreenState extends State<WritingScreen> {
             ],
             if (_feedback != null) ...[
               const SizedBox(height: 20),
-              Expanded(
-                child: SingleChildScrollView(
-                    child: Container(
+              Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         color: kColorAccent.withValues(alpha: 0.05),
@@ -378,13 +378,13 @@ class _WritingScreenState extends State<WritingScreen> {
                       ],
                     ),
                   ),
-                ),
-              ),
-            ],
-          ],
+                ],
+              ],
+            ),
+          ),
         ),
-      ),
-    );
+      );
+
   }
 }
 

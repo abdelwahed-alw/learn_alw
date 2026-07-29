@@ -91,8 +91,10 @@ class _AppShellState extends State<AppShell> {
                 },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isActive ? 16 : 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: isActive
                         ? kColorPrimary.withValues(alpha: 0.12)
@@ -109,18 +111,19 @@ class _AppShellState extends State<AppShell> {
                             ? kColorPrimary
                             : (isLight ? Colors.black54 : kColorAccent.withValues(alpha: 0.6)),
                       ),
-                      const SizedBox(width: 6),
-                      Text(
-                        items[i].$2,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight:
-                              isActive ? FontWeight.w700 : FontWeight.w500,
-                          color: isActive
-                              ? kColorPrimary
-                              : (isLight ? Colors.black54 : kColorAccent.withValues(alpha: 0.6)),
+                      if (isActive) ...[
+                        const SizedBox(width: 6),
+                        Text(
+                          items[i].$2,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: isActive
+                                ? kColorPrimary
+                                : (isLight ? Colors.black54 : kColorAccent.withValues(alpha: 0.6)),
+                          ),
                         ),
-                      ),
+                      ],
                     ],
                   ),
                 ),
