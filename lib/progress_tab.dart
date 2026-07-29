@@ -267,11 +267,8 @@ class _ProgressTabState extends State<ProgressTab> {
                     ),
                   ),
                   const SizedBox(height: 2),
-                  Text(
-                    'weakAreaSubtitle'.tr(args: [
-                      weakest.$1.tr(),
-                      '$pct',
-                    ]),
+                    Text(
+                      '${weakest.$1} — $pct%',
                     style: TextStyle(
                       color: cs.onSurface.withValues(alpha: 0.6),
                       fontSize: 12,
