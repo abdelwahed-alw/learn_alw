@@ -679,6 +679,7 @@ ABSOLUTE RULES — VIOLATING ANY OF THESE IS FORBIDDEN:
     required String nativeLanguage,
     required String targetWord,
     required List<String> knownWords,
+    String previousSentence = '',
   }) async {
     return _withRetry(() async {
       final prompt = buildBeginnerSentencePrompt(
@@ -686,6 +687,7 @@ ABSOLUTE RULES — VIOLATING ANY OF THESE IS FORBIDDEN:
         nativeLanguage: nativeLanguage,
         targetWord: targetWord,
         knownWords: knownWords,
+        previousSentence: previousSentence,
       );
       final model = _buildModel(apiKey.trim());
       final response =

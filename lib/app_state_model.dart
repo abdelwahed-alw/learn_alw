@@ -99,6 +99,7 @@ class AppStateModel extends ChangeNotifier {
   List<Map<String, String>> _beginnerVocabulary = [];
   List<BeginnerNewWord> _beginnerCurrentNewWords = [];
   String _beginnerError = '';
+  String _lastBeginnerSentence = '';
 
   // ─── Getters ───────────────────────────────────────────────────────────────
   String get nativeLanguage => _nativeLanguage;
@@ -225,8 +226,10 @@ class AppStateModel extends ChangeNotifier {
     }
   }
 
+  String get _beginnerVocabKey => '${kPrefBeginnerVocab}_$_targetLanguage';
+
   void _loadBeginnerVocabularyFromPrefs() {
-    final raw = _prefs.getString(kPrefBeginnerVocab);
+    final raw = _prefs.getString(_beginnerVocabKey);
     if (raw != null && raw.isNotEmpty) {
       try {
         final List<dynamic> decoded = jsonDecode(raw) as List<dynamic>;
@@ -332,8 +335,8 @@ class AppStateModel extends ChangeNotifier {
     if (_targetLanguage == code) return;
     _targetLanguage = code;
     await _prefs.setString(kPrefTargetLang, code);
-    _beginnerVocabulary.clear();
-    await _prefs.remove(kPrefBeginnerVocab);
+    _clearBeginnerSession();
+    _loadBeginnerVocabularyFromPrefs();
     notifyListeners();
   }
 
@@ -345,6 +348,8 @@ class AppStateModel extends ChangeNotifier {
     await _prefs.setString(kPrefNativeLang, _nativeLanguage);
     await _prefs.setString(kPrefTargetLang, _targetLanguage);
     _clearSession();
+    _clearBeginnerSession();
+    _loadBeginnerVocabularyFromPrefs();
     notifyListeners();
   }
 
@@ -752,7 +757,7 @@ class AppStateModel extends ChangeNotifier {
 
   Future<void> _saveBeginnerVocabulary() async {
     final encoded = jsonEncode(_beginnerVocabulary);
-    await _prefs.setString(kPrefBeginnerVocab, encoded);
+    await _prefs.setString(_beginnerVocabKey, encoded);
   }
 
   Future<String?> generateBeginnerSentence() async {
@@ -781,8 +786,12 @@ class AppStateModel extends ChangeNotifier {
         nativeLanguage: languageLabelFromCode(_nativeLanguage),
         targetWord: targetWord,
         knownWords: knownWords,
+        previousSentence: _lastBeginnerSentence,
       );
 
+      if (_beginnerSentence.isNotEmpty) {
+        _lastBeginnerSentence = _beginnerSentence;
+      }
       _beginnerTargetWord = result.targetWord;
       _beginnerSentence = result.sentence;
       _beginnerCurrentNewWords = result.newWords;
@@ -858,11 +867,14 @@ class AppStateModel extends ChangeNotifier {
   String _pickNextBeginnerWord() {
     // Cycle through known vocabulary to pick one for reinforcement
     if (_beginnerVocabulary.isEmpty) return _simpleFirstWord(_targetLanguage);
-    // Pick a random known word, or if all are well-known, just pick the first
-    final index =
-        DateTime.now().millisecondsSinceEpoch % _beginnerVocabulary.length;
-    return _beginnerVocabulary[index]['word'] ??
-        _simpleFirstWord(_targetLanguage);
+    // Avoid re-picking the current target word so we don't get a repeat
+    final current = _beginnerTargetWord.trim().toLowerCase();
+    final candidates = _beginnerVocabulary
+        .where((e) => (e['word'] ?? '').trim().toLowerCase() != current)
+        .toList();
+    final pool = candidates.isEmpty ? _beginnerVocabulary : candidates;
+    final index = DateTime.now().millisecondsSinceEpoch % pool.length;
+    return pool[index]['word'] ?? _simpleFirstWord(_targetLanguage);
   }
 
   // ─── Background preview generation ────────────────────────────────────────
@@ -940,5 +952,6 @@ class AppStateModel extends ChangeNotifier {
     _beginnerSentence = '';
     _beginnerCurrentNewWords = [];
     _beginnerError = '';
+    _lastBeginnerSentence = '';
   }
 }

@@ -678,10 +678,14 @@ String buildBeginnerSentencePrompt({
   required String nativeLanguage,
   required String targetWord,
   required List<String> knownWords,
+  String previousSentence = '',
 }) {
   final knownList = knownWords.isEmpty
       ? 'None yet — this is the very first word.'
       : knownWords.join(', ');
+  final prevBlock = previousSentence.isEmpty
+      ? 'None — this is the first sentence.'
+      : '"$previousSentence"';
 
   return '''You are a patient beginner language teacher for $targetLanguage learners who speak $nativeLanguage.
 
@@ -694,6 +698,9 @@ ${randomTopic()}
 ## Known Vocabulary the Student Already Knows
 $knownList
 
+## Previous Sentence (DO NOT REPEAT OR PARAPHRASE THIS)
+$prevBlock
+
 ## Task
 Generate a complete sentence ONLY in $targetLanguage that:
 1. Uses the target word "$targetWord"
@@ -701,6 +708,7 @@ Generate a complete sentence ONLY in $targetLanguage that:
 3. If no known vocabulary exists yet, use ONLY the target word plus the most basic common words (I, you, is, the, a, an, have, like, etc.)
 4. The sentence must be extremely simple — maximum 7 words
 5. Every single word in the sentence MUST be a real word in $targetLanguage. Do NOT mix languages.
+6. The sentence MUST be different from the previous sentence and must not repeat any of its words except for function words (I, you, is, the, a, an, have, like, etc.)
 ${seedSuffix()}
 
 Return ONLY valid JSON:

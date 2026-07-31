@@ -416,6 +416,22 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                   ],
                 ),
               ),
+              const Spacer(),
+              GestureDetector(
+                onTap: () => _speakSentence(state.beginnerSentence),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: kColorPrimary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.volume_up_rounded,
+                    size: 18,
+                    color: kColorPrimary,
+                  ),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 20),
@@ -478,12 +494,11 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                     ),
                   ),
                   child: isLoading
-                      ? SizedBox(
-                          width: 20,
-                          height: 20,
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
                           child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            color: textColor.withValues(alpha: 0.6),
+                            strokeWidth: 3,
                           ),
                         )
                       : Directionality(
@@ -617,33 +632,45 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
                       ),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () => _discoverWord(state, nw.word),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF2ECC71).withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.add_rounded,
-                                  color: Color(0xFF2ECC71), size: 12),
-                              const SizedBox(width: 2),
-                              Text(
-                                'add'.tr(),
-                                style: const TextStyle(
+                  Builder(builder: (context) {
+                    final adding = _loadingWords.contains(nw.word.trim());
+                    return GestureDetector(
+                      onTap: adding ? null : () => _discoverWord(state, nw.word),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2ECC71).withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: adding
+                            ? const SizedBox(
+                                width: 12,
+                                height: 12,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
                                   color: Color(0xFF2ECC71),
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
                                 ),
+                              )
+                            : Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.add_rounded,
+                                      color: Color(0xFF2ECC71), size: 12),
+                                  const SizedBox(width: 2),
+                                  Text(
+                                    'add'.tr(),
+                                    style: const TextStyle(
+                                      color: Color(0xFF2ECC71),
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                    ),
-                  ),
+                      ),
+                    );
+                  }),
                 ],
               ),
             );
@@ -816,6 +843,14 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
     await _tts.speak(word);
   }
 
+  Future<void> _speakSentence(String sentence) async {
+    final lang = context.read<AppStateModel>().targetLanguage;
+    await _tts.setLanguage(ttsLocaleFor(lang));
+    await _tts.setSpeechRate(0.4);
+    await _tts.speak(sentence);
+    await _tts.setSpeechRate(0.5);
+  }
+
   Future<void> _generateNewSentence(AppStateModel state) async {
     setState(() {
       _loadingWords.clear();
@@ -871,8 +906,10 @@ class _BeginnerScreenState extends State<BeginnerScreen> {
 
   Future<void> _discoverWord(AppStateModel state, String word) async {
     if (word.isEmpty) return;
+    setState(() => _loadingWords.add(word.trim()));
     final error = await state.discoverBeginnerWord(word);
     if (!mounted) return;
+    setState(() => _loadingWords.remove(word.trim()));
     if (error != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
