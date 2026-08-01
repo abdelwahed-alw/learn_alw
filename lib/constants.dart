@@ -192,6 +192,21 @@ String seedSuffix() {
   return '\n\n[Seed: $ts-$rnd — CRITICAL: Generate exactly ONE unique response. Do NOT repeat or paraphrase any previous response.]';
 }
 
+/// Returns a random extra constraint so each generated sentence differs.
+String randomSentenceVariation() {
+  const variations = [
+    'Make the sentence about a meal or eating.',
+    'Make the sentence about going somewhere.',
+    'Make the sentence about something the student likes.',
+    'Make the sentence about a family member.',
+    'Make the sentence about today or now.',
+    'Make the sentence about the home.',
+    'Make the sentence about meeting someone.',
+    'Make the sentence about feeling or emotion.',
+  ];
+  return variations[Random().nextInt(variations.length)];
+}
+
 // Topic → Icon mapping for drawer
 const Map<String, IconData> kTopicIcons = {
   'Daily Conversations': Icons.chat_bubble_outline_rounded,
@@ -709,6 +724,7 @@ Generate a complete sentence ONLY in $targetLanguage that:
 4. The sentence must be extremely simple — maximum 7 words
 5. Every single word in the sentence MUST be a real word in $targetLanguage. Do NOT mix languages.
 6. The sentence MUST be different from the previous sentence and must not repeat any of its words except for function words (I, you, is, the, a, an, have, like, etc.)
+7. ${randomSentenceVariation()}
 ${seedSuffix()}
 
 Return ONLY valid JSON:

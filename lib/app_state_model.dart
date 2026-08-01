@@ -763,6 +763,9 @@ class AppStateModel extends ChangeNotifier {
   Future<String?> generateBeginnerSentence() async {
     if (!hasApiKey) return 'Please configure your API key first.';
     _beginnerLoading = true;
+    if (_beginnerSentence.isNotEmpty) {
+      _lastBeginnerSentence = _beginnerSentence;
+    }
     _clearBeginnerSession();
     notifyListeners();
 
@@ -789,9 +792,6 @@ class AppStateModel extends ChangeNotifier {
         previousSentence: _lastBeginnerSentence,
       );
 
-      if (_beginnerSentence.isNotEmpty) {
-        _lastBeginnerSentence = _beginnerSentence;
-      }
       _beginnerTargetWord = result.targetWord;
       _beginnerSentence = result.sentence;
       _beginnerCurrentNewWords = result.newWords;
@@ -864,17 +864,39 @@ class AppStateModel extends ChangeNotifier {
     return firstWords[lang] ?? 'eat';
   }
 
+  static const Map<String, List<String>> _commonBeginnerWords = {
+    'en': ['eat', 'drink', 'like', 'have', 'go', 'come', 'see', 'want', 'love', 'play', 'read', 'run', 'walk', 'sleep', 'say', 'make', 'give', 'take', 'know', 'think'],
+    'es': ['comer', 'beber', 'gustar', 'tener', 'ir', 'venir', 'ver', 'querer', 'amar', 'jugar', 'leer', 'correr', 'caminar', 'dormir', 'decir', 'hacer', 'dar', 'tomar', 'saber', 'pensar'],
+    'fr': ['manger', 'boire', 'aimer', 'avoir', 'aller', 'venir', 'voir', 'vouloir', 'jouer', 'lire', 'courir', 'marcher', 'dormir', 'dire', 'faire', 'donner', 'prendre', 'savoir', 'penser'],
+    'de': ['essen', 'trinken', 'mögen', 'haben', 'gehen', 'kommen', 'sehen', 'wollen', 'lieben', 'spielen', 'lesen', 'laufen', 'schlafen', 'sagen', 'machen', 'geben', 'nehmen', 'wissen', 'denken'],
+    'it': ['mangiare', 'bere', 'piacere', 'avere', 'andare', 'venire', 'vedere', 'volere', 'amare', 'giocare', 'leggere', 'correre', 'camminare', 'dormire', 'dire', 'fare', 'dare', 'prendere', 'sapere', 'pensare'],
+    'pt': ['comer', 'beber', 'gostar', 'ter', 'ir', 'vir', 'ver', 'querer', 'amar', 'jogar', 'ler', 'correr', 'andar', 'dormir', 'dizer', 'fazer', 'dar', 'tomar', 'saber', 'pensar'],
+    'tr': ['yemek', 'içmek', 'sevmek', 'sahip olmak', 'gitmek', 'gelmek', 'görmek', 'istemek', 'oynamak', 'okumak', 'koşmak', 'yürümek', 'uyumak', 'söylemek', 'yapmak', 'vermek', 'almak', 'bilmek', 'düşünmek'],
+    'ar': ['أكل', 'شرب', 'أحب', 'أراد', 'ذهب', 'جاء', 'رأى', 'لعب', 'قرأ', 'ركض', 'مشى', 'نام', 'قال', 'فعل', 'أعطى', 'أخذ', 'عرف', 'فكر'],
+    'zh': ['吃', '喝', '喜欢', '想要', '去', '来', '看', '爱', '玩', '读', '跑', '走', '睡', '说', '做', '给', '拿', '知道', '想'],
+    'ja': ['食べる', '飲む', '好き', '欲しい', '行く', '来る', '見る', '愛する', '遊ぶ', '読む', '走る', '歩く', '眠る', '言う', 'する', 'あげる', '取る', '知る', '思う'],
+  };
+
   String _pickNextBeginnerWord() {
-    // Cycle through known vocabulary to pick one for reinforcement
-    if (_beginnerVocabulary.isEmpty) return _simpleFirstWord(_targetLanguage);
-    // Avoid re-picking the current target word so we don't get a repeat
+    // Progressively introduce new common words so sentences stay varied
+    final known = _beginnerVocabulary
+        .map((e) => (e['word'] ?? '').trim().toLowerCase())
+        .toSet();
+    final pool = _commonBeginnerWords[_targetLanguage] ??
+        _commonBeginnerWords['en']!;
+    for (final w in pool) {
+      if (!known.contains(w.trim().toLowerCase())) return w;
+    }
+    // All common words are learned — reinforce a known one, avoiding current target
     final current = _beginnerTargetWord.trim().toLowerCase();
     final candidates = _beginnerVocabulary
         .where((e) => (e['word'] ?? '').trim().toLowerCase() != current)
         .toList();
-    final pool = candidates.isEmpty ? _beginnerVocabulary : candidates;
-    final index = DateTime.now().millisecondsSinceEpoch % pool.length;
-    return pool[index]['word'] ?? _simpleFirstWord(_targetLanguage);
+    if (candidates.isEmpty) {
+      return _beginnerVocabulary.first['word'] ?? pool.first;
+    }
+    final index = DateTime.now().millisecondsSinceEpoch % candidates.length;
+    return candidates[index]['word'] ?? pool.first;
   }
 
   // ─── Background preview generation ────────────────────────────────────────
