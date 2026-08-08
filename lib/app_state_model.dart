@@ -425,7 +425,7 @@ class AppStateModel extends ChangeNotifier {
   void incrementCategoryProgress(String category) {
     _categoryProgress[category] = (_categoryProgress[category] ?? 0) + 1;
     _incrementDailyCount();
-    _lastActiveDate = DateTime.now();
+    _updateStreak(DateTime.now());
     _saveProgress();
     notifyListeners();
   }
@@ -435,30 +435,32 @@ class AppStateModel extends ChangeNotifier {
     _topicProgress[topic] = (_topicProgress[topic] ?? 0) + 1;
     _incrementDailyCount();
 
-    final now = DateTime.now();
+    _updateStreak(DateTime.now());
+    _lastAccessedMode = _appMode;
+
+    _saveProgress();
+    notifyListeners();
+  }
+
+  void _updateStreak(DateTime now) {
     final today = DateTime(now.year, now.month, now.day);
-    if (_lastActiveDate != null) {
+    if (_lastActiveDate == null) {
+      _streakCount = 1;
+    } else {
       final lastDay = DateTime(
         _lastActiveDate!.year,
         _lastActiveDate!.month,
         _lastActiveDate!.day,
       );
       final diff = today.difference(lastDay).inDays;
-      if (diff == 0) {
-        // same day — streak unchanged
-      } else if (diff == 1) {
+      if (diff == 1) {
         _streakCount++;
-      } else {
+      } else if (diff > 1) {
         _streakCount = 1;
       }
-    } else {
-      _streakCount = 1;
+      // diff == 0 — same day, streak unchanged
     }
     _lastActiveDate = now;
-    _lastAccessedMode = _appMode;
-
-    _saveProgress();
-    notifyListeners();
   }
 
   int _calculateStreak() {
