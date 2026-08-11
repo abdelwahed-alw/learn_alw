@@ -64,6 +64,7 @@ class AppStateModel extends ChangeNotifier {
 
   // ── Progress tracking ────────────────────────────────────────────────────
   int _totalExercisesDone = 0;
+  int _dailyGoalProgress = 0;
   Map<String, int> _topicProgress = {};
   Map<String, int> _categoryProgress = {};
   Map<String, int> _dailyHistory = {};
@@ -119,6 +120,7 @@ class AppStateModel extends ChangeNotifier {
   AppMode get lastAccessedMode => _lastAccessedMode;
 
   int get totalExercisesDone => _totalExercisesDone;
+  int get dailyGoalProgress => _dailyGoalProgress;
   Map<String, int> get topicProgress => Map.unmodifiable(_topicProgress);
   DateTime? get lastActiveDate => _lastActiveDate;
   int get streakDays => _calculateStreak();
@@ -128,8 +130,7 @@ class AppStateModel extends ChangeNotifier {
               (_topicProgress.length * 10))
           .clamp(0.0, 1.0);
 
-  int get todayExercisesCount =>
-      _dailyHistory[_isoDate(DateTime.now())] ?? 0;
+  int get todayExercisesCount => _dailyGoalProgress;
 
   List<int> get weeklyActivityCounts {
     final now = DateTime.now();
@@ -356,6 +357,7 @@ class AppStateModel extends ChangeNotifier {
   // ─── Progress Tracking ──────────────────────────────────────────────────────
 
   void loadProgress() {
+    _checkForNewDay();
     _totalExercisesDone = _prefs.getInt(kPrefTotalExercises) ?? 0;
     final raw = _prefs.getString(kPrefTopicProgress);
     if (raw != null && raw.isNotEmpty) {
@@ -401,6 +403,22 @@ class AppStateModel extends ChangeNotifier {
     await _prefs.setInt(kPrefLastMode, _lastAccessedMode.index);
     await _prefs.setString(kPrefCategoryProgress, jsonEncode(_categoryProgress));
     await _prefs.setString(kPrefDailyHistory, jsonEncode(_dailyHistory));
+    await _prefs.setInt(kPrefDailyGoalProgress, _dailyGoalProgress);
+    await _prefs.setString(kPrefDailyGoalDate, _isoDate(DateTime.now()));
+  }
+
+  /// Resets only [dailyGoalProgress] when a new day has started since the app
+  /// was last opened. Cumulative stats (total exercises, skill percentages,
+  /// vocabulary, streak) are intentionally left untouched.
+  void _checkForNewDay() {
+    _dailyGoalProgress = _prefs.getInt(kPrefDailyGoalProgress) ?? 0;
+    final lastDay = _prefs.getString(kPrefDailyGoalDate);
+    final today = _isoDate(DateTime.now());
+    if (lastDay != today) {
+      _dailyGoalProgress = 0;
+      _prefs.setInt(kPrefDailyGoalProgress, 0);
+      _prefs.setString(kPrefDailyGoalDate, today);
+    }
   }
 
   void _loadDailyHistoryFromPrefs() {
@@ -420,9 +438,11 @@ class AppStateModel extends ChangeNotifier {
   void _incrementDailyCount() {
     final key = _isoDate(DateTime.now());
     _dailyHistory[key] = (_dailyHistory[key] ?? 0) + 1;
+    _dailyGoalProgress++;
   }
 
   void incrementCategoryProgress(String category) {
+    _totalExercisesDone++;
     _categoryProgress[category] = (_categoryProgress[category] ?? 0) + 1;
     _incrementDailyCount();
     _updateStreak(DateTime.now());

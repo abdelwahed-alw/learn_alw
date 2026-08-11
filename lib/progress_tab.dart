@@ -113,19 +113,19 @@ class _ProgressTabState extends State<ProgressTab> {
               child: _StatCard(
                 icon: Icons.today_rounded,
                 label: 'today'.tr(),
-                value: '${state.todayExercisesCount} / $kDailyExerciseGoal',
+                value: '${state.dailyGoalProgress} / $kDailyExerciseGoal',
                 subtitle: 'dailyGoal'.tr(),
                 color: kColorPrimary,
-                progress: (state.todayExercisesCount / kDailyExerciseGoal)
+                progress: (state.dailyGoalProgress / kDailyExerciseGoal)
                     .clamp(0.0, 1.0),
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: _StatCard(
-                icon: Icons.date_range_rounded,
-                label: 'thisWeek'.tr(),
-                value: '${state.weeklyExercisesCount}',
+                icon: Icons.assignment_rounded,
+                label: 'exercisesDone'.tr(),
+                value: '${state.totalExercisesDone}',
                 subtitle: 'exercisesDone'.tr(),
                 color: const Color(0xFF2ECC71),
               ),

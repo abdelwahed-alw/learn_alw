@@ -23,6 +23,8 @@ const String kPrefIsDarkMode = 'is_dark_mode';
 
 /// Daily exercise goal used in progress widgets.
 const int kDailyExerciseGoal = 10;
+const String kPrefDailyGoalProgress = 'daily_goal_progress';
+const String kPrefDailyGoalDate = 'daily_goal_date';
 const String kPrefHasSelectedTheme = 'has_selected_theme';
 const String kPrefIsFabVisible = 'is_fab_visible';
 
