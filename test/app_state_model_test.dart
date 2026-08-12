@@ -51,7 +51,23 @@ void main() {
     model.incrementCategoryProgress('grammar');
 
     expect(model.totalExercisesDone, 1);
+    expect(model.totalAllTimeExercises, 1);
     expect(model.dailyGoalProgress, 1);
     expect(model.grammarProgress, 0.1);
+  });
+
+  test('totalAllTimeExercises reflects lifetime total exercises when daily goal resets', () async {
+    final yesterday = DateTime.now().subtract(const Duration(days: 1));
+    SharedPreferences.setMockInitialValues({
+      'daily_goal_progress': 5,
+      'daily_goal_date': isoDate(yesterday),
+      'total_exercises': 2,
+    });
+    final prefs = await SharedPreferences.getInstance();
+    final model = AppStateModel(prefs);
+    model.loadFromPrefs();
+
+    expect(model.dailyGoalProgress, 0);
+    expect(model.totalAllTimeExercises, 2);
   });
 }

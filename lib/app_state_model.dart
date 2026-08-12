@@ -120,6 +120,7 @@ class AppStateModel extends ChangeNotifier {
   AppMode get lastAccessedMode => _lastAccessedMode;
 
   int get totalExercisesDone => _totalExercisesDone;
+  int get totalAllTimeExercises => _totalExercisesDone;
   int get dailyGoalProgress => _dailyGoalProgress;
   Map<String, int> get topicProgress => Map.unmodifiable(_topicProgress);
   DateTime? get lastActiveDate => _lastActiveDate;

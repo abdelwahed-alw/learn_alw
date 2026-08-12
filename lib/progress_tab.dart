@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:provider/provider.dart';
 
 import 'app_state_model.dart';
@@ -35,6 +35,7 @@ class _ProgressTabState extends State<ProgressTab> {
   Widget build(BuildContext context) {
     return Consumer<AppStateModel>(
       builder: (context, state, _) {
+        final totalAllTimeExercises = state.totalAllTimeExercises;
         return SafeArea(
           bottom: false,
           child: CustomScrollView(
@@ -47,8 +48,13 @@ class _ProgressTabState extends State<ProgressTab> {
                     children: [
                       _buildHeader(context, state),
                       const SizedBox(height: 24),
-                      _buildWeeklySection(context, state),
-                      if (state.totalExercisesDone > 0) ...[
+                      if (totalAllTimeExercises == 0)
+                        _EmptyCard(
+                          subtitle: 'noExercisesYet'.tr(),
+                          onStart: widget.onNavigateExercises,
+                        )
+                      else ...[
+                        _buildWeeklySection(context, state),
                         const SizedBox(height: 24),
                         _buildOverviewCards(state),
                         const SizedBox(height: 24),
@@ -96,11 +102,6 @@ class _ProgressTabState extends State<ProgressTab> {
   }
 
   Widget _buildWeeklySection(BuildContext context, AppStateModel state) {
-    final hasActivity = state.totalExercisesDone > 0;
-    if (!hasActivity) {
-      return _EmptyCard(onStart: widget.onNavigateExercises);
-    }
-
     final cs = Theme.of(context).colorScheme;
     final counts = state.weeklyActivityCounts;
     final maxCount = counts.fold<int>(0, (a, b) => a > b ? a : b).clamp(1, 9999);
@@ -118,6 +119,7 @@ class _ProgressTabState extends State<ProgressTab> {
                 color: kColorPrimary,
                 progress: (state.dailyGoalProgress / kDailyExerciseGoal)
                     .clamp(0.0, 1.0),
+                textDirection: TextDirection.ltr,
               ),
             ),
             const SizedBox(width: 12),
@@ -156,8 +158,13 @@ class _ProgressTabState extends State<ProgressTab> {
                         .subtract(Duration(days: 6 - i));
                     final count = counts[i];
                     final ratio = count / maxCount;
-                    final dayLabel = DateFormat.E(context.locale.toString())
-                        .format(d);
+                    final localeStr = EasyLocalization.of(context)?.locale.toString() ?? 'en';
+                    String dayLabel;
+                    try {
+                      dayLabel = DateFormat.E(localeStr).format(d);
+                    } catch (_) {
+                      dayLabel = '${d.day}';
+                    }
                     return Expanded(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -335,67 +342,10 @@ class _ProgressTabState extends State<ProgressTab> {
 
   Widget _buildTopicBreakdown(BuildContext context, AppStateModel state) {
     final cs = Theme.of(context).colorScheme;
-    final topics = state.topicProgress.entries.toList();
+    final topics = state.topicProgress.isNotEmpty
+        ? state.topicProgress.entries.toList()
+        : kTopics.map((t) => MapEntry(t, 0)).toList();
     topics.sort((a, b) => (a.value / 10.0).compareTo(b.value / 10.0));
-    if (topics.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.all(20),
-        decoration: _cardDecor(context),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.bar_chart_rounded,
-                color: cs.onSurface.withValues(alpha: 0.4), size: 40),
-            const SizedBox(height: 8),
-            Text(
-              'noExercisesCompletedYet'.tr(),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: cs.onSurface.withValues(alpha: 0.6),
-                fontSize: 13,
-              ),
-            ),
-            const SizedBox(height: 20),
-            GestureDetector(
-              onTap: widget.onNavigateExercises,
-              child: Container(
-                height: 48,
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                decoration: BoxDecoration(
-                  gradient: kPrimaryGradient,
-                  borderRadius: BorderRadius.circular(14),
-                  boxShadow: [
-                    BoxShadow(
-                      color: kColorPrimary.withValues(alpha: 0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.rocket_launch_rounded,
-                          color: Colors.white, size: 16),
-                      const SizedBox(width: 8),
-                      Text(
-                        'startAnExercise'.tr(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
 
     final goal = kDailyExerciseGoal;
     final displayTopics = topics.take(8).toList();
@@ -860,6 +810,7 @@ class _StatCard extends StatelessWidget {
   final String subtitle;
   final Color color;
   final double? progress;
+  final TextDirection? textDirection;
 
   const _StatCard({
     required this.icon,
@@ -868,6 +819,7 @@ class _StatCard extends StatelessWidget {
     required this.subtitle,
     required this.color,
     this.progress,
+    this.textDirection,
   });
 
   @override
@@ -899,6 +851,7 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             value,
+            textDirection: textDirection,
             style: TextStyle(
               color: color,
               fontSize: 16,
