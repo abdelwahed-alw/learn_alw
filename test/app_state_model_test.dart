@@ -13,6 +13,7 @@ void main() {
       'daily_goal_progress': 5,
       'daily_goal_date': isoDate(DateTime.now()),
       'total_exercises': 19,
+      'progress_categories': '{"grammar":8}',
     });
     final prefs = await SharedPreferences.getInstance();
     final model = AppStateModel(prefs);
@@ -20,9 +21,10 @@ void main() {
 
     expect(model.dailyGoalProgress, 5);
     expect(model.totalExercisesDone, 19);
+    expect(model.grammarProgress, 0.8);
   });
 
-  test('resets only daily goal progress when a new day has started', () async {
+  test('resets daily metrics when a new day has started', () async {
     final yesterday = DateTime.now().subtract(const Duration(days: 1));
     SharedPreferences.setMockInitialValues({
       'daily_goal_progress': 7,
@@ -37,8 +39,8 @@ void main() {
     model.loadFromPrefs();
 
     expect(model.dailyGoalProgress, 0);
+    expect(model.grammarProgress, 0);
     expect(model.totalExercisesDone, 19);
-    expect(model.grammarProgress, 0.8);
     expect(model.beginnerVocabulary.length, 1);
   });
 

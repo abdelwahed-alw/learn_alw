@@ -408,16 +408,19 @@ class AppStateModel extends ChangeNotifier {
     await _prefs.setString(kPrefDailyGoalDate, _isoDate(DateTime.now()));
   }
 
-  /// Resets only [dailyGoalProgress] when a new day has started since the app
-  /// was last opened. Cumulative stats (total exercises, skill percentages,
-  /// vocabulary, streak) are intentionally left untouched.
+  /// Resets the daily metrics when a new day has started since the app was
+  /// last opened: [dailyGoalProgress] and the per-skill percentages (Grammar,
+  /// Writing, Vocabulary, Reading, Speaking, Listening). Cumulative stats
+  /// (total exercises, total words learned) are intentionally left untouched.
   void _checkForNewDay() {
     _dailyGoalProgress = _prefs.getInt(kPrefDailyGoalProgress) ?? 0;
     final lastDay = _prefs.getString(kPrefDailyGoalDate);
     final today = _isoDate(DateTime.now());
     if (lastDay != today) {
       _dailyGoalProgress = 0;
+      _categoryProgress = {};
       _prefs.setInt(kPrefDailyGoalProgress, 0);
+      _prefs.setString(kPrefCategoryProgress, jsonEncode(const <String, int>{}));
       _prefs.setString(kPrefDailyGoalDate, today);
     }
   }

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:salearn/data/prompts.dart';
+import 'package:salearn/constants.dart';
 
 void main() {
   group('buildQuestionPrompt', () {
