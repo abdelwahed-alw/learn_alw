@@ -1,4 +1,4 @@
-Salearn – AI Language Tutor 🤖🌍
+Salearn – AI Language Tutor 
 Salearn is a modern, high-performance mobile application built with Flutter. It acts as a personal AI-powered language tutor designed to help users master new languages through interactive scenarios, real-time feedback, and diverse study topics.
 ✨ Features
  * AI-Driven Feedback: Get instant, detailed corrections and natural-sounding suggestions for your sentences (as seen in the "AI Feedback" section).
